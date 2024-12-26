@@ -1,15 +1,18 @@
 flogin
 =======
 
+.. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/tests.yml?label=tests
+    :target: https://github.com/cibere/flogin/actions/workflows/tests.yml
+    :alt: Tests Workflow Status
+.. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/lint.yaml?label=lint
+    :target: https://github.com/cibere/flogin/actions/workflows/lint.yaml
+    :alt: Lint Workflow Status
 .. image:: https://img.shields.io/pypi/v/flogin.svg
    :target: https://pypi.python.org/pypi/flogin
    :alt: PyPI version info
 .. image:: https://img.shields.io/pypi/pyversions/flogin.svg
    :target: https://pypi.python.org/pypi/flogin
    :alt: PyPI supported Python versions
-.. image:: https://img.shields.io/pypi/dm/flogin
-    :target: https://pypi.python.org/pypi/flogin
-    :alt: PyPI download count
 .. image:: https://img.shields.io/badge/Documentation-Stable-blue
    :target: https://flogin.readthedocs.io/en/stable
    :alt: Stable Documentation
