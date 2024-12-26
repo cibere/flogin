@@ -67,7 +67,7 @@ class Plugin(Generic[SettingsT]):
         .. describe:: settings_no_update: bool
 
             Whether or not to let flow update flogin's version of the settings. This can be useful when using a custom settings menu. Defaults to
-    
+
     Attributes
     --------
     settings: :class:`~flogin.settings.Settings`
