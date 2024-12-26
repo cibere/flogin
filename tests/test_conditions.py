@@ -19,7 +19,7 @@ def _create_query(text: str, plugin, keyword: str = "*", is_requery: bool = Fals
             "rawQuery": f"{keyword} {text}",
             "search": text,
             "actionKeyword": keyword,
-            "isReQuery": False
+            "isReQuery": False,
         },
         plugin,
     )

@@ -72,15 +72,16 @@ async def test_handler_result(tester: PluginTester, handler: SearchHandler):
     result = response.results[0]
     assert result.title == "Title"
 
+
 @pytest.mark.asyncio
 async def test_handler_error(plugin: Plugin, tester: PluginTester):
     @plugin.search()
     async def handler(query: Query):
         raise TypeError("Boo")
-    
+
     @handler.error
     async def error_handler(query: Query, error: Exception):
         assert isinstance(error, TypeError)
         assert str(error) == "Boo"
-    
+
     await tester.test_query("bar")
