@@ -398,7 +398,7 @@ class Result(Base, Generic[PluginT]):
         r"""A quick and easy way to create a result with a callback without subclassing.
 
         .. NOTE::
-            This is meant to be used with :class:`~flogin.flow_api.client.FlowLauncherAPI` methods
+            This is meant to be used with :class:`~flogin.flow.api.FlowLauncherAPI` methods
 
         Example
         --------

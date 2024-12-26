@@ -86,25 +86,25 @@ If you pass ``None`` to the ``metadata`` argument, flogin will attempt to retrie
 
 In cases where that is not available or you need to customize your metadata, the :func:`~flogin.testing.plugin_tester.PluginTester.create_bogus_plugin_metadata` and :func:`~flogin.testing.plugin_tester.PluginTester.create_plugin_metadata` methods have been provided.
 
-The :func:`~flogin.testing.plugin_tester.PluginTester.create_plugin_metadata` classmethod provides a cleaner ui for creating a :class:`~flogin.flow_api.plugin_metadata.PluginMetadata` object, with some arguments being optional, and being auto-generated.
+The :func:`~flogin.testing.plugin_tester.PluginTester.create_plugin_metadata` classmethod provides a cleaner ui for creating a :class:`~flogin.flow.plugin_metadata.PluginMetadata` object, with some arguments being optional, and being auto-generated.
 
 The :func:`~flogin.testing.plugin_tester.PluginTester.create_bogus_plugin_metadata` provides a very fast way to generate a "valid" metadata object, by filling it with random data.
 
 Your FlowLauncherAPI replacement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If you do not use :class:`~flogin.flow_api.client.FlowLauncherAPI` in the code that you are testing, then the default filler object will do just fine.
+If you do not use :class:`~flogin.flow.api.FlowLauncherAPI` in the code that you are testing, then the default filler object will do just fine.
 
 However if you use the api at all in the code you want to test, you will want to create a FlowLauncherAPI replacement class for testing and pass it to the ``flow_api_client`` argument in your plugin tester's constructor.
 
 When creating your replacement class, make sure to impliment any and all API methods that you use, and respond accordingly inside of them.
 
-For example, lets say I use the :func:`~flogin.flow_api.client.FlowLauncherAPI.open_settings_menu` method. I would impliment that method into my replacement class, which might look something like this: ::
+For example, lets say I use the :func:`~flogin.flow.api.FlowLauncherAPI.open_settings_menu` method. I would impliment that method into my replacement class, which might look something like this: ::
 
     class MyFlowAPI:
         async def open_settings_menu(self):
             print("-- Settings menu has been opened --")
 
-That one is pretty easy due to it not returning anything, or doing anything that may affect the plugin. Let's take another example, :func:`~flogin.flow_api.client.FlowLauncherAPI.open_settings_menu`. You can always do something similiar to what we did with :func:`~flogin.flow_api.client.FlowLauncherAPI.open_settings_menu`, however for this example we will handle what will happen if we try to add a keyword to our own plugin. To do this, we will pass our plugin to our api class, and later use that to check the plugin ids, and add the keyword. ::
+That one is pretty easy due to it not returning anything, or doing anything that may affect the plugin. Let's take another example, :func:`~flogin.flow.api.FlowLauncherAPI.open_settings_menu`. You can always do something similiar to what we did with :func:`~flogin.flow.api.FlowLauncherAPI.open_settings_menu`, however for this example we will handle what will happen if we try to add a keyword to our own plugin. To do this, we will pass our plugin to our api class, and later use that to check the plugin ids, and add the keyword. ::
 
     class MyFlowAPI:
         def __init__(self, plugin):

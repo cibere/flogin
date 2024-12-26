@@ -10,16 +10,34 @@ from flogin import (
     Query,
     RegexCondition,
 )
+from flogin.testing.filler import FillerObject
+
+
+def _create_query(text: str, plugin, keyword: str = "*", is_requery: bool = False):
+    return Query(
+        {
+            "rawQuery": f"{keyword} {text}",
+            "search": text,
+            "actionKeyword": keyword,
+            "isReQuery": False,
+        },
+        plugin,
+    )
 
 
 @pytest.fixture
-def yes_query():
-    return Query(raw_text="bar foo", text="foo", keyword="bar")
+def plugin():
+    return FillerObject(f"Fake plugin object provided")
 
 
 @pytest.fixture
-def no_query():
-    return Query(raw_text="car foo", text="apple", keyword="car")
+def yes_query(plugin):
+    return _create_query(text="foo", keyword="bar", plugin=plugin)
+
+
+@pytest.fixture
+def no_query(plugin):
+    return _create_query(text="apple", keyword="car", plugin=plugin)
 
 
 @pytest.fixture(params=[0, 1])

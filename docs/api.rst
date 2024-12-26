@@ -83,23 +83,74 @@ Builtin Search Conditions
 .. autoclass:: flogin.conditions.AnyCondition
     :members:
 
-Flow API
-----------
+Flow
+-----
 
-Client
-~~~~~~~~
+API
+~~~~
 
-.. autoclass:: flogin.flow_api.client.FlowLauncherAPI
+.. autoclass:: flogin.flow.api.FlowLauncherAPI
     :members:
 
-Classes
-~~~~~~~~
-
-.. autoclass:: flogin.flow_api.fuzzy_search.FuzzySearchResult
+.. autoclass:: flogin.flow.fuzzy_search.FuzzySearchResult
     :members:
 
-.. autoclass:: flogin.flow_api.plugin_metadata.PluginMetadata
+.. autoclass:: flogin.flow.plugin_metadata.PluginMetadata
     :members:
+
+Settings
+~~~~~~~~~
+
+.. autoclass:: flogin.flow.settings.FlowSettings
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.CustomQueryShortcut
+    :members:
+
+.. autoclass:: flogin.flow.settings.CustomFileManager
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.CustomBrowser
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.CustomPluginHotkey
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.HttpProxy
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.PartialPlugin
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.PluginsSettings
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.LastQueryMode
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.SearchWindowScreens
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.SearchWindowAligns
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.AnimationSpeeds
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.SearchPrecisionScore
+    :members:
+    :private-members:
 
 Errors
 -----------

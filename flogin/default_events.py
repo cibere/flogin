@@ -4,7 +4,7 @@ import logging
 from typing import TYPE_CHECKING, Any, Awaitable, Callable
 
 from .jsonrpc import ErrorResponse
-from .query import Query
+from .query import Query, RawQuery
 from .settings import Settings
 
 if TYPE_CHECKING:
@@ -25,8 +25,8 @@ async def on_error(
 
 
 def get_default_events(plugin: Plugin[Any]) -> dict[str, Callable[..., Awaitable[Any]]]:
-    def on_query(data: dict[str, Any], raw_settings: dict[str, Any]):
-        query = Query.from_json(data)
+    def on_query(data: RawQuery, raw_settings: dict[str, Any]):
+        query = Query(data, plugin)
         if plugin._settings_are_populated is False:
             LOG.info(f"Settings have not been populated yet, creating a new instance")
             plugin._settings_are_populated = True

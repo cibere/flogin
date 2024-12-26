@@ -45,7 +45,7 @@ class FlowLauncherAPI:
 
         Returns
         --------
-        :class:`~flogin.flow_api.fuzzy_search.FuzzySearchResult`
+        :class:`~flogin.flow.fuzzy_search.FuzzySearchResult`
         """
 
         from ..jsonrpc import ErrorResponse  # circular import
@@ -322,7 +322,7 @@ class FlowLauncherAPI:
 
         Returns
         --------
-        list[:class:`~flogin.flow_api.plugin_metadata.PluginMetadata`]
+        list[:class:`~flogin.flow.plugin_metadata.PluginMetadata`]
         """
 
         from ..jsonrpc import ErrorResponse  # circular import

@@ -1,10 +1,23 @@
 from __future__ import annotations
 
-from typing import Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar
+
+from ._types import PluginT
+from .utils import MISSING
+
+if TYPE_CHECKING:
+    from .jsonrpc.results import Result
 
 T = TypeVar("T")
 
 __all__ = ("Query",)
+
+
+class RawQuery(TypedDict):
+    search: str
+    rawQuery: str
+    isReQuery: bool
+    actionKeyword: str
 
 
 class Query(Generic[T]):
@@ -34,24 +47,10 @@ class Query(Generic[T]):
         The keyword used to initiate the query
     """
 
-    def __init__(
-        self, *, raw_text: str, is_requery: bool = False, text: str, keyword: str
-    ) -> None:
+    def __init__(self, data: RawQuery, plugin: PluginT) -> None:
         self.__search_condition_data: T | None = None
-
-        self.raw_text = raw_text
-        self.is_requery = is_requery
-        self.text = text
-        self.keyword = keyword
-
-    @classmethod
-    def from_json(cls: type[Query], data: dict[str, Any]) -> Query:
-        return cls(
-            raw_text=data["rawQuery"],
-            is_requery=data["isReQuery"],
-            text=data["search"],
-            keyword=data["actionKeyword"],
-        )
+        self._data = data
+        self.plugin = plugin
 
     @property
     def condition_data(self) -> T | None:
@@ -61,6 +60,22 @@ class Query(Generic[T]):
     @condition_data.setter
     def condition_data(self, value: T) -> None:
         self.__search_condition_data = value
+
+    @property
+    def is_requery(self) -> bool:
+        return self._data["isReQuery"]
+
+    @property
+    def keyword(self) -> str:
+        return self._data["actionKeyword"]
+
+    @property
+    def raw_text(self) -> str:
+        return self._data["rawQuery"]
+
+    @property
+    def text(self) -> str:
+        return self._data["search"]
 
     def __eq__(self, other: Any) -> bool:
         return (
@@ -74,3 +89,61 @@ class Query(Generic[T]):
 
     def __repr__(self) -> str:
         return f"<Query {self.raw_text=} {self.text=} {self.keyword=} {self.is_requery=} {self.condition_data=}>"
+
+    async def update_results(self, results: list[Result]) -> None:
+        r"""|coro|
+
+        Tells flow to change the results shown to the user, using the query from this query object.
+
+        This method provides quick acess to :func:`flogin.flow.api.FlowLauncherAPI.update_results`. Because of that, this method will only take affect if the user has not changed the query.
+
+        Parameters
+        ----------
+        results: list[:class:`~flogin.jsonrpc.results.Result`]
+            The new results
+
+        Returns
+        -------
+        None
+        """
+
+        return await self.plugin.api.update_results(self.raw_text, results)
+
+    async def update(
+        self, *, text: str, keyword: str | None = MISSING, requery: bool = False
+    ) -> None:
+        r"""|coro|
+
+        Applies updates to the query with flow, and to this object.
+
+        This method provides quick acess to :func:`flogin.flow.api.FlowLauncherAPI.change_query`
+
+        Parameters
+        ----------
+        text: :class:`str`
+            The text that will be used with the query.
+        keyword: :class:`str`
+            The keyword that will be used with the query. Defaults to the pre-existing value of :attr:`Query.keyword`. Set this to ``None`` or `"*"` for no keyword to be used.
+        requery: :class:`bool`
+            Whether or not to re-send a query request in the event that the new query is the same as the current query
+
+        Returns
+        --------
+        None
+        """
+
+        if keyword is MISSING:
+            keyword = self.keyword
+
+        if keyword is None or keyword == "*":
+            raw_text = text
+            self._data["actionKeyword"] = "*"
+        else:
+            raw_text = f"{keyword} {text}"
+            self._data["actionKeyword"] = keyword
+
+        self._data["rawQuery"] = raw_text
+        self._data["search"] = text
+        self._data["isReQuery"] = requery
+
+        return await self.plugin.api.change_query(raw_text, requery=requery)

@@ -19,14 +19,6 @@ def tester(plugin, metadata):
     return PluginTester(plugin, metadata=metadata)
 
 
-@pytest.fixture
-def query():
-    txt = "bar"
-    keyword = "foo"
-
-    return Query(raw_text=f"{txt} {keyword}", text=txt, keyword=keyword)
-
-
 class ReturnSingleResultHandler(SearchHandler):
     async def callback(self, query: Query):
         return Result("Title")
@@ -67,7 +59,7 @@ handlers = [
 ]
 
 
-@pytest.fixture(params=handlers, ids=lambda h: h.__class__.__name__, autouse=True)
+@pytest.fixture(params=handlers, ids=lambda h: h.__class__.__name__)
 def handler(plugin: Plugin, request: pytest.FixtureRequest):
     h = request.param
     plugin.register_search_handler(h)
@@ -75,7 +67,21 @@ def handler(plugin: Plugin, request: pytest.FixtureRequest):
 
 
 @pytest.mark.asyncio
-async def test_handler_result(tester: PluginTester, query: Query):
-    response = await tester.test_query(query)
+async def test_handler_result(tester: PluginTester, handler: SearchHandler):
+    response = await tester.test_query("bar", keyword="foo")
     result = response.results[0]
     assert result.title == "Title"
+
+
+@pytest.mark.asyncio
+async def test_handler_error(plugin: Plugin, tester: PluginTester):
+    @plugin.search()
+    async def handler(query: Query):
+        raise TypeError("Boo")
+
+    @handler.error
+    async def error_handler(query: Query, error: Exception):
+        assert isinstance(error, TypeError)
+        assert str(error) == "Boo"
+
+    await tester.test_query("bar")
