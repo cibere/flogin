@@ -59,6 +59,15 @@ class Plugin(Generic[SettingsT]):
 
     This class impliments a generic for a custom :class:`~flogin.settings.Settings` class for typechecking purposes.
 
+    Parameters
+    -----------
+    **options: :class:`Any`
+        Options to be passed to the plugin
+
+        .. describe:: settings_no_update: bool
+
+            Whether or not to let flow update flogin's version of the settings. This can be useful when using a custom settings menu. Defaults to
+    
     Attributes
     --------
     settings: :class:`~flogin.settings.Settings`
