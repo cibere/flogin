@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.11"]
+        python-version: ["3.11", "3.12"]
 
     name: check ${{ matrix.python-version }}
     steps:
@@ -27,8 +27,7 @@ jobs:
       - name: Install dependencies
         id: install-deps
         run: |
-          python -m pip install --upgrade pip setuptools wheel black requests
-          pip install -U -r requirements.txt
+          python -m pip install .[dev]
 
       - name: Run black
         if: ${{ always() && steps.install-deps.outcome == 'success' }}
