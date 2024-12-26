@@ -20,21 +20,30 @@ classifiers = [
     "Topic :: Utilities",
     "Typing :: Typed",
 ]
-dynamic = [
-    "version",
-    "dependencies",
-    "optional-dependencies",
+dynamic = ["version"]
+dependencies = [
+    "aioconsole==0.8.1"
 ]
 
 [project.urls]
 Documentation = "https://flogin.readthedocs.io/en/latest/"
 "Issue tracker" = "https://github.com/cibere/flogin/issues"
 
-[tool.setuptools.dynamic]
-dependencies = { file = "requirements.txt" }
-optional-dependencies.docs = { file = "requirements-docs.txt" }
-optional-dependencies.dev = { file = "requirements-dev.txt" }
-optional-dependencies.tests = { file = "requirements-tests.txt" }
+[project.optional-dependencies]
+docs = [
+    "sphinx>=7.0.0,<8.0.0",
+    "furo>=2023.9.10,<2024.0.0", # theme // https://pradyunsg.me/furo/customisation/announcement/
+    "sphinx-autodoc-typehints>=1.25.0,<2.0.0",  # https://github.com/tox-dev/sphinx-autodoc-typehints
+    "sphinx-toolbox>=3.5,<4.0",  # https://sphinx-toolbox.readthedocs.io/en/latest/extensions/index.html
+]
+dev = [
+    "black==24.10.0",
+    "isort==5.13.2",
+]
+tests = [
+    "pytest==8.3.4",
+    "pytest-asyncio==0.25.0",
+]
 
 [tool.setuptools]
 packages = [
