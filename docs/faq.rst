@@ -95,3 +95,13 @@ How do highlights work?
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Highlight data works by marking which characters should be highlighted, by including their index in a list. Take the following string as an example: ``Hello World``. If I wanted to just highlight ``Hello``, the highlight data would be ``(0, 1, 2, 3, 4)``. If I wanted to just highlight ``World``, the highlight data would be ``(6, 7, 8, 9, 10)``. If I just wanted to highlight the vowels, I would do: ``(1, 4, 7)``.
+
+Flow Launcher
+-------------
+
+Questions related to flogin and flow launcher belong here.
+
+What is the difference between the V1 API and the V2 API?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The V1 API is partially documented, and creates a new instance of the plugin for each query/request. However the V2 API is completely undocumented (which is why I am trying to document flogin as much as possible), and has a single instance for the lifespan of flow itself. This allows for more efficient memory usage and faster response times.

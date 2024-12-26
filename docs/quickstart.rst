@@ -12,7 +12,7 @@ if you don't check the :ref:`installing` portion.
     To get yourself familiar with flow, check out their `guide <https://www.flowlauncher.com/docs/#/py-develop-plugins?id=about-flow39s-python-plugins>`_ for creating a plugin with the V1 API
 
 A Minimal Plugin
----------------
+-----------------
 
 Let's make a plugin which compares how similar the user's query is with the word ``Flow``.
 
