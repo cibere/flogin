@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, AsyncIterable, Callable, Coroutine, TypeVar
 
 if TYPE_CHECKING:
+    from typing_extensions import TypeVar
     from .plugin import Plugin
     from .query import Query
 
