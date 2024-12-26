@@ -96,6 +96,11 @@ How do highlights work?
 
 Highlight data works by marking which characters should be highlighted, by including their index in a list. Take the following string as an example: ``Hello World``. If I wanted to just highlight ``Hello``, the highlight data would be ``(0, 1, 2, 3, 4)``. If I wanted to just highlight ``World``, the highlight data would be ``(6, 7, 8, 9, 10)``. If I just wanted to highlight the vowels, I would do: ``(1, 4, 7)``.
 
+Why are the only supported python versions 3.11 and 3.12?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When a user installs a python plugin, flow prompts them to either locate a python installation or install an embedded version of python. The embedded version of python is 3.11. However, as the user can also install other versions of python, 3.12 is also supported.
+
 Flow Launcher
 -------------
 
