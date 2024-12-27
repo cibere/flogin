@@ -11,3 +11,4 @@ docs/_build
 plugin.json
 test.py
 Images
+main.py
