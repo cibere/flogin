@@ -49,15 +49,15 @@ __cached_objects__: defaultdict[Any, list[BaseCachedObject]] = defaultdict(list)
 
 def clear_cache(key: str | None = MISSING) -> None:
     r"""This function is used to clear the cache of items that have been cached with this module.
-    
+
     The caching decorators provide an optional positional argument that acts as a ``name`` argument, which is used in combination of this function.
-    
+
     Parameters
     ----------
     key: Optional[:class:`str` | ``None``]
         If :class:`str` is passed, every cached item with a name equal to ``key`` will have their cache cleared. If ``None`` is passed, every cached item with a name equal to ``None`` will have their cache cleared (default value for a cached item's name is ``None``). Lastly, if the ``key`` parameter is not passed at all, all caches will be cleared.
     """
-    
+
     if key is MISSING:
         items = []
         for section in __cached_objects__.values():
@@ -114,20 +114,22 @@ def _cached_deco(cls: type[BaseCachedObject], doc: str | None = None):
             return inner
         else:
             return cls(obj)
-        
+
     deco.__doc__ = doc
     return deco
-
 
 
 T = TypeVar("T")
 CallableT = TypeVar("CallableT", bound=Callable[..., Awaitable[Any]])
 
+
 @overload
 def cached_coro(obj: str | None = None) -> Callable[[T], T]: ...
 
+
 @overload
 def cached_coro(obj: CallableT) -> CallableT: ...
+
 
 def cached_coro(obj: str | Callable | None = None) -> Any:
     r"""A decorator to cache a coroutine's contents based on the passed arguments. This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
@@ -143,7 +145,7 @@ def cached_coro(obj: str | Callable | None = None) -> Any:
         @utils.cached_coro
         async def handler(query):
             ...
-    
+
     .. code-block:: python3
 
         @plugin.search()
@@ -153,13 +155,17 @@ def cached_coro(obj: str | Callable | None = None) -> Any:
     """
     ...
 
+
 GenT = TypeVar("GenT", bound=Callable[..., AsyncGenerator[Any, Any]])
+
 
 @overload
 def cached_gen(obj: str | None = None) -> Callable[[T], T]: ...
 
+
 @overload
 def cached_gen(obj: GenT) -> GenT: ...
+
 
 def cached_gen(obj: str | Callable | None = None) -> Any:
     r"""A decorator to cache the contents of an async generator based on the passed arguments. This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
@@ -175,7 +181,7 @@ def cached_gen(obj: str | Callable | None = None) -> Any:
         @utils.cached_gen
         async def handler(query):
             ...
-    
+
     .. code-block:: python3
 
         @plugin.search()
@@ -184,6 +190,7 @@ def cached_gen(obj: str | Callable | None = None) -> Any:
             ...
     """
     ...
+
 
 if not TYPE_CHECKING:
     cached_coro = _cached_deco(CachedCoro, cached_coro.__doc__)
