@@ -11,6 +11,7 @@ from typing import (
     Coroutine,
     TypeVar,
     overload,
+    Generic,
 )
 from .utils import coro_or_gen, MISSING, copy_doc
 
@@ -19,27 +20,6 @@ AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
 T = TypeVar("T")
 
 LOG = logging.getLogger(__name__)
-
-
-class _cached_property:
-    def __init__(self, function) -> None:
-        self.function = function
-        self.__doc__ = getattr(function, "__doc__")
-
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-
-        value = self.function(instance)
-        setattr(instance, self.function.__name__, value)
-
-        return value
-
-
-if TYPE_CHECKING:
-    from functools import cached_property as cached_property
-else:
-    cached_property = _cached_property
 
 __all__ = ("cached_property", "cached_coro", "cached_gen", "clear_cache")
 from collections import defaultdict
@@ -66,7 +46,7 @@ def clear_cache(key: str | None = MISSING) -> None:
         items = __cached_objects__[key]
 
     for cached_obj in items:
-        cached_obj.cache.clear()
+        cached_obj.clear_cache()
 
 
 class BaseCachedObject:
@@ -82,6 +62,9 @@ class BaseCachedObject:
 
     def call(self, key, args, kwargs):
         raise NotImplementedError
+
+    def clear_cache(self):
+        self.cache.clear()
 
 
 class CachedCoro(BaseCachedObject):
@@ -104,6 +87,23 @@ class CachedGen(BaseCachedObject):
                 yield item
 
 
+class CachedProperty(BaseCachedObject, Generic[T]):
+    value: T
+
+    def __get__(self, instance, owner) -> T:
+        if instance is None:
+            return self  # type: ignore
+
+        try:
+            return self.value
+        except AttributeError:
+            self.value = self.obj(instance)
+            return self.value
+
+    def clear_cache(self):
+        del self.value
+
+
 def _cached_deco(cls: type[BaseCachedObject], doc: str | None = None):
     def deco(obj: str | Callable | None = None):
         if isinstance(obj, str) or obj is None:
@@ -120,7 +120,8 @@ def _cached_deco(cls: type[BaseCachedObject], doc: str | None = None):
 
 
 T = TypeVar("T")
-CallableT = TypeVar("CallableT", bound=Callable[..., Awaitable[Any]])
+CoroT = TypeVar("CoroT", bound=Callable[..., Awaitable[Any]])
+GenT = TypeVar("GenT", bound=Callable[..., AsyncGenerator[Any, Any]])
 
 
 @overload
@@ -128,7 +129,7 @@ def cached_coro(obj: str | None = None) -> Callable[[T], T]: ...
 
 
 @overload
-def cached_coro(obj: CallableT) -> CallableT: ...
+def cached_coro(obj: CoroT) -> CoroT: ...
 
 
 def cached_coro(obj: str | Callable | None = None) -> Any:
@@ -154,9 +155,6 @@ def cached_coro(obj: str | Callable | None = None) -> Any:
             ...
     """
     ...
-
-
-GenT = TypeVar("GenT", bound=Callable[..., AsyncGenerator[Any, Any]])
 
 
 @overload
@@ -190,6 +188,43 @@ def cached_gen(obj: str | Callable | None = None) -> Any:
             ...
     """
     ...
+
+
+@overload
+def cached_property(
+    obj: str | None = None,
+) -> Callable[[Callable[[Any], T]], CachedProperty[T]]: ...
+
+
+@overload
+def cached_property(obj: Callable[[Any], T]) -> CachedProperty[T]: ...
+
+
+def cached_property(
+    obj: str | Callable[[Any], T] | None = None
+) -> Callable[[Callable[[Any], T]], CachedProperty[T]] | CachedProperty[T]:
+    r"""A decorator that is similar to the builtin `functools.cached_property <https://docs.python.org/3/library/functools.html#functools.cached_property>`__ decorator, but is async-safe and impliments the ability to use :func:`~flogin.caching.clear_cache`.
+
+    This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
+
+    Example
+    --------
+    .. code-block:: python3
+
+        class X:
+            @cached_property
+            def test(self):
+                ...
+
+    .. code-block:: python3
+
+        class X:
+            @cached_property("test_prop")
+            def test(self):
+                ...
+    """
+
+    return _cached_deco(CachedProperty)(obj)  # type: ignore
 
 
 if not TYPE_CHECKING:

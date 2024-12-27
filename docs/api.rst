@@ -191,18 +191,7 @@ Utils
 Caching
 -------
 
-.. decorator:: flogin.caching.cached_property()
-
-    A version of :func:`functools.cached_property` that is safe for async programs.
-
-    Example
-    --------
-    .. code-block:: python3
-
-        class Foo:
-            @utils.cached_property
-            def bar(self):
-                ...
+.. autodecorator:: flogin.caching.cached_property()
 
 .. autodecorator:: flogin.caching.cached_coro()
 
