@@ -261,7 +261,8 @@ if TYPE_CHECKING:
 
 
 class {name}Handler(SearchHandler["{plugin}Plugin"]):
-    def condition(self, query: Query): ...
+    def condition(self, query: Query) -> bool:
+        return True
 
     async def callback(self, query: Query):
         return "Hello World!"
@@ -314,6 +315,12 @@ def write_to_file(path: Path, content: str, parser: argparse.ArgumentParser) -> 
     return True
 
 
+def create_new_handler(
+    parser: argparse.ArgumentParser, *, path: Path, name: str, plugin: str
+):
+    write_to_file(path, _handler_template.format(plugin=plugin, name=name), parser)
+
+
 def create_plugin_directory(parser: argparse.ArgumentParser, args: argparse.Namespace):
     plugin_dir = Path("plugin")
     plugin_name = args.plugin_name
@@ -339,11 +346,7 @@ def create_plugin_directory(parser: argparse.ArgumentParser, args: argparse.Name
     handlers_dir = plugin_dir / "handlers"
     root_handler_file = handlers_dir / "root.py"
 
-    write_to_file(
-        root_handler_file,
-        _handler_template.format(plugin=plugin_name, name="Root"),
-        parser,
-    )
+    create_new_handler(parser, path=root_handler_file, name="Root", plugin=plugin_name)
 
 
 def create_git_files(parser: argparse.ArgumentParser, args: argparse.Namespace):
@@ -402,6 +405,35 @@ def add_init_args(subparser: argparse._SubParsersAction) -> None:
     )
 
 
+def add_new_handler_command(
+    parser: argparse.ArgumentParser, args: argparse.Namespace
+) -> None:
+    plugin_name: str = args.plugin_name or ""
+    handler_name: str = args.name
+    dir = Path("plugin") / (args.dir or "handlers")
+    path = dir / handler_name.lower()
+
+    classname = handler_name.replace("_", " ").title().replace(" ", "")
+
+    create_new_handler(
+        parser, path=path.with_suffix(".py"), name=classname, plugin=plugin_name
+    )
+
+
+def add_handler_command_args(subparser: argparse._SubParsersAction) -> None:
+    parser = subparser.add_parser(
+        "new-handler",
+        help="quickly set up a new handler using flogin's handler template.",
+    )
+    parser.set_defaults(func=add_new_handler_command)
+
+    parser.add_argument(
+        "name", help="the name of the handler in case snake format. ex: 'root'"
+    )
+    parser.add_argument("--plugin-name", help="Sets the plugin name for importing")
+    parser.add_argument("--dir", help="The handlers dir. Defaults to 'handlers'")
+
+
 def parse_args() -> tuple[argparse.ArgumentParser, argparse.Namespace]:
     parser = argparse.ArgumentParser(
         prog="flogin", description="Tools for helping with plugin development"
@@ -413,6 +445,7 @@ def parse_args() -> tuple[argparse.ArgumentParser, argparse.Namespace]:
 
     subparser = parser.add_subparsers(dest="subcommand", title="subcommands")
     add_init_args(subparser)
+    add_handler_command_args(subparser)
     return parser, parser.parse_args()
 
 
