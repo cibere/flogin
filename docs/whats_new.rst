@@ -9,15 +9,19 @@ v0.1.0
 Breaking Changes
 ~~~~~~~~~~~~~~~~
 
-- Move :class:`flogin.jsonrpc.results.Glyph` support from :attr:`flogin.jsonrpc.results.Result.icon` to :class:`flogin.jsonrpc.results.Result.gylph`
+- Move :class:`flogin.jsonrpc.results.Glyph` support from :attr:`flogin.jsonrpc.results.Result.icon` to :attr:`flogin.jsonrpc.results.Result.glyph`
 - Return ``None`` if a setting is not found in :class:`flogin.settings.Setting`
     - Remove ``flogin.errors.SettingNotFound``
 - Rewrite the CLI commands
 - Remove ``flogin.conditions.MultiCondition`` in favor of :class:`flogin.conditions.AnyCondition` and :class:`flogin.conditions.AllCondition`
-- Remove `Query.from_json`
+- Remove ``Query.from_json``
 - For :func:`flogin.testing.plugin_tester.PluginTester.test_query`, switch from receiving a query object to taking kwargs that will be used to make a query object
 - Rename the ``flogin.flow_api`` directory to ``flogin.flow``
     - Rename ``flogin.flow_api.client.py`` to ``flogin.flow.api.py``
+- Undocument ``flogin.utils.cached_property``
+- Remove ``flogin.utils.cached_coro``
+- Remove ``flogin.utils.cached_gen``
+
 
 New Features
 ~~~~~~~~~~~~
@@ -48,13 +52,17 @@ New Features
     - Add :class:`flogin.flow.settings.FlowSettings`
 - Add ``flogin.flow.enums.py``
     - Add :class:`flogin.flow.enums.LastQueryMode`
-    - Add :class:`flogin.flow.enums.ColorSchemes`
     - Add :class:`flogin.flow.enums.SearchWindowScreens`
     - Add :class:`flogin.flow.enums.SearchWindowAligns`
     - Add :class:`flogin.flow.enums.AnimationSpeeds`
     - Add :class:`flogin.flow.enums.SearchPrecisionScore`
 - Add :func:`flogin.plugin.Plugin.fetch_flow_settings`
 - Add :attr:`flogin.plugin.Plugin.last_query`
+- Add :func:`flogin.caching.cached_property`
+- Add :func:`flogin.caching.cached_coro`
+- Add :func:`flogin.caching.cached_gen`
+- Add :func:`flogin.caching.clear_cache`
+
 
 Bug Fixes
 ~~~~~~~~~
