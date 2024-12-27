@@ -20,6 +20,27 @@ T = TypeVar("T")
 
 LOG = logging.getLogger(__name__)
 
+
+class _cached_property:
+    def __init__(self, function) -> None:
+        self.function = function
+        self.__doc__ = getattr(function, "__doc__")
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+
+        value = self.function(instance)
+        setattr(instance, self.function.__name__, value)
+
+        return value
+
+
+if TYPE_CHECKING:
+    from functools import cached_property as cached_property
+else:
+    cached_property = _cached_property
+
 __all__ = (
     "setup_logging",
     "coro_or_gen",
