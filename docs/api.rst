@@ -188,7 +188,10 @@ Utils
 
     A type safe sentinel used in the library to represent something as missing. Used to distinguish from ``None`` values.
 
-.. decorator:: flogin.utils.cached_property()
+Caching
+-------
+
+.. decorator:: flogin.caching.cached_property()
 
     A version of :func:`functools.cached_property` that is safe for async programs.
 
@@ -201,6 +204,8 @@ Utils
             def bar(self):
                 ...
 
-.. autodecorator:: flogin.utils.cached_coro()
+.. autodecorator:: flogin.caching.cached_coro()
 
-.. autodecorator:: flogin.utils.cached_gen()
+.. autodecorator:: flogin.caching.cached_gen()
+
+.. autofunction:: flogin.caching.clear_cache

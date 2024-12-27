@@ -12,7 +12,7 @@ from typing import (
     TypeVar,
     overload,
 )
-from .utils import coro_or_gen, MISSING
+from .utils import coro_or_gen, MISSING, copy_doc
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
 AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
@@ -48,6 +48,16 @@ __cached_objects__: defaultdict[Any, list[BaseCachedObject]] = defaultdict(list)
 
 
 def clear_cache(key: str | None = MISSING) -> None:
+    r"""This function is used to clear the cache of items that have been cached with this module.
+    
+    The caching decorators provide an optional positional argument that acts as a ``name`` argument, which is used in combination of this function.
+    
+    Parameters
+    ----------
+    key: Optional[:class:`str` | ``None``]
+        If :class:`str` is passed, every cached item with a name equal to ``key`` will have their cache cleared. If ``None`` is passed, every cached item with a name equal to ``None`` will have their cache cleared (default value for a cached item's name is ``None``). Lastly, if the ``key`` parameter is not passed at all, all caches will be cleared.
+    """
+    
     if key is MISSING:
         items = []
         for section in __cached_objects__.values():
@@ -94,7 +104,7 @@ class CachedGen(BaseCachedObject):
                 yield item
 
 
-def _cached_deco(cls: type[BaseCachedObject]):
+def _cached_deco(cls: type[BaseCachedObject], doc: str | None = None):
     def deco(obj: str | Callable | None = None):
         if isinstance(obj, str) or obj is None:
 
@@ -104,36 +114,77 @@ def _cached_deco(cls: type[BaseCachedObject]):
             return inner
         else:
             return cls(obj)
-
+        
+    deco.__doc__ = doc
     return deco
 
 
-if TYPE_CHECKING:
-    T = TypeVar("T")
-    CallableT = TypeVar("CallableT", bound=Callable[..., Awaitable[Any]])
 
-    @overload
-    def cached_coro(obj: str | None = None) -> Callable[[T], T]: ...
+T = TypeVar("T")
+CallableT = TypeVar("CallableT", bound=Callable[..., Awaitable[Any]])
 
-    @overload
-    def cached_coro(obj: CallableT) -> CallableT: ...
+@overload
+def cached_coro(obj: str | None = None) -> Callable[[T], T]: ...
 
-    def cached_coro(obj: str | Callable | None = None) -> Any: ...
+@overload
+def cached_coro(obj: CallableT) -> CallableT: ...
 
-else:
-    cached_coro = _cached_deco(CachedCoro)
+def cached_coro(obj: str | Callable | None = None) -> Any:
+    r"""A decorator to cache a coroutine's contents based on the passed arguments. This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
 
-if TYPE_CHECKING:
-    T = TypeVar("T")
-    GenT = TypeVar("GenT", bound=Callable[..., AsyncGenerator[Any, Any]])
+    .. NOTE::
+        The arguments passed to the generator must be hashable.
 
-    @overload
-    def cached_gen(obj: str | None = None) -> Callable[[T], T]: ...
+    Example
+    --------
+    .. code-block:: python3
 
-    @overload
-    def cached_gen(obj: GenT) -> GenT: ...
+        @plugin.search()
+        @utils.cached_coro
+        async def handler(query):
+            ...
+    
+    .. code-block:: python3
 
-    def cached_gen(obj: str | Callable | None = None) -> Any: ...
+        @plugin.search()
+        @utils.cached_coro("search-handler")
+        async def handler(query):
+            ...
+    """
+    ...
 
-else:
-    cached_gen = _cached_deco(CachedGen)
+GenT = TypeVar("GenT", bound=Callable[..., AsyncGenerator[Any, Any]])
+
+@overload
+def cached_gen(obj: str | None = None) -> Callable[[T], T]: ...
+
+@overload
+def cached_gen(obj: GenT) -> GenT: ...
+
+def cached_gen(obj: str | Callable | None = None) -> Any:
+    r"""A decorator to cache the contents of an async generator based on the passed arguments. This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
+
+    .. NOTE::
+        The arguments passed to the generator must be hashable.
+
+    Example
+    --------
+    .. code-block:: python3
+
+        @plugin.search()
+        @utils.cached_gen
+        async def handler(query):
+            ...
+    
+    .. code-block:: python3
+
+        @plugin.search()
+        @utils.cached_gen("search-handler")
+        async def handler(query):
+            ...
+    """
+    ...
+
+if not TYPE_CHECKING:
+    cached_coro = _cached_deco(CachedCoro, cached_coro.__doc__)
+    cached_gen = _cached_deco(CachedGen, cached_gen.__doc__)
