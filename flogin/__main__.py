@@ -220,6 +220,7 @@ jobs:
 _plugin_dot_py_template = """
 from flogin import Plugin
 
+from .handlers.root import RootHandler
 from .settings import {plugin}Settings
 
 
@@ -227,8 +228,6 @@ class {plugin}Plugin(Plugin[{plugin}Settings]):
     def __init__(self) -> None:
         super().__init__()
 
-        from .handlers.root import RootHandler
-        
         self.register_search_handler(RootHandler())
 """
 _plugin_dot_py_template_no_settings = """
@@ -253,12 +252,15 @@ class {plugin}Settings(Settings):
 _handler_template = """
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from flogin import Query, Result, SearchHandler
 
-from ..plugin import {plugin}Plugin
+if TYPE_CHECKING:
+    from ..plugin import {plugin}Plugin
 
 
-class {name}Handler(SearchHandler[{plugin}Plugin]):
+class {name}Handler(SearchHandler["{plugin}Plugin"]):
     def condition(self, query: Query): ...
 
     async def callback(self, query: Query):
@@ -291,7 +293,7 @@ def create_plugin_dot_json_file(
         "Author": "",
         "Version": "0.0.1",
         "Language": "python_v2",
-        "Website": "",
+        "Website": "https://github.com/author/Flow.Launcher.Plugin.Name",
         "IcoPath": "Images/app.png",
         "ExecuteFileName": "main.py",
     }
