@@ -17,7 +17,8 @@ from typing import (
 )
 
 from .._types import PluginT, SearchHandlerCallbackReturns
-from ..utils import MISSING, cached_property, copy_doc
+from ..utils import MISSING, copy_doc
+from ..caching import cached_property
 from .base_object import Base
 from .responses import ErrorResponse, ExecuteResponse
 

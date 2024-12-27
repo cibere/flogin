@@ -1,7 +1,6 @@
 import functools
 import logging
 import logging.handlers
-from functools import _make_key as make_cached_key
 from inspect import isasyncgen, iscoroutine
 from inspect import signature as _signature
 from typing import (
