@@ -28,7 +28,7 @@ __all__ = ("Result", "ResultPreview", "ProgressBar", "Glyph")
 
 
 class Glyph(Base):
-    r"""This represents a glyth object with flow launcher, which is an alternative to :class:`~flogin.jsonrpc.results.Result` icons.
+    r"""This represents a glyph object with flow launcher, which is an alternative to :class:`~flogin.jsonrpc.results.Result` icons.
 
     Attributes
     ----------
@@ -163,7 +163,7 @@ class Result(Base, Generic[PluginT]):
     sub: Optional[:class:`str`]
         The subtitle to be shown.
     icon: Optional[:class:`str`]
-        A path to the icon to be shown with the result. If this and :attr:`~flogin.jsonrpc.results.Result.glyth` are passed, the user's ``Use Segoe Fluent Icons`` setting will determine which is used.
+        A path to the icon to be shown with the result. If this and :attr:`~flogin.jsonrpc.results.Result.glyph` are passed, the user's ``Use Segoe Fluent Icons`` setting will determine which is used.
     title_highlight_data: Optional[Iterable[:class:`int`]]
         The highlight data for the title. See the :ref:`FAQ section on highlights <highlights>` for more info.
     title_tooltip: Optional[:class:`str`]
@@ -182,7 +182,7 @@ class Result(Base, Generic[PluginT]):
         The text that will replace the :attr:`~flogin.query.Query.raw_text` in the flow menu when the autocomplete hotkey is used on the result. Defaults to the result's title.
     rounded_icon: Optional[:class:`bool`]
         Whether to have round the icon or not.
-    glyth: Optional[:class:`~flogin.jsonrpc.results.Glyph`]
+    glyph: Optional[:class:`~flogin.jsonrpc.results.Glyph`]
         The :class:`~flogin.jsonrpc.results.Glyph` object that will serve as the result's icon. If this and :attr:`~flogin.jsonrpc.results.Result.icon` are passed, the user's ``Use Segoe Fluent Icons`` setting will determine which is used.
     """
 
