@@ -188,19 +188,13 @@ Utils
 
     A type safe sentinel used in the library to represent something as missing. Used to distinguish from ``None`` values.
 
-.. decorator:: flogin.utils.cached_property()
+Caching
+-------
 
-    A version of :func:`functools.cached_property` that is safe for async programs.
+.. autodecorator:: flogin.caching.cached_property()
 
-    Example
-    --------
-    .. code-block:: python3
+.. autodecorator:: flogin.caching.cached_coro()
 
-        class Foo:
-            @utils.cached_property
-            def bar(self):
-                ...
+.. autodecorator:: flogin.caching.cached_gen()
 
-.. autodecorator:: flogin.utils.cached_coro()
-
-.. autodecorator:: flogin.utils.cached_gen()
+.. autofunction:: flogin.caching.clear_cache

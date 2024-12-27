@@ -6,7 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import re, os, sys
+import os
+import re
+import sys
 from datetime import date
 
 project = "flogin"

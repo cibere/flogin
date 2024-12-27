@@ -23,13 +23,13 @@ if errorlevel 9009 (
 	exit /b 1
 )
 
-if "%1" == "" goto help
+if "%1" == "" goto root
 
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
 
-:help
-%SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+:root
+%SPHINXBUILD% -b html -j auto -a -n -T -W --keep-going . _build/html
 
 :end
 popd

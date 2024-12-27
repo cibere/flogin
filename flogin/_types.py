@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, AsyncIterable, Callable, Coroutine, TypeV
 
 if TYPE_CHECKING:
     from typing_extensions import TypeVar
+
     from .plugin import Plugin
     from .query import Query
 
