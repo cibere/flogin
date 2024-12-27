@@ -28,6 +28,7 @@ def get_default_events(plugin: Plugin[Any]) -> dict[str, Callable[..., Awaitable
     def on_query(data: RawQuery, raw_settings: dict[str, Any]):
         query = Query(data, plugin)
         plugin.last_query = query
+        plugin._results.clear()
 
         if plugin._settings_are_populated is False:
             LOG.info(f"Settings have not been populated yet, creating a new instance")
