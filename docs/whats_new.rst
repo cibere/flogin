@@ -54,6 +54,7 @@ New Features
     - Add :class:`flogin.flow.enums.AnimationSpeeds`
     - Add :class:`flogin.flow.enums.SearchPrecisionScore`
 - Add :func:`flogin.plugin.Plugin.fetch_flow_settings`
+- Add :attr:`flogin.plugin.Plugin.last_query`
 
 Bug Fixes
 ~~~~~~~~~

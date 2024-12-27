@@ -74,6 +74,8 @@ class Plugin(Generic[SettingsT]):
         The plugin's settings set by the user
     api: :class:`~flogin.flow.api.FlowLauncherAPI`
         An easy way to acess Flow Launcher's API
+    last_query: :class:`~flogin.query.Query` | ``None``
+        The last query request that flow sent. This is ``None`` if no query request has been sent yet.
     """
 
     def __init__(self, **options: Any) -> None:
@@ -87,6 +89,7 @@ class Plugin(Generic[SettingsT]):
         self._results: dict[str, Result] = {}
         self._settings_are_populated: bool = False
         self.options = options
+        self.last_query: Query | None = None
 
     @cached_property
     def settings(self) -> SettingsT:
