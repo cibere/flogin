@@ -67,7 +67,7 @@ Bug Fixes
 Removals
 ~~~~~~~~~
 - Remove the ``CLI`` docs section
-- Remove `click <https://pypi.org/project/click>`_ as a dependency.
+- Remove `click <https://pypi.org/project/click>`__ as a dependency.
 
 v0.0.5
 -------
@@ -94,7 +94,7 @@ Bug Fixes
 ~~~~~~~~~
 
 - Fixed bug with the `create plugin.json <cli-create-plugin-json>`_ CLI command dumping the wrong data.
-- Add the missing dependency `click <https://pypi.org/project/click/>`_
+- Add the missing dependency `click <https://pypi.org/project/click/>`__
 - Fix bug where :attr:`flogin.search_handler.SearchHandler.plugin` is ``None`` when :obj:`flogin.search_handler.SearchHandler.condition` is ran.
 - Fix an ``AttributeError`` that gets raised in a couple of :class:`~flogin.flow.api.FlowLauncherAPI` methods
 - Log fatal errors that cause startup crashes to prevent them from being hidden.
