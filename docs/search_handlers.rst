@@ -123,7 +123,7 @@ Using the decorator isn't the only weay to create search handlers, you can also 
 
 Error Handling
 --------------
-flogin is callback focused, so callbacks are used to handle errors in search handlers. If you are using the :func:`~flogin.plugin.Plugin.search` decorator to make your handler, you can use the :func:`~flogin.search_handlers.SearchHandler.error` decorator to register an error handler. ::
+flogin is callback focused, so callbacks are used to handle errors in search handlers. If you are using the :func:`~flogin.plugin.Plugin.search` decorator to make your handler, you can use the :func:`~flogin.search_handler.SearchHandler.error` decorator to register an error handler. ::
 
     @plugin.search()
     async def my_handler(query: Query):
@@ -133,7 +133,7 @@ flogin is callback focused, so callbacks are used to handle errors in search han
     async def my_error_handler(error: Exception):
         return f"An error occured! {error!r}"
 
-Alternatively, if you are subclassing your handler, you can override the :func:`~flogin.search_handlers.SearchHandler.on_error` method to handle your error. ::
+Alternatively, if you are subclassing your handler, you can override the :func:`~flogin.search_handler.SearchHandler.on_error` method to handle your error. ::
 
     class MyHandler(SearchHandler):
         async def callback(self, query: Query):

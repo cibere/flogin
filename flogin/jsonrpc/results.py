@@ -93,7 +93,7 @@ class ResultPreview(Base):
     ----------
     image_path: :class:`str`
         The path to the image to be shown
-    description: Optional[:class:`str]`
+    description: Optional[:class:`str`]
         The description to be shown
     is_media: Optional[:class:`bool`]
         Whther the preview should be treated as media or not
