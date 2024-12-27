@@ -21,34 +21,10 @@ T = TypeVar("T")
 
 LOG = logging.getLogger(__name__)
 
-
-class _cached_property:
-    def __init__(self, function) -> None:
-        self.function = function
-        self.__doc__ = getattr(function, "__doc__")
-
-    def __get__(self, instance, owner):
-        if instance is None:
-            return self
-
-        value = self.function(instance)
-        setattr(instance, self.function.__name__, value)
-
-        return value
-
-
-if TYPE_CHECKING:
-    from functools import cached_property as cached_property
-else:
-    cached_property = _cached_property
-
 __all__ = (
     "setup_logging",
     "coro_or_gen",
     "MISSING",
-    "cached_property",
-    "cached_coro",
-    "cached_gen",
 )
 
 
@@ -75,68 +51,6 @@ class _MissingSentinel:
 
 
 MISSING: Any = _MissingSentinel()
-
-
-def cached_coro(coro: Coro) -> Coro:
-    r"""A decorator to cache a coro's contents based on the passed arguments. This is provided to cache search results.
-
-    .. NOTE::
-        The arguments passed to the coro must be hashable.
-
-    Example
-    --------
-    .. code-block:: python3
-
-        @plugin.search()
-        @utils.cached_coro
-        async def handler(query):
-            ...
-    """
-
-    cache = {}
-
-    @functools.wraps(coro)
-    async def inner(*args, **kwargs):
-        key = make_cached_key(args, kwargs, False)
-        try:
-            return cache[key]
-        except KeyError:
-            cache[key] = await coro_or_gen(coro(*args, **kwargs))
-            return cache[key]
-
-    return inner  # type: ignore
-
-
-def cached_gen(gen: AGenT) -> AGenT:
-    r"""A decorator to cache an async generator's contents based on the passed arguments. This is provided to cache search results.
-
-    .. NOTE::
-        The arguments passed to the generator must be hashable.
-
-    Example
-    --------
-    .. code-block:: python3
-
-        @plugin.search()
-        @utils.cached_gen
-        async def handler(query):
-            ...
-    """
-
-    cache = {}
-
-    @functools.wraps(gen)
-    async def inner(*args, **kwargs):
-        key = make_cached_key(args, kwargs, False)
-        try:
-            for item in cache[key]:
-                yield item
-        except KeyError:
-            cache[key] = await coro_or_gen(gen(*args, **kwargs))
-            for item in cache[key]:
-                yield item
-
-    return inner  # type: ignore
 
 
 def setup_logging(
