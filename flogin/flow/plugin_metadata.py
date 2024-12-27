@@ -69,12 +69,12 @@ class PluginMetadata(Base):
 
     @property
     def executable(self) -> Path:
-        r"""The path to the plugin's executable file"""
+        r""":class:`pathlib.Path`: The path to the plugin's executable file"""
         return Path(self._data["executeFilePath"]).absolute()
 
     @property
     def icon(self) -> Path:
-        r"""The path to the plugin's icon file"""
+        r""":class:`pathlib.Path`: The path to the plugin's icon file"""
         return Path(self._data["icoPath"]).absolute()
 
     def add_keyword(self, keyword: str) -> Awaitable[None]:

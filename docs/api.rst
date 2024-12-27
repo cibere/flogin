@@ -9,10 +9,6 @@ Plugin
 .. autoclass:: flogin.plugin.Plugin
     :members:
 
-.. autodecorator:: Plugin.event()
-
-.. autodecorator:: Plugin.search()
-
 Classes
 ~~~~~~~
 

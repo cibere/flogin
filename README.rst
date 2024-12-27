@@ -4,6 +4,9 @@ flogin
 .. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/tests.yml?label=tests
     :target: https://github.com/cibere/flogin/actions/workflows/tests.yml
     :alt: Tests Workflow Status
+.. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/build.yml?label=build
+    :target: https://github.com/cibere/flogin/actions/workflows/build.yml
+    :alt: Build Workflow Status
 .. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/lint.yaml?label=lint
     :target: https://github.com/cibere/flogin/actions/workflows/lint.yaml
     :alt: Lint Workflow Status
