@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 import logging
 import logging.handlers
+from collections import defaultdict
 from functools import _make_key as make_cached_key
 from typing import (
     TYPE_CHECKING,
@@ -9,11 +11,13 @@ from typing import (
     Awaitable,
     Callable,
     Coroutine,
+    Generic,
+    Self,
     TypeVar,
     overload,
-    Generic,
 )
-from .utils import coro_or_gen, MISSING, copy_doc
+
+from .utils import MISSING, coro_or_gen
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
 AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
@@ -22,7 +26,6 @@ T = TypeVar("T")
 LOG = logging.getLogger(__name__)
 
 __all__ = ("cached_property", "cached_coro", "cached_gen", "clear_cache")
-from collections import defaultdict
 
 __cached_objects__: defaultdict[Any, list[BaseCachedObject]] = defaultdict(list)
 
@@ -90,9 +93,17 @@ class CachedGen(BaseCachedObject):
 class CachedProperty(BaseCachedObject, Generic[T]):
     value: T
 
-    def __get__(self, instance, owner) -> T:
+    @overload
+    def __get__(self, instance: None, owner: type[Any] | None = None) -> Self: ...
+
+    @overload
+    def __get__(self, instance: object, owner: type[Any] | None = None) -> T: ...
+
+    def __get__(
+        self, instance: object | None, owner: type[Any] | None = None
+    ) -> T | Self:
         if instance is None:
-            return self  # type: ignore
+            return self
 
         try:
             return self.value
