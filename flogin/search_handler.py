@@ -1,11 +1,28 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Callable, Generic, TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Generic,
+    TypeVar,
+    Unpack,
+    TypedDict,
+    NotRequired,
+    Iterable,
+)
 
 from ._types import PluginT, SearchHandlerCallbackReturns, SearchHandlerCondition
 from .jsonrpc import ErrorResponse
-from .utils import copy_doc
+from .utils import copy_doc, MISSING
+from .conditions import (
+    AllCondition,
+    AnyCondition,
+    RegexCondition,
+    KeywordCondition,
+    PlainTextCondition,
+)
+import re
 
 if TYPE_CHECKING:
     from .query import Query
@@ -18,10 +35,6 @@ if TYPE_CHECKING:
 LOG = logging.getLogger(__name__)
 
 __all__ = ("SearchHandler",)
-
-
-def _default_condition(q: Query) -> bool:
-    return True
 
 
 class SearchHandler(Generic[PluginT]):
@@ -37,8 +50,6 @@ class SearchHandler(Generic[PluginT]):
 
     Attributes
     ------------
-    condition: :ref:`condition <condition_example>`
-        A function which is used to determine if this search handler should be used to handle a given query or not
     plugin: :class:`~flogin.plugin.Plugin` | None
         Your plugin instance. This is filled before :func:`~flogin.search_handler.SearchHandler.callback` is triggered.
     """
@@ -47,11 +58,53 @@ class SearchHandler(Generic[PluginT]):
         self,
         condition: SearchHandlerCondition | None = None,
     ) -> None:
-        if condition is None:
-            condition = _default_condition
+        if condition is not None:
+            self.condition = condition  # type: ignore
 
-        self.condition = condition
         self.plugin: PluginT | None = None
+
+    def __init_subclass__(
+        cls: type[SearchHandler],
+        *,
+        text: str = MISSING,
+        pattern: re.Pattern | str = MISSING,
+        keyword: str = MISSING,
+        allowed_keywords: Iterable[str] = MISSING,
+        disallowed_keywords: Iterable[str] = MISSING,
+    ) -> None:
+        con = None
+
+        if text is not MISSING:
+            con = PlainTextCondition(text)
+        elif pattern is not MISSING:
+            if isinstance(pattern, str):
+                pattern = re.compile(pattern)
+            con = RegexCondition(pattern)
+        elif keyword is not MISSING:
+            con = KeywordCondition(allowed_keywords=[keyword])
+        elif allowed_keywords is not MISSING:
+            con = KeywordCondition(allowed_keywords=allowed_keywords)
+        elif disallowed_keywords is not MISSING:
+            con = KeywordCondition(disallowed_keywords=disallowed_keywords)
+
+        if con is not None:
+            cls.condition = con  # type: ignore
+
+    def condition(self, query: Query) -> bool:
+        r"""A function that determines whether or not to fire off this search handler for a given query
+
+        Parameters
+        ----------
+        query: :class:`~flogin.query.Query`
+            The query object for the query request
+
+        Returns
+        --------
+        :class:`bool`
+            Whether or not to fire off this handler for the given query.
+        """
+
+        return True
 
     def callback(self, query: Query) -> SearchHandlerCallbackReturns:
         r"""|coro|
