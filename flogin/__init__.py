@@ -1,6 +1,6 @@
 __title__ = "flogin"
 __author__ = "cibere"
-__version__ = "0.1.0b"
+__version__ = "1.0.0"
 
 
 from typing import Literal, NamedTuple
