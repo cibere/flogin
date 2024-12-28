@@ -24,7 +24,7 @@ class BaseField:
     def to_dict(self) -> dict[str, Any]:
         return {
             "type": self.type.value,
-            "attributes": self.attrs,  # {key:value for key, value in self.attrs.items() if value is not MISSING}
+            "attributes": self.attrs,
         }
 
 
