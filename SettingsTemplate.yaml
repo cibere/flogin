@@ -1,0 +1,30 @@
+- attributes:
+    description: textblock
+  type: textBlock
+- attributes:
+    defaultValue: default value
+    description: desc
+    label: textAreaField
+    name: area
+  type: textarea
+- attributes:
+    defaultValue: foo
+    description: foo or bar
+    label: dropdown
+    name: dropdown
+    options:
+    - foo
+    - bar
+  type: dropdown
+- attributes:
+    defaultValue: true
+    description: checkbox
+    label: checkbox
+    name: checkbox
+  type: checkbox
+- attributes:
+    defaultValue: bob
+    description: whats your name?
+    label: name
+    name: name
+  type: input
