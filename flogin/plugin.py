@@ -61,19 +61,13 @@ class Plugin(Generic[SettingsT]):
 
     Parameters
     -----------
-    **options: :class:`Any`
-        Options to be passed to the plugin
-
-        .. describe:: settings_no_update: bool
-
-            Whether or not to let flow update flogin's version of the settings. This can be useful when using a custom settings menu. Defaults to
-
-        .. describe:: ignore_cancellation_requests: bool
-
-            Whether or not to ignore cancellation requests sent from flow.
+    settings_no_update: Optional[:class:`bool`]
+        Whether or not to let flow update flogin's version of the settings. This can be useful when using a custom settings menu. Defaults to ``False``
+    ignore_cancellation_requests: Optional[:class:`bool`]
+        Whether or not to ignore cancellation requests sent from flow. Defaults to ``False``
 
     Attributes
-    --------
+    ----------
     settings: :class:`~flogin.settings.Settings`
         The plugin's settings set by the user
     api: :class:`~flogin.flow.api.FlowLauncherAPI`

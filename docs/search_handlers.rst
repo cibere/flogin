@@ -144,7 +144,7 @@ Alternatively, if you are subclassing your handler, you can override the :func:`
 
 Caching
 -------
-If your results are predicable and don't change much, a great option is to cache the results to make response times just that much faster. Additionally, if web requests are involved, the ``ignore_cancellation_requests`` :class:`~flogin.plugin.Plugin` option combined with cached search handlers can help reduce the amount of web requests that are made. For this, a :ref:`caching module <caching_reference>` is provided. Here is a quick walkthrough:
+If your results are predicable and don't change much, a great option is to cache the results to make response times just that much faster. Additionally, if web requests are involved, the ``ignore_cancellation_requests`` parameter in :class:`~flogin.plugin.Plugin` combined with cached search handlers can help reduce the amount of web requests that are made. For this, a :ref:`caching module <caching_reference>` is provided. Here is a quick walkthrough:
 
 There are 3 provided decorators:
 
