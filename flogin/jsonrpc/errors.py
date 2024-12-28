@@ -121,7 +121,7 @@ class FlowError(JsonRPCException):
 
     Attributes
     ----------
-    code: :class:`int` = -32603
+    code: :class:`int`
         The JsonRPC Error Code
     message: :class:`str`
         The message sent with the error
