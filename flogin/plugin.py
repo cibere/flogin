@@ -57,7 +57,7 @@ __all__ = ("Plugin",)
 class Plugin(Generic[SettingsT]):
     r"""This class represents your plugin.
 
-    This class impliments a generic for a custom :class:`~flogin.settings.Settings` class for typechecking purposes.
+    This class implements a generic for a custom :class:`~flogin.settings.Settings` class for typechecking purposes.
 
     Parameters
     -----------

@@ -33,7 +33,7 @@ class SearchHandler(Generic[PluginT]):
 
     There is a provided decorator to easily create search handlers: :func:`~flogin.plugin.Plugin.search`
 
-    This class impliments a generic for the :attr:`~flogin.search_handler.SearchHandler.plugin` attribute, which will be used for typechecking purposes.
+    This class implements a generic for the :attr:`~flogin.search_handler.SearchHandler.plugin` attribute, which will be used for typechecking purposes.
 
     Attributes
     ------------

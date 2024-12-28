@@ -214,7 +214,7 @@ def cached_property(obj: Callable[[Any], T]) -> CachedProperty[T]: ...
 def cached_property(
     obj: str | Callable[[Any], T] | None = None
 ) -> Callable[[Callable[[Any], T]], CachedProperty[T]] | CachedProperty[T]:
-    r"""A decorator that is similar to the builtin `functools.cached_property <https://docs.python.org/3/library/functools.html#functools.cached_property>`__ decorator, but is async-safe and impliments the ability to use :func:`~flogin.caching.clear_cache`.
+    r"""A decorator that is similar to the builtin `functools.cached_property <https://docs.python.org/3/library/functools.html#functools.cached_property>`__ decorator, but is async-safe and implements the ability to use :func:`~flogin.caching.clear_cache`.
 
     This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
 

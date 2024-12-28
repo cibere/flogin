@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from ..jsonrpc.responses import QueryResponse
     from ..jsonrpc.results import Result
 
-API_FILLER_TEXT = "FlowLauncherAPI is unavailable during testing. Consider passing the 'flow_api_client' arg into PluginTester to impliment your own flow api client."
+API_FILLER_TEXT = "FlowLauncherAPI is unavailable during testing. Consider passing the 'flow_api_client' arg into PluginTester to implement your own flow api client."
 CHARACTERS = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLLZXCVBNM1234567890"
 
 __all__ = ("PluginTester",)
@@ -29,7 +29,7 @@ class PluginTester(Generic[PluginT]):
 
     See the :doc:`testing` guide for more information on writing tests.
 
-    This class impliments a generic for the :attr:`~flogin.testing.plugin_tester.PluginTester.plugin` attribute, which will be used for typechecking purposes.
+    This class implements a generic for the :attr:`~flogin.testing.plugin_tester.PluginTester.plugin` attribute, which will be used for typechecking purposes.
 
     Parameters
     ----------
@@ -38,7 +38,7 @@ class PluginTester(Generic[PluginT]):
     metadata: :class:`~flogin.flow.plugin_metadata.PluginMetadata` | dict[str, Any] | None
         Your plugin's metadata. If ``None`` is passed, flogin will attempt to get the metadata from your ``plugin.json`` file. The :func:`PluginTester.create_plugin_metadata` and :func:`PluginTester.create_bogus_plugin_metadata` classmethods have been provided for creating :class:`~flogin.flow.plugin_metadata.PluginMetadata` objects.
     flow_api_client: Optional[Any]
-        If not passed, flogin will use a filler class which will raise a runtime error whenever an attribute is accessed. If passed, you should be passing an instance of a class which will replace :class:`~flogin.flow.api.FlowLauncherAPI`, so make sure to impliment the methods you need and handle them accordingly.
+        If not passed, flogin will use a filler class which will raise a runtime error whenever an attribute is accessed. If passed, you should be passing an instance of a class which will replace :class:`~flogin.flow.api.FlowLauncherAPI`, so make sure to implement the methods you need and handle them accordingly.
 
     Attributes
     ----------
@@ -79,7 +79,7 @@ class PluginTester(Generic[PluginT]):
         Parameters
         ----------
         flow_api_client: Optional[Any]
-            If not passed, flogin will use a filler class which will raise a runtime error whenever an attribute is accessed. If passed, you should be passing an instance of a class which will replace :class:`~flogin.flow.api.FlowLauncherAPI`, so make sure to impliment the methods you need and handle them accordingly.
+            If not passed, flogin will use a filler class which will raise a runtime error whenever an attribute is accessed. If passed, you should be passing an instance of a class which will replace :class:`~flogin.flow.api.FlowLauncherAPI`, so make sure to implement the methods you need and handle them accordingly.
         """
         if flow_api_client is MISSING:
             flow_api_client = FillerObject(API_FILLER_TEXT)
@@ -146,7 +146,7 @@ class PluginTester(Generic[PluginT]):
         This coroutine can be used to send a result's context menu, and get the response.
 
         .. NOTE::
-            You should use this to test your context menus instead of invoking them directly because this method impliments the post-processing that flogin puts onto your context menu and query methods.
+            You should use this to test your context menus instead of invoking them directly because this method implements the post-processing that flogin puts onto your context menu and query methods.
 
         Parameters
         ----------

@@ -23,7 +23,7 @@ class RawQuery(TypedDict):
 class Query(Generic[T]):
     r"""This class represents the query data sent from flow launcher
 
-    This class impliments a generic for the :attr:`~flogin.query.Query.condition_data` attribute, which will be used for typechecking purposes.
+    This class implements a generic for the :attr:`~flogin.query.Query.condition_data` attribute, which will be used for typechecking purposes.
 
     .. container:: operations
 

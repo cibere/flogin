@@ -45,7 +45,7 @@ And here is a simply testing script for it: ::
     from flogin.testing import PluginTester
     from flogin import Query
 
-    # Since we use the `show_notification` api method in our result callback, we need to impliment it in our replacement class.
+    # Since we use the `show_notification` api method in our result callback, we need to implement it in our replacement class.
     class FakeFlowAPI:
         async def show_notification(self, *args):
             print(f"showing notification with {args!r}")
@@ -96,9 +96,9 @@ If you do not use :class:`~flogin.flow.api.FlowLauncherAPI` in the code that you
 
 However if you use the api at all in the code you want to test, you will want to create a FlowLauncherAPI replacement class for testing and pass it to the ``flow_api_client`` argument in your plugin tester's constructor.
 
-When creating your replacement class, make sure to impliment any and all API methods that you use, and respond accordingly inside of them.
+When creating your replacement class, make sure to implement any and all API methods that you use, and respond accordingly inside of them.
 
-For example, lets say I use the :func:`~flogin.flow.api.FlowLauncherAPI.open_settings_menu` method. I would impliment that method into my replacement class, which might look something like this: ::
+For example, lets say I use the :func:`~flogin.flow.api.FlowLauncherAPI.open_settings_menu` method. I would implement that method into my replacement class, which might look something like this: ::
 
     class MyFlowAPI:
         async def open_settings_menu(self):
