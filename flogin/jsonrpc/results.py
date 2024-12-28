@@ -26,8 +26,6 @@ LOG = logging.getLogger(__name__)
 
 __all__ = ("Result", "ResultPreview", "ProgressBar", "Glyph")
 
-# region Glyth
-
 
 class Glyph(Base):
     r"""This represents a glyph object with flow launcher, which is an alternative to :class:`~flogin.jsonrpc.results.Result` icons.
@@ -60,10 +58,6 @@ class Glyph(Base):
         return cls(text=data["Glyth"], font_family=data["FontFamily"])
 
 
-# endregion
-# region ProgressBar
-
-
 class ProgressBar(Base):
     r"""This represents the progress bar than can be shown on a result.
 
@@ -87,10 +81,6 @@ class ProgressBar(Base):
     def __init__(self, percentage: int, color: str = MISSING) -> None:
         self.percentage = percentage
         self.color = color or "#26a0da"
-
-
-# endregion
-# region ResultPreview
 
 
 class ResultPreview(Base):
@@ -126,10 +116,6 @@ class ResultPreview(Base):
         self.image_path = image_path
         self.description = description
         self.is_media = is_media
-
-
-# endregion
-# region Result
 
 
 class ResultConstructorArgs(TypedDict):
@@ -450,5 +436,3 @@ class Result(Base, Generic[PluginT]):
 
     def __repr__(self):
         return f"<{self.__class__.__name__} {self.title=} {self.sub=} {self.icon=} {self.title_highlight_data=} {self.title_tooltip=} {self.sub_tooltip=} {self.copy_text=} {self.score=} {self.auto_complete_text=} {self.preview=} {self.progress_bar=} {self.rounded_icon=} {self.glyph=}>"
-
-# endregion
