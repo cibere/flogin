@@ -44,7 +44,10 @@ class JsonRPCClient:
     def request_id(self, value: int) -> None:
         self._current_request_id = value
 
-    async def request(self, method: str, params: list[object] = []) -> Any:
+    async def request(self, method: str, params: list[Any] | None = None) -> Any:
+        if params is None:
+            params = []
+
         fut: asyncio.Future[Any] = asyncio.Future()
         rid = self.request_id
         self.requests[rid] = fut
