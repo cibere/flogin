@@ -3,7 +3,7 @@ Whats New
 
 This page keeps a detailed human friendly rendering of what's new and changed in specific versions.
 
-v0.1.0
+v1.0.0
 ------
 
 Breaking Changes
