@@ -141,7 +141,7 @@ class JsonRPCClient:
             return await self.write(result.to_message(id=request["id"]))
         else:
             err = InternalError(
-                f"Internal Error: Invalid Response Object", repr(result)
+                "Internal Error: Invalid Response Object", repr(result)
             )
             LOG.exception(
                 f"Invalid Response Object: {result!r}",
