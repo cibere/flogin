@@ -67,6 +67,7 @@ New Features
 - Add ``SearchHandler.__init_subclassed__`` with the same kwargs as :func:`flogin.search_handler.SearchHandler` and :func:`flogin.plugin.Plugin.search`
 - Add ``keyword``, ``allowed_keywords``, ``text``, ``patterns``, and ``disallowed_keywords`` kwargs to :class:`flogin.search_handler.SearchHandler`
 - Add ``keyword``, ``allowed_keywords``, and ``disallowed_keywords`` kwargs to :func:`flogin.plugin.Plugin.search`
+- Document the :ref:`on_close event <on_close>`
 
 Bug Fixes
 ~~~~~~~~~
@@ -77,6 +78,7 @@ Bug Fixes
 - Fix bug with the ``PluginT`` TypeVar not being marked as covariant
 - Fix bug with the default settings reader looking for the wrong path.
 - Fix some typos in the docs
+- Fix deadlock on shutdown due to flogin not sending a response
 
 Removals
 ~~~~~~~~~
