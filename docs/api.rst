@@ -188,6 +188,8 @@ Utils
 
     A type safe sentinel used in the library to represent something as missing. Used to distinguish from ``None`` values.
 
+.. _caching_reference:
+
 Caching
 -------
 
