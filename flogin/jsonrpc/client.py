@@ -6,7 +6,11 @@ import logging
 from asyncio.streams import StreamReader, StreamWriter
 from typing import TYPE_CHECKING, Any
 
-from .errors import JsonRPCException
+from .errors import (
+    MethodNotFound,
+    get_exception_from_json as _get_jsonrpc_error_from_json,
+    InternalError,
+)
 from .requests import Request
 from .responses import BaseResponse, ErrorResponse
 
@@ -40,10 +44,8 @@ class JsonRPCClient:
     def request_id(self, value: int) -> None:
         self._current_request_id = value
 
-    async def request(
-        self, method: str, params: list[object] = []
-    ) -> Any | ErrorResponse:
-        fut: asyncio.Future[Any | ErrorResponse] = asyncio.Future()
+    async def request(self, method: str, params: list[object] = []) -> Any:
+        fut: asyncio.Future[Any] = asyncio.Future()
         rid = self.request_id
         self.requests[rid] = fut
         msg = Request(method, rid, params).to_message(rid)
@@ -82,7 +84,9 @@ class JsonRPCClient:
 
     async def handle_error(self, id: int, error: ErrorResponse) -> None:
         if id in self.requests:
-            self.requests.pop(id).set_exception(Exception(error))
+            self.requests.pop(id).set_exception(
+                _get_jsonrpc_error_from_json(error.to_dict())
+            )
         else:
             LOG.error(f"cancel with no id found: %d", id)
 
@@ -90,9 +94,12 @@ class JsonRPCClient:
         if method == "$/cancelRequest":
             await self.handle_cancellation(params["id"])
         else:
+            err = MethodNotFound(f"Notification Method {method!r} Not Found")
+            await self.write(err.to_response().to_message(params["id"]))
+
             LOG.exception(
                 f"Unknown notification method received: {method}",
-                exc_info=JsonRPCException("Unknown notificaton method received"),
+                exc_info=err,
             )
 
     async def handle_request(self, request: dict[str, Any]) -> None:
@@ -117,11 +124,12 @@ class JsonRPCClient:
         if task is None:
             task = self.plugin.dispatch(method, *params)
             if not task:
-                return await self.write(
-                    ErrorResponse(-32601, "Method Not Found").to_message(
-                        id=request["id"]
-                    )
+                err = MethodNotFound(f"Request method {method!r} was not found")
+                LOG.exception(
+                    f"Unknown request method received: {method}",
+                    exc_info=err,
                 )
+                return await self.write(err.to_response().to_message(id=request["id"]))
 
         self.tasks[request["id"]] = task
         result = await task
@@ -129,9 +137,14 @@ class JsonRPCClient:
         if isinstance(result, BaseResponse):
             return await self.write(result.to_message(id=request["id"]))
         else:
-            return await self.write(
-                ErrorResponse.internal_error().to_message(id=request["id"])
+            err = InternalError(
+                f"Internal Error: Invalid Response Object", repr(result)
             )
+            LOG.exception(
+                f"Invalid Response Object: {result!r}",
+                exc_info=err,
+            )
+            return await self.write(err.to_response().to_message(id=request["id"]))
 
     async def process_input(self, line: str):
         LOG.debug(f"Processing {line!r}")
@@ -154,7 +167,7 @@ class JsonRPCClient:
         else:
             LOG.exception(
                 f"Unknown message type received",
-                exc_info=JsonRPCException("Unknown message type received"),
+                exc_info=RuntimeError("Unknown message type received"),
             )
 
     async def start_listening(self, reader: StreamReader, writer: StreamWriter):
