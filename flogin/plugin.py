@@ -12,6 +12,7 @@ from typing import (
     Awaitable,
     Callable,
     Coroutine,
+    Generic,
     Iterable,
     TypeVar,
     TypeVarTuple,
@@ -21,7 +22,7 @@ from typing import (
 from .conditions import PlainTextCondition, RegexCondition
 from .default_events import get_default_events
 from .errors import InvalidContextDataReceived, PluginNotInitialized
-from .flow_api.client import FlowLauncherAPI, PluginMetadata
+from .flow import FlowLauncherAPI, FlowSettings, PluginMetadata
 from .jsonrpc import (
     ErrorResponse,
     ExecuteResponse,
@@ -36,7 +37,14 @@ from .settings import Settings
 from .utils import MISSING, cached_property, coro_or_gen, setup_logging
 
 if TYPE_CHECKING:
-    from ._types import SearchHandlerCallback, SearchHandlerCondition
+    from typing_extensions import TypeVar
+
+    from ._types import RawSettings, SearchHandlerCallback, SearchHandlerCondition
+
+    SettingsT = TypeVar("SettingsT", default=Settings, bound=Settings)
+else:
+    SettingsT = TypeVar("SettingsT")
+
 TS = TypeVarTuple("TS")
 EventCallbackT = TypeVar(
     "EventCallbackT", bound=Callable[..., Coroutine[Any, Any, Any]]
@@ -46,39 +54,53 @@ LOG = logging.getLogger(__name__)
 __all__ = ("Plugin",)
 
 
-class Plugin:
-    r"""This class represents your plugin
+class Plugin(Generic[SettingsT]):
+    r"""This class represents your plugin.
 
+    This class implements a generic for a custom :class:`~flogin.settings.Settings` class for typechecking purposes.
+
+    Parameters
+    -----------
+    settings_no_update: Optional[:class:`bool`]
+        Whether or not to let flow update flogin's version of the settings. This can be useful when using a custom settings menu. Defaults to ``False``
+    ignore_cancellation_requests: Optional[:class:`bool`]
+        Whether or not to ignore cancellation requests sent from flow. Defaults to ``False``
 
     Attributes
-    --------
+    ----------
     settings: :class:`~flogin.settings.Settings`
         The plugin's settings set by the user
-    api: :class:`~flogin.flow_api.client.FlowLauncherAPI`
+    api: :class:`~flogin.flow.api.FlowLauncherAPI`
         An easy way to acess Flow Launcher's API
+    last_query: :class:`~flogin.query.Query` | ``None``
+        The last query request that flow sent. This is ``None`` if no query request has been sent yet.
     """
 
-    def __init__(self) -> None:
-        self.jsonrpc: JsonRPCClient = JsonRPCClient(self)
-        self.api = FlowLauncherAPI(self.jsonrpc)
+    def __init__(self, **options: Any) -> None:
+        self.options = options
         self._metadata: PluginMetadata | None = None
-        self._events: dict[str, Callable[..., Awaitable[Any]]] = get_default_events(
-            self
-        )
         self._search_handlers: list[SearchHandler] = []
         self._results: dict[str, Result] = {}
         self._settings_are_populated: bool = False
+        self.last_query: Query | None = None
+
+        self._events: dict[str, Callable[..., Awaitable[Any]]] = get_default_events(
+            self
+        )
+        self.jsonrpc: JsonRPCClient = JsonRPCClient(self)
+        self.api = FlowLauncherAPI(self.jsonrpc)
 
     @cached_property
-    def settings(self) -> Settings:
+    def settings(self) -> SettingsT:
         fp = os.path.join(
-            "..", "..", "Settings", "Plugin", self.metadata.name, "Settings.json"
+            "..", "..", "Settings", "Plugins", self.metadata.name, "Settings.json"
         )
         with open(fp, "r") as f:
             data = json.load(f)
         self._settings_are_populated = True
         LOG.debug(f"Settings filled from file: {data!r}")
-        return Settings(data)
+        sets = Settings(data, no_update=self.options.get("settings_no_update", False))
+        return sets  # type: ignore
 
     async def _run_event(
         self,
@@ -135,6 +157,10 @@ class Plugin:
     ) -> list[Result] | ErrorResponse:
         results = []
         raw_results = await coro_or_gen(coro)
+
+        if raw_results is None:
+            return results
+
         if isinstance(raw_results, ErrorResponse):
             return raw_results
         if isinstance(raw_results, dict):
@@ -250,7 +276,7 @@ class Plugin:
                 f"A fatal error has occured which crashed flogin: {e}", exc_info=e
             )
 
-    def register_search_handler(self, handler: SearchHandler) -> None:
+    def register_search_handler(self, handler: SearchHandler[Any]) -> None:
         r"""Register a new search handler
 
         See the :ref:`search handler section <search_handlers>` for more information about using search handlers.
@@ -264,7 +290,7 @@ class Plugin:
         self._search_handlers.append(handler)
         LOG.info(f"Registered search handler: {handler}")
 
-    def register_search_handlers(self, *handlers: SearchHandler) -> None:
+    def register_search_handlers(self, *handlers: SearchHandler[Any]) -> None:
         r"""Register new search handlers
 
         See the :ref:`search handler section <search_handlers>` for more information about using search handlers.
@@ -332,7 +358,30 @@ class Plugin:
 
     @overload
     def search(
-        self, *, pattern: re.Pattern
+        self,
+        *,
+        pattern: re.Pattern | str = MISSING,
+    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
+
+    @overload
+    def search(
+        self,
+        *,
+        keyword: str = MISSING,
+    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
+
+    @overload
+    def search(
+        self,
+        *,
+        allowed_keywords: Iterable[str] = MISSING,
+    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
+
+    @overload
+    def search(
+        self,
+        *,
+        disallowed_keywords: Iterable[str] = MISSING,
     ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
 
     @overload
@@ -345,7 +394,10 @@ class Plugin:
         condition: SearchHandlerCondition | None = None,
         *,
         text: str = MISSING,
-        pattern: re.Pattern = MISSING,
+        pattern: re.Pattern | str = MISSING,
+        keyword: str = MISSING,
+        allowed_keywords: Iterable[str] = MISSING,
+        disallowed_keywords: Iterable[str] = MISSING,
     ) -> Callable[[SearchHandlerCallback], SearchHandler]:
         """A decorator that registers a search handler.
 
@@ -357,8 +409,14 @@ class Plugin:
             The condition to determine which queries this handler should run on. If given, this should be the only argument given.
         text: Optional[:class:`str`]
             A kwarg to quickly add a :class:`~flogin.conditions.PlainTextCondition`. If given, this should be the only argument given.
-        pattern: Optional[:class:`re.Pattern`]
+        pattern: Optional[:class:`re.Pattern` | :class:`str`]
             A kwarg to quickly add a :class:`~flogin.conditions.RegexCondition`. If given, this should be the only argument given.
+        keyword: Optional[:class:`str`]
+            A kwarg to quickly set the condition to a :class:`~flogin.conditions.KeywordCondition` condition with the ``keyword`` kwarg being the only allowed keyword.
+        allowed_keywords: Optional[Iterable[:class:`str`]]
+            A kwarg to quickly set the condition to a :class:`~flogin.conditions.KeywordCondition` condition with the kwarg being the list of allowed keywords.
+        disallowed_keywords: Optional[Iterable[:class:`str`]]
+            A kwarg to quickly set the condition to a :class:`~flogin.conditions.KeywordCondition` condition with the kwarg being the list of disallowed keywords.
 
         Example
         ---------
@@ -372,15 +430,34 @@ class Plugin:
         """
 
         if condition is None:
-            if text is not MISSING:
-                condition = PlainTextCondition(text)
-            elif pattern is not MISSING:
-                condition = RegexCondition(pattern)
+            condition = SearchHandler._builtin_condition_kwarg_to_obj(
+                text=text,
+                pattern=pattern,
+                keyword=keyword,
+                allowed_keywords=allowed_keywords,
+                disallowed_keywords=disallowed_keywords,
+            )
 
         def inner(func: SearchHandlerCallback) -> SearchHandler:
-            handler = SearchHandler(condition)
+            handler = SearchHandler()
+            if condition:
+                handler.condition = condition  # type: ignore
             handler.callback = func  # type: ignore # type is the same
             self.register_search_handler(handler)
             return handler
 
         return inner
+
+    def fetch_flow_settings(self) -> FlowSettings:
+        """Fetches flow's settings from flow's config file
+
+        Returns
+        --------
+        :class:`~flogin.flow.settings.FlowSettings`
+            A dataclass containing all of flow's settings
+        """
+
+        path = os.path.join("..", "..", "Settings", "Settings.json")
+        with open(path, "r") as f:
+            data = json.load(f)
+        return FlowSettings(data)

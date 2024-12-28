@@ -7,7 +7,13 @@ if TYPE_CHECKING:
     from ._types import SearchHandlerCondition
     from .query import Query
 
-__all__ = "PlainTextCondition", "RegexCondition", "KeywordCondition", "MultiCondition"
+__all__ = (
+    "PlainTextCondition",
+    "RegexCondition",
+    "KeywordCondition",
+    "AllCondition",
+    "AnyCondition",
+)
 
 
 class PlainTextCondition:
@@ -59,32 +65,62 @@ class RegexCondition:
         return False
 
 
-class MultiCondition:
-    r"""A builtin search condition to check for multiple conditions.
-
-    This condition will only run if all given conditions return ``True``.
-    See the :ref:`search handler section <search_handlers>` for more information about using search handlers and conditions.
-
-    .. NOTE::
-        This condition will set the query's :attr:`~flogin.query.Query.condition_data` attribute to a dictionary object where the key is the condition and the value is the extra data it provided.
-
-    """
-
+class _MultiCondition:
     __slots__ = ("conditions",)
 
-    def __init__(self, conditions: Iterable[SearchHandlerCondition]) -> None:
+    def __init__(self, *conditions: SearchHandlerCondition) -> None:
         self.conditions = conditions
+
+    def __repr__(self):
+        return f"{self.__class__.__name__} {self.conditions=}"
+
+
+class AllCondition(_MultiCondition):
+    r"""This builtin search condition acts similiarly to the builtin ``all`` function. It only returns ``True`` if all of the given conditions also return ``True``.
+
+    ConditionData
+    -------------
+    This condition will set :attr:`flogin.query.Query.condition_data` to a dictionary containing the conditions, where the keys are the conditions, and the values are the condition data that they gave.
+
+    Parameters
+    ----------
+    *conditions: :ref:`condition <condition_example>`
+        A vararg that contains all the conditions that should be used with this condition.
+    """
 
     def __call__(self, query: Query) -> bool:
         condition_data = {}
         for condition in self.conditions:
             if condition(query) is False:
                 return False
-            condition_data[condition.__name__] = query.condition_data
+            condition_data[condition] = query.condition_data
             query.condition_data = None
 
         query.condition_data = condition_data
         return True
+
+
+class AnyCondition(_MultiCondition):
+    r"""This builtin search condition acts similiarly to the builtin ``any`` function. It only returns ``True`` if any one of the given conditions return ``True``.
+
+    ConditionData
+    -------------
+    This condition will set :attr:`flogin.query.Query.condition_data` to a tuple containing two values. The first value will be the condition that returned true, and the second will be the condition data that the condition gave. ::
+
+        (condition, query.condition_data)
+
+    Parameters
+    ----------
+    *conditions: :ref:`condition <condition_example>`
+        A vararg that contains all the conditions that should be used with this condition.
+    """
+
+    def __call__(self, query: Query) -> bool:
+        for condition in self.conditions:
+            if condition(query) is True:
+                query.condition_data = (condition, query.condition_data)
+                return True
+        return False
 
 
 class KeywordCondition:

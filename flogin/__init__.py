@@ -1,6 +1,6 @@
 __title__ = "flogin"
 __author__ = "cibere"
-__version__ = "0.0.5a"
+__version__ = "1.0.0"
 
 
 from typing import Literal, NamedTuple
@@ -12,6 +12,7 @@ from .plugin import *
 from .query import *
 from .search_handler import *
 from .settings import *
+from .caching import *
 
 
 class VersionInfo(NamedTuple):
@@ -21,6 +22,6 @@ class VersionInfo(NamedTuple):
     releaselevel: Literal["alpha", "beta", "candidate", "final"]
 
 
-version_info: VersionInfo = VersionInfo(major=0, minor=0, micro=5, releaselevel="alpha")
+version_info: VersionInfo = VersionInfo(major=0, minor=1, micro=0, releaselevel="beta")
 
 del NamedTuple, Literal, VersionInfo

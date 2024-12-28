@@ -1,3 +1,5 @@
+.. module:: flogin
+
 API Reference
 =============
 
@@ -6,10 +8,6 @@ Plugin
 
 .. autoclass:: flogin.plugin.Plugin
     :members:
-
-.. autodecorator:: Plugin.event()
-
-.. autodecorator:: Plugin.search()
 
 Classes
 ~~~~~~~
@@ -75,27 +73,80 @@ Builtin Search Conditions
 .. autoclass:: flogin.conditions.KeywordCondition
     :members:
 
-.. autoclass:: flogin.conditions.MultiCondition
+.. autoclass:: flogin.conditions.AllCondition
     :members:
 
-
-Flow API
-----------
-
-Client
-~~~~~~~~
-
-.. autoclass:: flogin.flow_api.client.FlowLauncherAPI
+.. autoclass:: flogin.conditions.AnyCondition
     :members:
 
-Classes
-~~~~~~~~
+Flow
+-----
 
-.. autoclass:: flogin.flow_api.fuzzy_search.FuzzySearchResult
+API
+~~~~
+
+.. autoclass:: flogin.flow.api.FlowLauncherAPI
     :members:
 
-.. autoclass:: flogin.flow_api.plugin_metadata.PluginMetadata
+.. autoclass:: flogin.flow.fuzzy_search.FuzzySearchResult
     :members:
+
+.. autoclass:: flogin.flow.plugin_metadata.PluginMetadata
+    :members:
+
+Settings
+~~~~~~~~~
+
+.. autoclass:: flogin.flow.settings.FlowSettings
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.CustomQueryShortcut
+    :members:
+
+.. autoclass:: flogin.flow.settings.CustomFileManager
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.CustomBrowser
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.CustomPluginHotkey
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.HttpProxy
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.PartialPlugin
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.PluginsSettings
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.LastQueryMode
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.SearchWindowScreens
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.SearchWindowAligns
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.AnimationSpeeds
+    :members:
+    :private-members:
+
+.. autoclass:: flogin.flow.settings.SearchPrecisionScore
+    :members:
+    :private-members:
 
 Errors
 -----------
@@ -104,9 +155,6 @@ Plugin Errors
 ~~~~~~~~~~~~~
 
 .. autoclass:: flogin.errors.PluginException
-    :members:
-
-.. autoclass:: flogin.errors.SettingNotFound
     :members:
 
 .. autoclass:: flogin.errors.PluginNotInitialized
@@ -121,6 +169,14 @@ JSON-RPC Errors
 .. autoclass:: flogin.jsonrpc.errors.JsonRPCVersionMismatch
     :members:
 
+.. _testing_module_api_reference:
+
+Testing
+-------
+
+.. autoclass:: flogin.testing.plugin_tester.PluginTester
+    :members:
+
 Utils
 -----
 
@@ -132,17 +188,15 @@ Utils
 
     A type safe sentinel used in the library to represent something as missing. Used to distinguish from ``None`` values.
 
-.. decorator:: flogin.utils.cached_property()
+.. _caching_reference:
 
-    A version of :func:`functools.cached_property` that is safe for async programs.
+Caching
+-------
 
-    Example
-    --------
-    .. code-block:: python3
+.. autodecorator:: flogin.caching.cached_property()
 
-        class Foo:
-            @utils.cached_property
-            def bar(self):
-                ...
+.. autodecorator:: flogin.caching.cached_coro()
 
-.. autodecorator:: flogin.utils.cached_coro()
+.. autodecorator:: flogin.caching.cached_gen()
+
+.. autofunction:: flogin.caching.clear_cache

@@ -7,7 +7,7 @@ class FuzzySearchResult(Base):
     r"""A class which represents the result given from flow launcher to a fuzzy search request
 
     .. NOTE::
-        This is not intended to be a class that you create yourself, use :func:`~flogin.flow_api.client.FlowLauncherAPI.fuzzy_search` instead.
+        This is not intended to be a class that you create yourself, use :func:`~flogin.flow.api.FlowLauncherAPI.fuzzy_search` instead.
 
     Attributes
     --------

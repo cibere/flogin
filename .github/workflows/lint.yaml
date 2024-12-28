@@ -1,4 +1,4 @@
-name: Run Black
+name: Lint
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12"]
+        python-version: [ '3.11', '3.12', '3.13' ]
 
     name: check ${{ matrix.python-version }}
     steps:
@@ -27,10 +27,20 @@ jobs:
       - name: Install dependencies
         id: install-deps
         run: |
-          python -m pip install --upgrade pip setuptools wheel black requests
-          pip install -U -r requirements.txt
+          python -m pip install .[dev,tests]
 
       - name: Run black
         if: ${{ always() && steps.install-deps.outcome == 'success' }}
         run: |
           black --check flogin examples
+      
+      - name: Install pyright
+        id: install-pyright
+        run: |
+          pip install pyright
+      
+      - name: Run pyright
+        id: run-pyright
+        if: ${{ always() && steps.install-pyright.outcome == 'success' }}
+        run: |
+          pyright --pythonversion ${{ matrix.python-version }} --pythonplatform Windows --warnings flogin examples tests

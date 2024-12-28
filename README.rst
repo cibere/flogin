@@ -1,8 +1,29 @@
 flogin
 =======
-A wrapper for Flow Lancher's V2 jsonrpc api using python, to easily and quickly make **Flo**\ w launcher plu\ **gin**\ s.
 
-Flogin's `documentation can be viewed online <https://flogin.readthedocs.io/en/latest/>`_
+.. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/tests.yml?label=tests
+    :target: https://github.com/cibere/flogin/actions/workflows/tests.yml
+    :alt: Tests Workflow Status
+.. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/build.yml?label=build
+    :target: https://github.com/cibere/flogin/actions/workflows/build.yml
+    :alt: Build Workflow Status
+.. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/lint.yaml?label=lint
+    :target: https://github.com/cibere/flogin/actions/workflows/lint.yaml
+    :alt: Lint Workflow Status
+.. image:: https://img.shields.io/pypi/v/flogin.svg
+   :target: https://pypi.python.org/pypi/flogin
+   :alt: PyPI version info
+.. image:: https://img.shields.io/pypi/pyversions/flogin.svg
+   :target: https://pypi.python.org/pypi/flogin
+   :alt: PyPI supported Python versions
+.. image:: https://img.shields.io/badge/Documentation-Stable-blue
+   :target: https://flogin.readthedocs.io/en/stable
+   :alt: Stable Documentation
+.. image:: https://img.shields.io/badge/Documentation-Dev/Latest-blue
+   :target: https://flogin.readthedocs.io/en/latest
+   :alt: Dev/Latest Documentation
+
+A wrapper for Flow Lancher's V2 jsonrpc api using python, to easily and quickly make **Flo**\ w launcher plu\ **gin**\ s.
 
 .. WARNING::
     This library is still in alpha development, so expect breaking changes
@@ -39,7 +60,7 @@ Basic Example
 
     plugin = Plugin()
 
-    @plugin.event
+    @plugin.search()
     async def on_query(data: Query):
         return f"You wrote {data.text}"
     

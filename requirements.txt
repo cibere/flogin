@@ -1,2 +1,0 @@
-aioconsole==0.8.1
-click==8.1.7

@@ -7,6 +7,7 @@ from typing import (
     Any,
     Callable,
     Coroutine,
+    Generic,
     Iterable,
     NotRequired,
     Self,
@@ -15,13 +16,10 @@ from typing import (
     Unpack,
 )
 
+from .._types import PluginT, SearchHandlerCallbackReturns
 from ..utils import MISSING, cached_property, copy_doc
 from .base_object import Base
 from .responses import ErrorResponse, ExecuteResponse
-
-if TYPE_CHECKING:
-    from .._types import SearchHandlerCallbackReturns
-    from ..plugin import Plugin
 
 TS = TypeVarTuple("TS")
 LOG = logging.getLogger(__name__)
@@ -32,7 +30,7 @@ __all__ = ("Result", "ResultPreview", "ProgressBar", "Glyph")
 
 
 class Glyph(Base):
-    r"""This represents a glyth object with flow launcher, which is an alternative to :class:`~flogin.jsonrpc.results.Result` icons.
+    r"""This represents a glyph object with flow launcher, which is an alternative to :class:`~flogin.jsonrpc.results.Result` icons.
 
     Attributes
     ----------
@@ -105,7 +103,7 @@ class ResultPreview(Base):
     ----------
     image_path: :class:`str`
         The path to the image to be shown
-    description: Optional[:class:`str]`
+    description: Optional[:class:`str`]
         The description to be shown
     is_media: Optional[:class:`bool`]
         Whther the preview should be treated as media or not
@@ -135,7 +133,7 @@ class ResultPreview(Base):
 
 
 class ResultConstructorArgs(TypedDict):
-    title: str
+    title: NotRequired[str | None]
     sub: NotRequired[str | None]
     icon: NotRequired[str | None]
     title_highlight_data: NotRequired[Iterable[int] | None]
@@ -144,14 +142,17 @@ class ResultConstructorArgs(TypedDict):
     copy_text: NotRequired[str | None]
     score: NotRequired[int | None]
     rounded_icon: NotRequired[bool | None]
+    glyph: NotRequired[Glyph | None]
 
 
-class Result(Base):
+class Result(Base, Generic[PluginT]):
     r"""This represents a result that would be returned as a result for a query or context menu.
 
     For simple useage: create instances of this class as-is.
 
     For advanced useage (handling clicks and custom context menus), it is recommended to subclass the result object to create your own subclass.
+
+    This class implements a generic for the :attr:`~flogin.jsonrpc.results.Result.plugin` attribute, which will be used for typechecking purposes.
 
     Subclassing
     ------------
@@ -175,8 +176,8 @@ class Result(Base):
         The title/content of the result
     sub: Optional[:class:`str`]
         The subtitle to be shown.
-    icon: Optional[:class:`str` | :class:`~flogin.jsonrpc.results.Glyph`]
-        A path to the icon to be shown with the result, or a :class:`~flogin.jsonrpc.results.Glyph` object that will serve as the result's icon.
+    icon: Optional[:class:`str`]
+        A path to the icon to be shown with the result. If this and :attr:`~flogin.jsonrpc.results.Result.glyph` are passed, the user's ``Use Segoe Fluent Icons`` setting will determine which is used.
     title_highlight_data: Optional[Iterable[:class:`int`]]
         The highlight data for the title. See the :ref:`FAQ section on highlights <highlights>` for more info.
     title_tooltip: Optional[:class:`str`]
@@ -195,13 +196,15 @@ class Result(Base):
         The text that will replace the :attr:`~flogin.query.Query.raw_text` in the flow menu when the autocomplete hotkey is used on the result. Defaults to the result's title.
     rounded_icon: Optional[:class:`bool`]
         Whether to have round the icon or not.
+    glyph: Optional[:class:`~flogin.jsonrpc.results.Glyph`]
+        The :class:`~flogin.jsonrpc.results.Glyph` object that will serve as the result's icon. If this and :attr:`~flogin.jsonrpc.results.Result.icon` are passed, the user's ``Use Segoe Fluent Icons`` setting will determine which is used.
     """
 
     def __init__(
         self,
-        title: str,
+        title: str | None = None,
         sub: str | None = None,
-        icon: str | Glyph | None = None,
+        icon: str | None = None,
         title_highlight_data: Iterable[int] | None = None,
         title_tooltip: str | None = None,
         sub_tooltip: str | None = None,
@@ -211,6 +214,7 @@ class Result(Base):
         preview: ResultPreview | None = None,
         progress_bar: ProgressBar | None = None,
         rounded_icon: bool | None = None,
+        glyph: Glyph | None = None,
     ) -> None:
         self.title = title
         self.sub = sub
@@ -224,7 +228,8 @@ class Result(Base):
         self.preview = preview
         self.progress_bar = progress_bar
         self.rounded_icon = rounded_icon
-        self.plugin: Plugin | None = None
+        self.glyph = glyph
+        self.plugin: PluginT | None = None
 
     async def on_error(self, error: Exception) -> ErrorResponse | ExecuteResponse:
         r"""|coro|
@@ -323,16 +328,14 @@ class Result(Base):
         dict[:class:`str`, Any]
         """
 
-        x: dict[str, Any] = {
-            "title": self.title,
-        }
+        x: dict[str, Any] = {}
+
+        if self.title is not None:
+            x["title"] = self.title
         if self.sub is not None:
             x["subTitle"] = self.sub
         if self.icon is not None:
-            if isinstance(self.icon, Glyph):
-                x["Glyph"] = self.icon.to_dict()
-            else:
-                x["icoPath"] = self.icon
+            x["icoPath"] = self.icon
         if self.title_highlight_data is not None:
             x["titleHighlightData"] = self.title_highlight_data
         if self.title_tooltip is not None:
@@ -355,6 +358,8 @@ class Result(Base):
             x.update(self.progress_bar.to_dict())
         if self.rounded_icon is not None:
             x["RoundedIcon"] = self.rounded_icon
+        if self.glyph is not None:
+            x["Glyph"] = self.glyph.to_dict()
         return x
 
     @classmethod
@@ -407,7 +412,7 @@ class Result(Base):
         r"""A quick and easy way to create a result with a callback without subclassing.
 
         .. NOTE::
-            This is meant to be used with :class:`~flogin.flow_api.client.FlowLauncherAPI` methods
+            This is meant to be used with :class:`~flogin.flow.api.FlowLauncherAPI` methods
 
         Example
         --------
@@ -443,5 +448,7 @@ class Result(Base):
             )
         )
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} {self.title=} {self.sub=} {self.icon=} {self.title_highlight_data=} {self.title_tooltip=} {self.sub_tooltip=} {self.copy_text=} {self.score=} {self.auto_complete_text=} {self.preview=} {self.progress_bar=} {self.rounded_icon=} {self.glyph=}>"
 
 # endregion

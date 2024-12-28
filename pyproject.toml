@@ -12,15 +12,21 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Intended Audience :: Developers",
     "Natural Language :: English",
-    "Operating System :: OS Independent",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Utilities",
     "Typing :: Typed",
+    "Programming Language :: Python :: Implementation :: CPython",
 ]
-dynamic = ["version", "dependencies"]
+dynamic = ["version"]
+dependencies = [
+    "aioconsole==0.8.1"
+]
 
 [project.urls]
 Documentation = "https://flogin.readthedocs.io/en/latest/"
@@ -37,13 +43,18 @@ dev = [
     "black==24.10.0",
     "isort==5.13.2",
 ]
-
-[tool.setuptools.dynamic]
-dependencies = { file = "requirements.txt" }
+tests = [
+    "pytest==8.3.4",
+    "pytest-asyncio==0.25.0",
+]
 
 [tool.setuptools]
 packages = [
     "flogin",
-    "flogin.flow_api",
+    "flogin.flow",
     "flogin.jsonrpc",
+    "flogin.testing"
 ]
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "module"

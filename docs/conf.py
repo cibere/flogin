@@ -6,7 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import os
 import re
+import sys
 from datetime import date
 
 project = "flogin"
@@ -39,7 +41,7 @@ import sys
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..")))
-
+sys.path.append(os.path.abspath("extensions"))
 
 extensions = [
     "sphinx.ext.viewcode",  # https://www.sphinx-doc.org/en/master/usage/extensions/viewcode.html
@@ -48,6 +50,7 @@ extensions = [
     "sphinx_autodoc_typehints",  # https://github.com/tox-dev/sphinx-autodoc-typehints
     "sphinx.ext.intersphinx",  # https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html
     "sphinx_toolbox.more_autodoc.typevars",  # https://sphinx-toolbox.readthedocs.io/en/latest/extensions/more_autodoc/typevars.html
+    "nitpick_file_ignorer",
 ]
 
 rst_prolog = """
@@ -66,7 +69,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "furo"
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
 
 
 # autodoc
@@ -104,3 +107,19 @@ html_theme_options = {
         "If you find any bugs, please report them om the <a href='https://github.com/cibere/flogin/issues'>GitHub repository</a>."
     ),
 }
+
+# Nitpicky mode options
+nitpick_ignore_files = [
+    "whats_new",
+]
+
+# Typehints are wonky for some reason, and errors/warnings get raised. This workaround just ignores the errors
+# https://github.com/sphinx-doc/sphinx/issues/10785
+nitpick_ignore = [
+    ("py:class", "flogin.query.T"),
+    ("py:class", "SearchHandlerCallbackReturns"),
+    (
+        "py:class",
+        "pathlib._local.Path",
+    ),  # this gets resolved just fine, but an error still gets thrown for some reason
+]

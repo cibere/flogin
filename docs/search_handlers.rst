@@ -123,7 +123,7 @@ Using the decorator isn't the only weay to create search handlers, you can also 
 
 Error Handling
 --------------
-flogin is callback focused, so callbacks are used to handle errors in search handlers. If you are using the :func:`~flogin.plugin.Plugin.search` decorator to make your handler, you can use the :func:`~flogin.search_handlers.SearchHandler.error` decorator to register an error handler. ::
+flogin is callback focused, so callbacks are used to handle errors in search handlers. If you are using the :func:`~flogin.plugin.Plugin.search` decorator to make your handler, you can use the :func:`~flogin.search_handler.SearchHandler.error` decorator to register an error handler. ::
 
     @plugin.search()
     async def my_handler(query: Query):
@@ -133,7 +133,7 @@ flogin is callback focused, so callbacks are used to handle errors in search han
     async def my_error_handler(error: Exception):
         return f"An error occured! {error!r}"
 
-Alternatively, if you are subclassing your handler, you can override the :func:`~flogin.search_handlers.SearchHandler.on_error` method to handle your error. ::
+Alternatively, if you are subclassing your handler, you can override the :func:`~flogin.search_handler.SearchHandler.on_error` method to handle your error. ::
 
     class MyHandler(SearchHandler):
         async def callback(self, query: Query):
@@ -141,6 +141,65 @@ Alternatively, if you are subclassing your handler, you can override the :func:`
         
         async def on_error(error: Exception):
             return f"An error occured! {error!r}"
+
+Caching
+-------
+If your results are predicable and don't change much, a great option is to cache the results to make response times just that much faster. Additionally, if web requests are involved, the ``ignore_cancellation_requests`` parameter in :class:`~flogin.plugin.Plugin` combined with cached search handlers can help reduce the amount of web requests that are made. For this, a :ref:`caching module <caching_reference>` is provided. Here is a quick walkthrough:
+
+There are 3 provided decorators:
+
+1. :func:`~flogin.caching.cached_coro`
+
+This decorator can be used to cache the result of coroutines.
+
+2. :func:`~flogin.caching.cached_gen`
+
+This decorator can be used for caching async generators.
+
+3. :func:`~flogin.caching.cached_property`
+
+This decorator ca be used for caching properties, almost exacly like `functools.cached_property <https://docs.python.org/3/library/functools.html#functools.cached_property>`__
+
+Useage
+~~~~~~
+The useage of each decorator is the same. You can use them as-is, for example: ::
+
+    @cached_coro
+    async def my_coro():
+        ...
+
+or you can call it: ::
+
+    @cached_coro()
+    async def my_coro():
+        ...
+
+If you call the decorator, you can pass an argument which acts as a ``name`` parameter. This parameter is used in combination with :func:`~flogin.caching.clear_cache` to fully customize which cached items you want to clear. The default ``name`` value is ``None``, but you can pass a custom one, like so: ::
+
+    @cached_coro("my_coro")
+    async def my_coro():
+        ...
+
+Clearing the cache
+~~~~~~~~~~~~~~~~~~~
+To clear the cache, you can use :func:`~flogin.caching.clear_cache`. See the above section about the ``name`` parameter for more information about where the ``name`` comes from.
+
+To clear the cache of every cached object, don't pass any parameters. Example: ::
+
+    clear_cache()
+
+To clear the cache of every cached object that doesn't have a set name, pass ``None``. Example: ::
+
+    clear_cache(None)
+
+Lastly, to clear the cache of a specific item, pass it's name. Example: ::
+
+    @cached_coro("my_coro")
+    async def my_coro():
+        ...
+    
+    # just clear the cache of 'my_coro' and nothing else
+    clear_cache('my_coro')
 
 API Reference
 -------------

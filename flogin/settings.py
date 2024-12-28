@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any
 
-from .errors import SettingNotFound
+from typing import TYPE_CHECKING, Any, overload
 
 if TYPE_CHECKING:
     from ._types import RawSettings
@@ -14,13 +13,19 @@ __all__ = ("Settings",)
 
 
 class Settings:
-    r"""This class represents the settings that you user has chosen
+    r"""This class represents the settings that you user has chosen.
+
+    If a setting is not found, ``None`` is returned instead.
 
     .. container:: operations
 
         .. describe:: x['setting name']
 
             Get a setting by key similiar to a dictionary
+
+        .. describe:: x['setting name', 'default']
+
+            Get a setting by key similiar to a dictionary, with a custom default.
 
         .. describe:: x['setting name'] = "new value"
 
@@ -33,26 +38,28 @@ class Settings:
         .. describe:: x.setting_name = "new value"
 
             Change a settings value like an attribute
-
-
-    Raises
-    --------
-    :class:`SettingNotFound`
-        A setting was not found
     """
 
     _data: RawSettings
     _changes: RawSettings
 
-    def __init__(self, data: RawSettings) -> None:
+    def __init__(self, data: RawSettings, *, no_update: bool = False) -> None:
         self._data = data
         self._changes = {}
+        self._no_update = no_update
 
-    def __getitem__(self, key: str) -> Any:
-        try:
-            return self._data[key]
-        except KeyError:
-            raise SettingNotFound(key) from None
+    @overload
+    def __getitem__(self, key: str, /) -> Any: ...
+
+    @overload
+    def __getitem__(self, key: tuple[str, Any], /) -> Any: ...
+
+    def __getitem__(self, key: tuple[str, Any] | str) -> Any:
+        if isinstance(key, str):
+            default = None
+        else:
+            key, default = key
+        return self._data.get(key, default)
 
     def __setitem__(self, key: str, value: Any) -> None:
         self._data[key] = value
@@ -74,8 +81,11 @@ class Settings:
         self.__setitem__(name, value)
 
     def _update(self, data: RawSettings) -> None:
-        LOG.debug(f"Updating settings. Before: {self._data}, after: {data}")
-        self._data = data
+        if self._no_update:
+            LOG.debug(f"Received a settings update, ignoring. {data=}")
+        else:
+            LOG.debug(f"Updating settings. Before: {self._data}, after: {data}")
+            self._data = data
 
     def _get_updates(self) -> RawSettings:
         try:

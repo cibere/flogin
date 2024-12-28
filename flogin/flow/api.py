@@ -67,7 +67,7 @@ class FlowLauncherAPI:
 
         Returns
         --------
-        :class:`~flogin.flow_api.fuzzy_search.FuzzySearchResult`
+        :class:`~flogin.flow.fuzzy_search.FuzzySearchResult`
         """
 
         from ..jsonrpc import ErrorResponse  # circular import
@@ -356,7 +356,7 @@ class FlowLauncherAPI:
 
         Returns
         --------
-        list[:class:`~flogin.flow_api.plugin_metadata.PluginMetadata`]
+        list[:class:`~flogin.flow.plugin_metadata.PluginMetadata`]
         """
 
         from ..jsonrpc import ErrorResponse  # circular import
@@ -458,4 +458,5 @@ class FlowLauncherAPI:
         from ..jsonrpc import ErrorResponse, QueryResponse  # circular import
 
         res = yield ("UpdateResults", [raw_query, QueryResponse(results).to_dict()])
+        self.jsonrpc.plugin._results.update({res.slug: res for res in results})
         assert not isinstance(res, ErrorResponse)

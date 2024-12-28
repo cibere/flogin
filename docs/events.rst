@@ -37,6 +37,20 @@ on_initialization
     
     This is called when flow sends the ``initialize`` request, which happens when the plugin gets started for the first time.
 
+.. _on_close:
+
+on_close
+~~~~~~~~~
+
+.. function:: async def on_close()
+
+    |coro|
+
+    This is called when flow attempts to gracefully shut down.
+
+    .. WARNING::
+        Not sending a response in this event WILL cause flow to deadlock. Any response will do, even and error response.
+
 Error Handling Events
 ---------------------
 These events are triggered by flogin to handle errors

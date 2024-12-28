@@ -1,12 +1,12 @@
 import functools
 import logging
 import logging.handlers
-from functools import _make_key as make_cached_key
 from inspect import isasyncgen, iscoroutine
 from inspect import signature as _signature
 from typing import (
     TYPE_CHECKING,
     Any,
+    AsyncGenerator,
     AsyncIterable,
     Awaitable,
     Callable,
@@ -18,6 +18,7 @@ from typing import (
 )
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
+AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
 T = TypeVar("T")
 P = ParamSpec("P")
 CT = TypeVar("CT")
@@ -45,7 +46,11 @@ if TYPE_CHECKING:
 else:
     cached_property = _cached_property
 
-__all__ = ("setup_logging", "coro_or_gen", "MISSING", "cached_property", "cached_coro")
+__all__ = (
+    "setup_logging",
+    "coro_or_gen",
+    "MISSING",
+)
 
 
 def copy_doc(original: Callable[..., Any]) -> Callable[[T], T]:
@@ -73,37 +78,11 @@ class _MissingSentinel:
 MISSING: Any = _MissingSentinel()
 
 
-def cached_coro(coro: Coro) -> Coro:
-    r"""A decorator to cache a coro's contents based on the passed arguments. This is provided to cache search results.
-
-    .. NOTE::
-        The arguments passed to the coro must be hashable.
-
-    Example
-    --------
-    .. code-block:: python3
-
-        @plugin.search()
-        @utils.cached_coro
-        async def handler(query):
-            ...
-    """
-
-    cache = {}
-
-    @functools.wraps(coro)
-    async def inner(*args, **kwargs):
-        key = make_cached_key(args, kwargs, False)
-        try:
-            return cache[key]
-        except KeyError:
-            cache[key] = await coro(*args, **kwargs)
-            return cache[key]
-
-    return inner  # type: ignore
-
-
-def setup_logging(*, formatter: logging.Formatter | None = None) -> None:
+def setup_logging(
+    *,
+    formatter: logging.Formatter | None = None,
+    handler: logging.Handler | None = None,
+) -> None:
     r"""Sets up flogin's default logger.
 
     Parameters
@@ -114,9 +93,10 @@ def setup_logging(*, formatter: logging.Formatter | None = None) -> None:
 
     level = logging.DEBUG
 
-    handler = logging.handlers.RotatingFileHandler(
-        "flogin.log", maxBytes=1000000, encoding="UTF-8"
-    )
+    if handler is None:
+        handler = logging.handlers.RotatingFileHandler(
+            "flogin.log", maxBytes=1000000, encoding="UTF-8"
+        )
 
     if formatter is None:
         dt_fmt = "%Y-%m-%d %H:%M:%S"
