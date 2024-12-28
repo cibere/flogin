@@ -38,27 +38,6 @@ LOG = logging.getLogger(__name__)
 __all__ = ("SearchHandler",)
 
 
-def builtin_condition_kwarg_to_obj(
-    text: str = MISSING,
-    pattern: re.Pattern | str = MISSING,
-    keyword: str = MISSING,
-    allowed_keywords: Iterable[str] = MISSING,
-    disallowed_keywords: Iterable[str] = MISSING,
-):
-    if text is not MISSING:
-        return PlainTextCondition(text)
-    elif pattern is not MISSING:
-        if isinstance(pattern, str):
-            pattern = re.compile(pattern)
-        return RegexCondition(pattern)
-    elif keyword is not MISSING:
-        return KeywordCondition(allowed_keywords=[keyword])
-    elif allowed_keywords is not MISSING:
-        return KeywordCondition(allowed_keywords=allowed_keywords)
-    elif disallowed_keywords is not MISSING:
-        return KeywordCondition(disallowed_keywords=disallowed_keywords)
-
-
 class SearchHandler(Generic[PluginT]):
     r"""This represents a search handler.
 
@@ -121,7 +100,7 @@ class SearchHandler(Generic[PluginT]):
         disallowed_keywords: Iterable[str] = MISSING,
     ) -> None:
         if condition is None:
-            condition = builtin_condition_kwarg_to_obj(
+            condition = self._builtin_condition_kwarg_to_obj(
                 text=text,
                 pattern=pattern,
                 keyword=keyword,
@@ -173,7 +152,7 @@ class SearchHandler(Generic[PluginT]):
         allowed_keywords: Iterable[str] = MISSING,
         disallowed_keywords: Iterable[str] = MISSING,
     ) -> None:
-        con = builtin_condition_kwarg_to_obj(
+        con = cls._builtin_condition_kwarg_to_obj(
             text=text,
             pattern=pattern,
             keyword=keyword,
@@ -182,6 +161,29 @@ class SearchHandler(Generic[PluginT]):
         )
         if con is not None:
             cls.condition = con  # type: ignore
+
+    @classmethod
+    def _builtin_condition_kwarg_to_obj(
+        cls: type[SearchHandler],
+        *,
+        text: str = MISSING,
+        pattern: re.Pattern | str = MISSING,
+        keyword: str = MISSING,
+        allowed_keywords: Iterable[str] = MISSING,
+        disallowed_keywords: Iterable[str] = MISSING,
+    ) -> SearchHandlerCondition | None:
+        if text is not MISSING:
+            return PlainTextCondition(text)
+        elif pattern is not MISSING:
+            if isinstance(pattern, str):
+                pattern = re.compile(pattern)
+            return RegexCondition(pattern)
+        elif keyword is not MISSING:
+            return KeywordCondition(allowed_keywords=[keyword])
+        elif allowed_keywords is not MISSING:
+            return KeywordCondition(allowed_keywords=allowed_keywords)
+        elif disallowed_keywords is not MISSING:
+            return KeywordCondition(disallowed_keywords=disallowed_keywords)
 
     def condition(self, query: Query) -> bool:
         r"""A function that determines whether or not to fire off this search handler for a given query
