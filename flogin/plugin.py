@@ -71,7 +71,7 @@ class Plugin(Generic[SettingsT]):
         .. describe:: ignore_cancellation_requests: bool
 
             Whether or not to ignore cancellation requests sent from flow.
-            
+
     Attributes
     --------
     settings: :class:`~flogin.settings.Settings`
