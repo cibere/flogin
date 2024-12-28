@@ -62,7 +62,7 @@ New Features
 - Add :func:`flogin.caching.cached_coro`
 - Add :func:`flogin.caching.cached_gen`
 - Add :func:`flogin.caching.clear_cache`
-
+- Support python ``3.13``
 
 Bug Fixes
 ~~~~~~~~~
@@ -72,6 +72,7 @@ Bug Fixes
 - Fix bug where ``Glyph`` was not included in ``ResultConstructorArgs``
 - Fix bug with the ``PluginT`` TypeVar not being marked as covariant
 - Fix bug with the default settings reader looking for the wrong path.
+- Fix some typos in the docs
 
 Removals
 ~~~~~~~~~
