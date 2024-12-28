@@ -49,6 +49,32 @@ class SearchHandler(Generic[PluginT]):
 
     This class implements a generic for the :attr:`~flogin.search_handler.SearchHandler.plugin` attribute, which will be used for typechecking purposes.
 
+    The keywords in the constructor can also be passed into the subclassed init, like so: ::
+
+        class MyHandler(SearchHandler, text="text"):
+            ...
+
+        # is equal to
+
+        class MyHandler(SearchHandler):
+            def __init__(self):
+                super().__init__(text="text")
+
+    Parameters
+    ----------
+    condition: Optional[:ref:`condition <condition_example>`]
+        The condition to determine which queries this handler should run on. If given, this should be the only argument given.
+    text: Optional[:class:`str`]
+        A kwarg to quickly add a :class:`~flogin.conditions.PlainTextCondition`. If given, this should be the only argument given.
+    pattern: Optional[:class:`re.Pattern` | :class:`str`]
+        A kwarg to quickly add a :class:`~flogin.conditions.RegexCondition`. If given, this should be the only argument given.
+    keyword: Optional[:class:`str`]
+        A kwarg to quickly set the condition to a :class:`~flogin.conditions.KeywordCondition` condition with the ``keyword`` kwarg being the only allowed keyword.
+    allowed_keywords: Optional[Iterable[:class:`str`]]
+        A kwarg to quickly set the condition to a :class:`~flogin.conditions.KeywordCondition` condition with the kwarg being the list of allowed keywords.
+    disallowed_keywords: Optional[Iterable[:class:`str`]]
+        A kwarg to quickly set the condition to a :class:`~flogin.conditions.KeywordCondition` condition with the kwarg being the list of disallowed keywords.
+
     Attributes
     ------------
     plugin: :class:`~flogin.plugin.Plugin` | None

@@ -415,8 +415,14 @@ class Plugin(Generic[SettingsT]):
             The condition to determine which queries this handler should run on. If given, this should be the only argument given.
         text: Optional[:class:`str`]
             A kwarg to quickly add a :class:`~flogin.conditions.PlainTextCondition`. If given, this should be the only argument given.
-        pattern: Optional[:class:`re.Pattern`]
+        pattern: Optional[:class:`re.Pattern` | :class:`str`]
             A kwarg to quickly add a :class:`~flogin.conditions.RegexCondition`. If given, this should be the only argument given.
+        keyword: Optional[:class:`str`]
+            A kwarg to quickly set the condition to a :class:`~flogin.conditions.KeywordCondition` condition with the ``keyword`` kwarg being the only allowed keyword.
+        allowed_keywords: Optional[Iterable[:class:`str`]]
+            A kwarg to quickly set the condition to a :class:`~flogin.conditions.KeywordCondition` condition with the kwarg being the list of allowed keywords.
+        disallowed_keywords: Optional[Iterable[:class:`str`]]
+            A kwarg to quickly set the condition to a :class:`~flogin.conditions.KeywordCondition` condition with the kwarg being the list of disallowed keywords.
 
         Example
         ---------

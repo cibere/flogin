@@ -64,6 +64,9 @@ New Features
 - Add :func:`flogin.caching.clear_cache`
 - Support python ``3.13``
 - Add the ``ignore_cancellation_requests`` option to :class:`flogin.plugin.Plugin`
+- Add ``SearchHandler.__init_subclassed__`` with the same kwargs as :func:`flogin.search_handler.Searchhandler` and :func:`flogin.plugin.Plugin.search`
+- Add ``keyword``, ``allowed_keywords``, ``text``, ``patterns``, and ``disallowed_keywords`` kwargs to :class:`flogin.search_handler.SearchHandler`
+- Add ``keyword``, ``allowed_keywords``, and ``disallowed_keywords`` kwargs to :func:`flogin.plugin.Plugin.search`
 
 Bug Fixes
 ~~~~~~~~~
