@@ -88,6 +88,11 @@ class PluginMetadata(Base):
         --------
         keyword: :class:`str`
             The keyword to be added
+        
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------
@@ -107,6 +112,11 @@ class PluginMetadata(Base):
         --------
         keyword: :class:`str`
             The keyword to be removed
+
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------

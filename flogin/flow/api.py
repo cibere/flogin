@@ -42,6 +42,11 @@ class FlowLauncherAPI:
             The text
         text_to_compare_it_to: :class:`str`
             The text you want to compare the other text to
+        
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------
@@ -64,6 +69,11 @@ class FlowLauncherAPI:
         requery: :class:`bool`
             Whether or not to re-send a query request in the event that the `new_query` is the same as the current query
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
@@ -82,6 +92,11 @@ class FlowLauncherAPI:
             The title of the notification
         text: :class:`str`
             The content of the notification
+
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------
@@ -112,6 +127,11 @@ class FlowLauncherAPI:
         use_main_window_as_owner: :class:`bool`
             Whether or not to use the main flow window as the notification's owner. Defaults to `True`
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
@@ -125,6 +145,11 @@ class FlowLauncherAPI:
         r"""|coro|
 
         This method tells flow to open up the settings menu.
+
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------
@@ -145,6 +170,11 @@ class FlowLauncherAPI:
         in_private: :class:`bool`
             Whether or not to open up the url in a private window
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
@@ -164,6 +194,11 @@ class FlowLauncherAPI:
         filename: :class:`str`
             The name of the command prompt instance, defaults to `cmd.exe`
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
@@ -178,6 +213,11 @@ class FlowLauncherAPI:
 
         .. WARNING::
             Expect this method to never finish, so clean up and prepare for the plugin to be shut down before calling this.
+        
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
         """
 
         await self.jsonrpc.request("RestartApp")
@@ -186,6 +226,11 @@ class FlowLauncherAPI:
         r"""|coro|
 
         This method tells flow to save all app settings.
+
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------
@@ -198,6 +243,11 @@ class FlowLauncherAPI:
         r"""|coro|
 
         This method tells flow to save plugin settings
+
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------
@@ -213,6 +263,11 @@ class FlowLauncherAPI:
 
         This method tells flow to trigger a reload of all plugins.
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
@@ -224,6 +279,11 @@ class FlowLauncherAPI:
         """|coro|
 
         This method tells flow to show the main window
+
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------
@@ -237,6 +297,11 @@ class FlowLauncherAPI:
 
         This method tells flow to hide the main window
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
@@ -248,6 +313,11 @@ class FlowLauncherAPI:
         r"""|coro|
 
         This method asks flow if the main window is visible or not
+
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------
@@ -265,6 +335,11 @@ class FlowLauncherAPI:
 
         .. NOTE::
             This tells flow launcher to check for updates to flow launcher, not your plugin
+        
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------
@@ -277,6 +352,11 @@ class FlowLauncherAPI:
         r"""|coro|
 
         Get the metadata of all plugins that the user has installed
+
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------
@@ -299,6 +379,11 @@ class FlowLauncherAPI:
         keyword: :class:`str`
             The keyword to add
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
@@ -317,6 +402,11 @@ class FlowLauncherAPI:
             The ID of the plugin that you want to remove the keyword from
         keyword: :class:`str`
             The keyword that you want to remove
+        
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------
@@ -336,6 +426,11 @@ class FlowLauncherAPI:
             The directory you want to open
         file: Optional[:class:`str`]
             The file in the directory that you want to highlight, defaults to `None`
+        
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------
@@ -358,6 +453,11 @@ class FlowLauncherAPI:
             Only change the results if the current raw query is the same as this
         results: list[:class:`~flogin.jsonrpc.results.Result`]
             The new results
+        
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         -------
