@@ -11,17 +11,12 @@ from typing import (
     Awaitable,
     Callable,
     Coroutine,
-    Generator,
-    Generic,
-    ParamSpec,
     TypeVar,
 )
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
 AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
 T = TypeVar("T")
-P = ParamSpec("P")
-CT = TypeVar("CT")
 
 LOG = logging.getLogger(__name__)
 
