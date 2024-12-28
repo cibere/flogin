@@ -22,7 +22,8 @@ classifiers = [
 ]
 dynamic = ["version"]
 dependencies = [
-    "aioconsole==0.8.1"
+    "aioconsole==0.8.1",
+    "pyyaml-6.0.2",
 ]
 
 [project.urls]
