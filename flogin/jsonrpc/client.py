@@ -117,7 +117,11 @@ class JsonRPCClient:
         if task is None:
             task = self.plugin.dispatch(method, *params)
             if not task:
-                return
+                return await self.write(
+                    ErrorResponse(-32601, "Method Not Found").to_message(
+                        id=request["id"]
+                    )
+                )
 
         self.tasks[request["id"]] = task
         result = await task
