@@ -165,9 +165,10 @@ class JsonRPCClient:
                 message["id"], ErrorResponse.from_dict(message["error"])
             )
         else:
+            err = InternalError("Unknown message type received", line)
             LOG.exception(
-                f"Unknown message type received",
-                exc_info=RuntimeError("Unknown message type received"),
+                "Unknown message type received",
+                exc_info=err,
             )
 
     async def start_listening(self, reader: StreamReader, writer: StreamWriter):
