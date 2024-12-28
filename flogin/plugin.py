@@ -359,7 +359,30 @@ class Plugin(Generic[SettingsT]):
 
     @overload
     def search(
-        self, *, pattern: re.Pattern
+        self,
+        *,
+        pattern: re.Pattern | str = MISSING,
+    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
+
+    @overload
+    def search(
+        self,
+        *,
+        keyword: str = MISSING,
+    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
+
+    @overload
+    def search(
+        self,
+        *,
+        allowed_keywords: Iterable[str] = MISSING,
+    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
+
+    @overload
+    def search(
+        self,
+        *,
+        disallowed_keywords: Iterable[str] = MISSING,
     ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
 
     @overload
@@ -372,7 +395,10 @@ class Plugin(Generic[SettingsT]):
         condition: SearchHandlerCondition | None = None,
         *,
         text: str = MISSING,
-        pattern: re.Pattern = MISSING,
+        pattern: re.Pattern | str = MISSING,
+        keyword: str = MISSING,
+        allowed_keywords: Iterable[str] = MISSING,
+        disallowed_keywords: Iterable[str] = MISSING,
     ) -> Callable[[SearchHandlerCallback], SearchHandler]:
         """A decorator that registers a search handler.
 
@@ -399,13 +425,18 @@ class Plugin(Generic[SettingsT]):
         """
 
         if condition is None:
-            if text is not MISSING:
-                condition = PlainTextCondition(text)
-            elif pattern is not MISSING:
-                condition = RegexCondition(pattern)
+            condition = SearchHandler._builtin_condition_kwarg_to_obj(
+                text=text,
+                pattern=pattern,
+                keyword=keyword,
+                allowed_keywords=allowed_keywords,
+                disallowed_keywords=disallowed_keywords,
+            )
 
         def inner(func: SearchHandlerCallback) -> SearchHandler:
-            handler = SearchHandler(condition)
+            handler = SearchHandler()
+            if condition:
+                handler.condition = condition  # type: ignore
             handler.callback = func  # type: ignore # type is the same
             self.register_search_handler(handler)
             return handler
