@@ -88,7 +88,7 @@ class PluginMetadata(Base):
         --------
         keyword: :class:`str`
             The keyword to be added
-        
+
         Raises
         -------
         :class:`~flogin.jsonrpc.errors.JsonRPCException`

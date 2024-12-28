@@ -42,7 +42,7 @@ class FlowLauncherAPI:
             The text
         text_to_compare_it_to: :class:`str`
             The text you want to compare the other text to
-        
+
         Raises
         -------
         :class:`~flogin.jsonrpc.errors.JsonRPCException`
@@ -213,7 +213,7 @@ class FlowLauncherAPI:
 
         .. WARNING::
             Expect this method to never finish, so clean up and prepare for the plugin to be shut down before calling this.
-        
+
         Raises
         -------
         :class:`~flogin.jsonrpc.errors.JsonRPCException`
@@ -335,7 +335,7 @@ class FlowLauncherAPI:
 
         .. NOTE::
             This tells flow launcher to check for updates to flow launcher, not your plugin
-        
+
         Raises
         -------
         :class:`~flogin.jsonrpc.errors.JsonRPCException`
@@ -402,7 +402,7 @@ class FlowLauncherAPI:
             The ID of the plugin that you want to remove the keyword from
         keyword: :class:`str`
             The keyword that you want to remove
-        
+
         Raises
         -------
         :class:`~flogin.jsonrpc.errors.JsonRPCException`
@@ -426,7 +426,7 @@ class FlowLauncherAPI:
             The directory you want to open
         file: Optional[:class:`str`]
             The file in the directory that you want to highlight, defaults to `None`
-        
+
         Raises
         -------
         :class:`~flogin.jsonrpc.errors.JsonRPCException`
@@ -453,7 +453,7 @@ class FlowLauncherAPI:
             Only change the results if the current raw query is the same as this
         results: list[:class:`~flogin.jsonrpc.results.Result`]
             The new results
-        
+
         Raises
         -------
         :class:`~flogin.jsonrpc.errors.JsonRPCException`
