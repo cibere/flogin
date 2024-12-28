@@ -10,6 +10,7 @@ from typing import (
     TypedDict,
     NotRequired,
     Iterable,
+    overload,
 )
 
 from ._types import PluginT, SearchHandlerCallbackReturns, SearchHandlerCondition
@@ -36,11 +37,14 @@ LOG = logging.getLogger(__name__)
 
 __all__ = ("SearchHandler",)
 
-def builtin_condition_kwarg_to_obj(text: str = MISSING,
-        pattern: re.Pattern | str = MISSING,
-        keyword: str = MISSING,
-        allowed_keywords: Iterable[str] = MISSING,
-        disallowed_keywords: Iterable[str] = MISSING,):
+
+def builtin_condition_kwarg_to_obj(
+    text: str = MISSING,
+    pattern: re.Pattern | str = MISSING,
+    keyword: str = MISSING,
+    allowed_keywords: Iterable[str] = MISSING,
+    disallowed_keywords: Iterable[str] = MISSING,
+):
     if text is not MISSING:
         return PlainTextCondition(text)
     elif pattern is not MISSING:
@@ -53,6 +57,7 @@ def builtin_condition_kwarg_to_obj(text: str = MISSING,
         return KeywordCondition(allowed_keywords=allowed_keywords)
     elif disallowed_keywords is not MISSING:
         return KeywordCondition(disallowed_keywords=disallowed_keywords)
+
 
 class SearchHandler(Generic[PluginT]):
     r"""This represents a search handler.
@@ -70,6 +75,40 @@ class SearchHandler(Generic[PluginT]):
     plugin: :class:`~flogin.plugin.Plugin` | None
         Your plugin instance. This is filled before :func:`~flogin.search_handler.SearchHandler.callback` is triggered.
     """
+
+    @overload
+    def __init__(self, condition: SearchHandlerCondition) -> None: ...
+
+    @overload
+    def __init__(self, *, text: str) -> None: ...
+
+    @overload
+    def __init__(
+        self,
+        *,
+        pattern: re.Pattern | str = MISSING,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self,
+        *,
+        keyword: str = MISSING,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self,
+        *,
+        allowed_keywords: Iterable[str] = MISSING,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self,
+        *,
+        disallowed_keywords: Iterable[str] = MISSING,
+    ) -> None: ...
 
     def __init__(
         self,
@@ -90,9 +129,40 @@ class SearchHandler(Generic[PluginT]):
                 disallowed_keywords=disallowed_keywords,
             )
         if condition:
-            self.condition = condition # type: ignore
+            self.condition = condition  # type: ignore
 
         self.plugin: PluginT | None = None
+
+    @overload
+    def __init_subclass__(cls: type[SearchHandler], *, text: str) -> None: ...
+
+    @overload
+    def __init_subclass__(
+        cls: type[SearchHandler],
+        *,
+        pattern: re.Pattern | str = MISSING,
+    ) -> None: ...
+
+    @overload
+    def __init_subclass__(
+        cls: type[SearchHandler],
+        *,
+        keyword: str = MISSING,
+    ) -> None: ...
+
+    @overload
+    def __init_subclass__(
+        cls: type[SearchHandler],
+        *,
+        allowed_keywords: Iterable[str] = MISSING,
+    ) -> None: ...
+
+    @overload
+    def __init_subclass__(
+        cls: type[SearchHandler],
+        *,
+        disallowed_keywords: Iterable[str] = MISSING,
+    ) -> None: ...
 
     def __init_subclass__(
         cls: type[SearchHandler],
