@@ -36,6 +36,23 @@ LOG = logging.getLogger(__name__)
 
 __all__ = ("SearchHandler",)
 
+def builtin_condition_kwarg_to_obj(text: str = MISSING,
+        pattern: re.Pattern | str = MISSING,
+        keyword: str = MISSING,
+        allowed_keywords: Iterable[str] = MISSING,
+        disallowed_keywords: Iterable[str] = MISSING,):
+    if text is not MISSING:
+        return PlainTextCondition(text)
+    elif pattern is not MISSING:
+        if isinstance(pattern, str):
+            pattern = re.compile(pattern)
+        return RegexCondition(pattern)
+    elif keyword is not MISSING:
+        return KeywordCondition(allowed_keywords=[keyword])
+    elif allowed_keywords is not MISSING:
+        return KeywordCondition(allowed_keywords=allowed_keywords)
+    elif disallowed_keywords is not MISSING:
+        return KeywordCondition(disallowed_keywords=disallowed_keywords)
 
 class SearchHandler(Generic[PluginT]):
     r"""This represents a search handler.
@@ -57,9 +74,23 @@ class SearchHandler(Generic[PluginT]):
     def __init__(
         self,
         condition: SearchHandlerCondition | None = None,
+        *,
+        text: str = MISSING,
+        pattern: re.Pattern | str = MISSING,
+        keyword: str = MISSING,
+        allowed_keywords: Iterable[str] = MISSING,
+        disallowed_keywords: Iterable[str] = MISSING,
     ) -> None:
-        if condition is not None:
-            self.condition = condition  # type: ignore
+        if condition is None:
+            condition = builtin_condition_kwarg_to_obj(
+                text=text,
+                pattern=pattern,
+                keyword=keyword,
+                allowed_keywords=allowed_keywords,
+                disallowed_keywords=disallowed_keywords,
+            )
+        if condition:
+            self.condition = condition # type: ignore
 
         self.plugin: PluginT | None = None
 
@@ -72,21 +103,13 @@ class SearchHandler(Generic[PluginT]):
         allowed_keywords: Iterable[str] = MISSING,
         disallowed_keywords: Iterable[str] = MISSING,
     ) -> None:
-        con = None
-
-        if text is not MISSING:
-            con = PlainTextCondition(text)
-        elif pattern is not MISSING:
-            if isinstance(pattern, str):
-                pattern = re.compile(pattern)
-            con = RegexCondition(pattern)
-        elif keyword is not MISSING:
-            con = KeywordCondition(allowed_keywords=[keyword])
-        elif allowed_keywords is not MISSING:
-            con = KeywordCondition(allowed_keywords=allowed_keywords)
-        elif disallowed_keywords is not MISSING:
-            con = KeywordCondition(disallowed_keywords=disallowed_keywords)
-
+        con = builtin_condition_kwarg_to_obj(
+            text=text,
+            pattern=pattern,
+            keyword=keyword,
+            allowed_keywords=allowed_keywords,
+            disallowed_keywords=disallowed_keywords,
+        )
         if con is not None:
             cls.condition = con  # type: ignore
 
