@@ -15,7 +15,7 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from .client import FlowLauncherAPI
+    from .api import FlowLauncherAPI
 
 P = ParamSpec("P")
 CT = TypeVar("CT")
