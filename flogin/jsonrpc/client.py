@@ -98,7 +98,6 @@ class JsonRPCClient:
             await self.handle_cancellation(params["id"])
         else:
             err = MethodNotFound(f"Notification Method {method!r} Not Found")
-            await self.write(err.to_response().to_message(params["id"]))
 
             LOG.exception(
                 f"Unknown notification method received: {method}",
