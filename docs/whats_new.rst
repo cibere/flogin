@@ -63,6 +63,7 @@ New Features
 - Add :func:`flogin.caching.cached_gen`
 - Add :func:`flogin.caching.clear_cache`
 - Support python ``3.13``
+- Add the ``ignore_cancellation_requests`` option to :class:`flogin.plugin.Plugin`
 
 Bug Fixes
 ~~~~~~~~~

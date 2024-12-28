@@ -27,6 +27,7 @@ class JsonRPCClient:
         self.requests: dict[int, asyncio.Future[Any | ErrorResponse]] = {}
         self._current_request_id = 1
         self.plugin = plugin
+        self.ignore_cancellations: bool = plugin.options.get("ignore_cancellation_requests", False)
 
     @property
     def request_id(self) -> int:
@@ -48,6 +49,9 @@ class JsonRPCClient:
         return await fut
 
     async def handle_cancellation(self, id: int) -> None:
+        if self.ignore_cancellations:
+            return LOG.debug(f"Ignoring cancellation request of {id!r}")
+        
         if id in self.tasks:
             task = self.tasks.pop(id)
             success = task.cancel()

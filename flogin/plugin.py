@@ -68,6 +68,10 @@ class Plugin(Generic[SettingsT]):
 
             Whether or not to let flow update flogin's version of the settings. This can be useful when using a custom settings menu. Defaults to
 
+        .. describe:: ignore_cancellation_requests: bool
+
+            Whether or not to ignore cancellation requests sent from flow.
+            
     Attributes
     --------
     settings: :class:`~flogin.settings.Settings`
@@ -79,17 +83,18 @@ class Plugin(Generic[SettingsT]):
     """
 
     def __init__(self, **options: Any) -> None:
-        self.jsonrpc: JsonRPCClient = JsonRPCClient(self)
-        self.api = FlowLauncherAPI(self.jsonrpc)
+        self.options = options
         self._metadata: PluginMetadata | None = None
-        self._events: dict[str, Callable[..., Awaitable[Any]]] = get_default_events(
-            self
-        )
         self._search_handlers: list[SearchHandler] = []
         self._results: dict[str, Result] = {}
         self._settings_are_populated: bool = False
-        self.options = options
         self.last_query: Query | None = None
+
+        self._events: dict[str, Callable[..., Awaitable[Any]]] = get_default_events(
+            self
+        )
+        self.jsonrpc: JsonRPCClient = JsonRPCClient(self)
+        self.api = FlowLauncherAPI(self.jsonrpc)
 
     @cached_property
     def settings(self) -> SettingsT:
