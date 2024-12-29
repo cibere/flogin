@@ -13,6 +13,7 @@ from typing import (
     Coroutine,
     TypeVar,
 )
+from typing import NamedTuple, Literal
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
 AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
@@ -132,3 +133,50 @@ async def coro_or_gen(coro: Awaitable[T] | AsyncIterable[T]) -> list[T] | T:
         return [item async for item in coro]
     else:
         raise TypeError(f"Not a coro or gen: {coro!r}")
+
+
+ReleaseLevel = Literal["alpha", "beta", "candidate", "final"]
+
+
+class VersionInfo(NamedTuple):
+    major: int
+    minor: int
+    micro: int
+    releaselevel: ReleaseLevel
+
+    @classmethod
+    def _from_str(cls, txt: str):
+        raw_major, raw_minor, raw_micro_w_rel = txt.split(".")
+
+        rlevel_shorthands: dict[str, ReleaseLevel] = {
+            "a": "alpha",
+            "b": "beta",
+            "c": "candidate",
+        }
+        release_level = rlevel_shorthands.get(raw_micro_w_rel[-1], "final")
+
+        if release_level != "final":
+            raw_micro = raw_micro_w_rel.removesuffix(raw_micro_w_rel[-1])
+        else:
+            raw_micro = raw_micro_w_rel
+
+        try:
+            major = int(raw_major)
+        except ValueError:
+            raise ValueError(
+                f"Invalid major version, {raw_major!r} is not a valid integer"
+            ) from None
+        try:
+            minor = int(raw_minor)
+        except ValueError:
+            raise ValueError(
+                f"Invalid minor version, {raw_minor!r} is not a valid integer"
+            ) from None
+        try:
+            micro = int(raw_micro)
+        except ValueError:
+            raise ValueError(
+                f"Invalid micro version, {raw_micro!r} is not a valid integer"
+            ) from None
+
+        return cls(major=major, minor=minor, micro=micro, releaselevel=release_level)
