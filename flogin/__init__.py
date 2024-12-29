@@ -1,6 +1,6 @@
 __title__ = "flogin"
 __author__ = "cibere"
-__version__ = "1.0.0"
+__version__ = "1.0.1a"
 
 from .conditions import *
 from .errors import *
