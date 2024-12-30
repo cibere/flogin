@@ -3,6 +3,14 @@ Whats New
 
 This page keeps a detailed human friendly rendering of what's new and changed in specific versions.
 
+v1.0.1
+------
+
+Bug Fixes
+~~~~~~~~~
+
+- Fix bug where ``auto_complete_text``, ``preview``, and ``progress_bar`` aren't present in ``ResultConstructorArgs``
+
 v1.0.0
 ------
 

@@ -129,6 +129,9 @@ class ResultConstructorArgs(TypedDict):
     score: NotRequired[int | None]
     rounded_icon: NotRequired[bool | None]
     glyph: NotRequired[Glyph | None]
+    auto_complete_text: NotRequired[str | None]
+    preview: NotRequired[ResultPreview | None]
+    progress_bar: NotRequired[ProgressBar | None]
 
 
 class Result(Base, Generic[PluginT]):
