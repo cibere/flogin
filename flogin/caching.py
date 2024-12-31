@@ -25,7 +25,13 @@ T = TypeVar("T")
 
 LOG = logging.getLogger(__name__)
 
-__all__ = ("cached_property", "cached_coro", "cached_gen", "clear_cache", "cached_callable")
+__all__ = (
+    "cached_property",
+    "cached_coro",
+    "cached_gen",
+    "clear_cache",
+    "cached_callable",
+)
 
 __cached_objects__: defaultdict[Any, list[BaseCachedObject]] = defaultdict(list)
 
@@ -114,6 +120,7 @@ class CachedProperty(BaseCachedObject, Generic[T]):
     def clear_cache(self):
         del self.value
 
+
 class CachedCallable(BaseCachedObject):
     def call(self, key, args, kwargs):
         try:
@@ -121,6 +128,7 @@ class CachedCallable(BaseCachedObject):
         except KeyError:
             self.cache[key] = self.obj(*args, **kwargs)
             return self.cache[key]
+
 
 def _cached_deco(cls: type[BaseCachedObject], doc: str | None = None):
     def deco(obj: str | Callable | None = None):
@@ -141,6 +149,7 @@ T = TypeVar("T")
 CoroT = TypeVar("CoroT", bound=Callable[..., Awaitable[Any]])
 GenT = TypeVar("GenT", bound=Callable[..., AsyncGenerator[Any, Any]])
 CallableT = TypeVar("CallableT", bound=Callable[..., Any])
+
 
 @overload
 def cached_coro(obj: str | None = None) -> Callable[[T], T]: ...
@@ -243,6 +252,7 @@ def cached_property(
     """
 
     return _cached_deco(CachedProperty)(obj)  # type: ignore
+
 
 @overload
 def cached_callable(obj: str | None = None) -> Callable[[T], T]: ...
