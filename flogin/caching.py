@@ -25,7 +25,13 @@ T = TypeVar("T")
 
 LOG = logging.getLogger(__name__)
 
-__all__ = ("cached_property", "cached_coro", "cached_gen", "clear_cache")
+__all__ = (
+    "cached_property",
+    "cached_coro",
+    "cached_gen",
+    "clear_cache",
+    "cached_callable",
+)
 
 __cached_objects__: defaultdict[Any, list[BaseCachedObject]] = defaultdict(list)
 
@@ -115,6 +121,15 @@ class CachedProperty(BaseCachedObject, Generic[T]):
         del self.value
 
 
+class CachedCallable(BaseCachedObject):
+    def call(self, key, args, kwargs):
+        try:
+            return self.cache[key]
+        except KeyError:
+            self.cache[key] = self.obj(*args, **kwargs)
+            return self.cache[key]
+
+
 def _cached_deco(cls: type[BaseCachedObject], doc: str | None = None):
     def deco(obj: str | Callable | None = None):
         if isinstance(obj, str) or obj is None:
@@ -133,6 +148,7 @@ def _cached_deco(cls: type[BaseCachedObject], doc: str | None = None):
 T = TypeVar("T")
 CoroT = TypeVar("CoroT", bound=Callable[..., Awaitable[Any]])
 GenT = TypeVar("GenT", bound=Callable[..., AsyncGenerator[Any, Any]])
+CallableT = TypeVar("CallableT", bound=Callable[..., Any])
 
 
 @overload
@@ -238,6 +254,38 @@ def cached_property(
     return _cached_deco(CachedProperty)(obj)  # type: ignore
 
 
+@overload
+def cached_callable(obj: str | None = None) -> Callable[[T], T]: ...
+
+
+@overload
+def cached_callable(obj: CallableT) -> CallableT: ...
+
+
+def cached_callable(obj: str | Callable | None = None) -> Any:
+    r"""A decorator to cache a callable's output based on the passed arguments. This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
+
+    .. NOTE::
+        The arguments passed to the callable must be hashable.
+
+    Example
+    --------
+    .. code-block:: python3
+
+        @utils.cached_callable
+        def foo(bar):
+            ...
+
+    .. code-block:: python3
+
+        @utils.cached_callable("search-handler")
+        def foo(bar):
+            ...
+    """
+    ...
+
+
 if not TYPE_CHECKING:
     cached_coro = _cached_deco(CachedCoro, cached_coro.__doc__)
     cached_gen = _cached_deco(CachedGen, cached_gen.__doc__)
+    cached_callable = _cached_deco(CachedCallable, cached_callable.__doc__)
