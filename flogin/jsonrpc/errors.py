@@ -129,7 +129,7 @@ class FlowError(JsonRPCException):
         Any data sent with the error
     """
 
-    ...
+    code = -32000
 
 
 def get_exception_from_json(data: dict[str, Any]) -> JsonRPCException:
