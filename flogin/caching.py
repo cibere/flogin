@@ -163,21 +163,21 @@ def cached_coro(obj: str | Callable | None = None) -> Any:
     r"""A decorator to cache a coroutine's contents based on the passed arguments. This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
 
     .. NOTE::
-        The arguments passed to the generator must be hashable.
+        The arguments passed to the coroutine must be hashable.
 
     Example
     --------
     .. code-block:: python3
 
         @plugin.search()
-        @utils.cached_coro
+        @cached_coro
         async def handler(query):
             ...
 
     .. code-block:: python3
 
         @plugin.search()
-        @utils.cached_coro("search-handler")
+        @cached_coro("search-handler")
         async def handler(query):
             ...
     """
@@ -203,14 +203,14 @@ def cached_gen(obj: str | Callable | None = None) -> Any:
     .. code-block:: python3
 
         @plugin.search()
-        @utils.cached_gen
+        .cached_gen
         async def handler(query):
             ...
 
     .. code-block:: python3
 
         @plugin.search()
-        @utils.cached_gen("search-handler")
+        @cached_gen("search-handler")
         async def handler(query):
             ...
     """
@@ -272,13 +272,13 @@ def cached_callable(obj: str | Callable | None = None) -> Any:
     --------
     .. code-block:: python3
 
-        @utils.cached_callable
+        @cached_callable
         def foo(bar):
             ...
 
     .. code-block:: python3
 
-        @utils.cached_callable("search-handler")
+        @cached_callable("search-handler")
         def foo(bar):
             ...
     """
