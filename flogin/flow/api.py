@@ -43,15 +43,18 @@ class FlowLauncherAPI:
         text_to_compare_it_to: :class:`str`
             The text you want to compare the other text to
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         :class:`~flogin.flow.fuzzy_search.FuzzySearchResult`
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
         res = await self.jsonrpc.request("FuzzySearch", [text, text_to_compare_it_to])
-        assert not isinstance(res, ErrorResponse)
+
         return FuzzySearchResult(res["result"])
 
     async def change_query(self, new_query: str, requery: bool = False) -> None:
@@ -66,15 +69,17 @@ class FlowLauncherAPI:
         requery: :class:`bool`
             Whether or not to re-send a query request in the event that the `new_query` is the same as the current query
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("ChangeQuery", [new_query, requery])
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("ChangeQuery", [new_query, requery])
 
     async def show_error_message(self, title: str, text: str) -> None:
         r"""|coro|
@@ -88,15 +93,17 @@ class FlowLauncherAPI:
         text: :class:`str`
             The content of the notification
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("ShowMsgError", [title, text])
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("ShowMsgError", [title, text])
 
     async def show_notification(
         self,
@@ -120,32 +127,36 @@ class FlowLauncherAPI:
         use_main_window_as_owner: :class:`bool`
             Whether or not to use the main flow window as the notification's owner. Defaults to `True`
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request(
+        await self.jsonrpc.request(
             "ShowMsg", [title, content, icon, use_main_window_as_owner]
         )
-        assert not isinstance(res, ErrorResponse)
 
     async def open_settings_menu(self) -> None:
         r"""|coro|
 
         This method tells flow to open up the settings menu.
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("OpenSettingDialog")
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("OpenSettingDialog")
 
     async def open_url(self, url: str, in_private: bool = False) -> None:
         r"""|coro|
@@ -159,15 +170,17 @@ class FlowLauncherAPI:
         in_private: :class:`bool`
             Whether or not to open up the url in a private window
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("OpenUrl", [url, in_private])
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("OpenUrl", [url, in_private])
 
     async def run_shell_cmd(self, cmd: str, filename: str = "cmd.exe") -> None:
         r"""|coro|
@@ -181,15 +194,17 @@ class FlowLauncherAPI:
         filename: :class:`str`
             The name of the command prompt instance, defaults to `cmd.exe`
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("ShellRun", [cmd, filename])
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("ShellRun", [cmd, filename])
 
     async def restart_flow_launcher(self) -> None:
         r"""|coro|
@@ -198,42 +213,49 @@ class FlowLauncherAPI:
 
         .. WARNING::
             Expect this method to never finish, so clean up and prepare for the plugin to be shut down before calling this.
+
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = self.jsonrpc.request("RestartApp")
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("RestartApp")
 
     async def save_all_app_settings(self) -> None:
         r"""|coro|
 
         This method tells flow to save all app settings.
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("SaveAppAllSettings")
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("SaveAppAllSettings")
 
     async def save_plugin_settings(self) -> Any:
         r"""|coro|
 
         This method tells flow to save plugin settings
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
         res = await self.jsonrpc.request("SavePluginSettings")
-        assert not isinstance(res, ErrorResponse)
+
         return res["result"]
 
     async def reload_all_plugin_data(self) -> None:
@@ -241,60 +263,69 @@ class FlowLauncherAPI:
 
         This method tells flow to trigger a reload of all plugins.
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("ReloadAllPluginDataAsync")
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("ReloadAllPluginDataAsync")
 
     async def show_main_window(self) -> None:
         """|coro|
 
         This method tells flow to show the main window
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("ShowMainWindow")
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("ShowMainWindow")
 
     async def hide_main_window(self) -> None:
         r"""|coro|
 
         This method tells flow to hide the main window
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("HideMainWindow")
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("HideMainWindow")
 
     async def is_main_window_visible(self) -> bool:
         r"""|coro|
 
         This method asks flow if the main window is visible or not
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         :class:`bool`
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
         res = await self.jsonrpc.request("IsMainWindowVisible")
-        assert not isinstance(res, ErrorResponse)
+
         return res["result"]
 
     async def check_for_updates(self) -> None:
@@ -305,30 +336,35 @@ class FlowLauncherAPI:
         .. NOTE::
             This tells flow launcher to check for updates to flow launcher, not your plugin
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("CheckForNewUpdate")
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("CheckForNewUpdate")
 
     async def get_all_plugins(self) -> list[PluginMetadata]:
         r"""|coro|
 
         Get the metadata of all plugins that the user has installed
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         list[:class:`~flogin.flow.plugin_metadata.PluginMetadata`]
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
         res = await self.jsonrpc.request("GetAllPlugins")
-        assert not isinstance(res, ErrorResponse)
+
         return [PluginMetadata(plugin["metadata"], self) for plugin in res["result"]]
 
     async def add_keyword(self, plugin_id: str, keyword: str) -> None:
@@ -343,15 +379,17 @@ class FlowLauncherAPI:
         keyword: :class:`str`
             The keyword to add
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("AddActionKeyword", [plugin_id, keyword])
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("AddActionKeyword", [plugin_id, keyword])
 
     async def remove_keyword(self, plugin_id: str, keyword: str) -> None:
         r"""|coro|
@@ -365,15 +403,17 @@ class FlowLauncherAPI:
         keyword: :class:`str`
             The keyword that you want to remove
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("RemoveActionKeyword", [plugin_id, keyword])
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("RemoveActionKeyword", [plugin_id, keyword])
 
     async def open_directory(self, directory: str, file: str | None = None) -> None:
         r"""|coro|
@@ -387,15 +427,17 @@ class FlowLauncherAPI:
         file: Optional[:class:`str`]
             The file in the directory that you want to highlight, defaults to `None`
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         --------
         None
         """
 
-        from ..jsonrpc import ErrorResponse  # circular import
-
-        res = await self.jsonrpc.request("OpenDirectory", [directory, file])
-        assert not isinstance(res, ErrorResponse)
+        await self.jsonrpc.request("OpenDirectory", [directory, file])
 
     async def update_results(self, raw_query: str, results: list[Result]) -> None:
         r"""|coro|
@@ -412,16 +454,20 @@ class FlowLauncherAPI:
         results: list[:class:`~flogin.jsonrpc.results.Result`]
             The new results
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         -------
         None
         """
 
-        from ..jsonrpc import ErrorResponse, QueryResponse  # circular import
+        from ..jsonrpc import QueryResponse  # circular import
 
         self.jsonrpc.plugin._results.update({res.slug: res for res in results})
 
-        res = await self.jsonrpc.request(
+        await self.jsonrpc.request(
             "UpdateResults", [raw_query, QueryResponse(results).to_dict()]
         )
-        assert not isinstance(res, ErrorResponse)

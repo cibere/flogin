@@ -165,9 +165,25 @@ JSON-RPC Errors
 
 .. autoclass:: flogin.jsonrpc.errors.JsonRPCException
     :members:
-
-.. autoclass:: flogin.jsonrpc.errors.JsonRPCVersionMismatch
+    
+.. autoclass:: flogin.jsonrpc.errors.ParserError
     :members:
+    
+.. autoclass:: flogin.jsonrpc.errors.InvalidRequest
+    :members:
+    
+.. autoclass:: flogin.jsonrpc.errors.MethodNotFound
+    :members:
+    
+.. autoclass:: flogin.jsonrpc.errors.InvalidParams
+    :members:
+    
+.. autoclass:: flogin.jsonrpc.errors.InternalError
+    :members:
+    
+.. autoclass:: flogin.jsonrpc.errors.FlowError
+    :members:
+    
 
 .. _testing_module_api_reference:
 

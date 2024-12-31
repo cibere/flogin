@@ -64,7 +64,7 @@ class ErrorResponse(BaseResponse):
 
     @classmethod
     def from_dict(cls: type[ErrorResponse], data: dict[str, Any]) -> ErrorResponse:
-        return cls(code=data["code"], message=data["message"], data=data["data"])
+        return cls(code=data["code"], message=data["message"], data=data.get("data"))
 
     @classmethod
     def internal_error(cls: type[ErrorResponse], data: Any = None) -> ErrorResponse:
