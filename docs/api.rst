@@ -199,4 +199,6 @@ Caching
 
 .. autodecorator:: flogin.caching.cached_gen()
 
+.. autodecorator:: flogin.caching.cached_callable()
+
 .. autofunction:: flogin.caching.clear_cache
