@@ -6,6 +6,11 @@ This page keeps a detailed human friendly rendering of what's new and changed in
 v1.0.1
 ------
 
+New Features
+~~~~~~~~~~~~~
+
+- Add :func:`flogin.caching.cached_callable`
+
 Bug Fixes
 ~~~~~~~~~
 
