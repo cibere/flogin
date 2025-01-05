@@ -106,7 +106,7 @@ class Plugin(Generic[SettingsT]):
         return self._get_env("FLOW_VERSION", "flow_version")
 
     @cached_property
-    def flow_application_directory(self) -> Path:
+    def flow_application_dir(self) -> Path:
         """:class:`~pathlib.Path`: flow's application directory from environment variables.
 
         .. versionadded:: 1.0.1
@@ -115,7 +115,7 @@ class Plugin(Generic[SettingsT]):
         return Path(self._get_env("FLOW_APPLICATION_DIRECTORY", "flow_application_dir"))
 
     @cached_property
-    def flow_program_directory(self) -> Path:
+    def flow_program_dir(self) -> Path:
         """:class:`~pathlib.Path`: flow's application program from environment variables.
 
         .. versionadded:: 1.0.1
