@@ -280,7 +280,8 @@ class SearchHandler(Generic[PluginT]):
         @copy_doc(on_error)
         async def on_error(self, query: Query, error: Exception):
             LOG.exception(
-                f"Ignoring exception in reuslt callback ({self!r})", exc_info=error
+                f"Ignoring exception in search handler callback ({self!r})",
+                exc_info=error,
             )
             return ErrorResponse.internal_error(error)
 

@@ -231,7 +231,7 @@ class Result(Base, Generic[PluginT]):
             The error that occured
         """
         LOG.exception(
-            f"Ignoring exception in reuslt callback ({self!r})", exc_info=error
+            f"Ignoring exception in result callback ({self!r})", exc_info=error
         )
         return ErrorResponse.internal_error(error)
 
