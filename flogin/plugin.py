@@ -29,6 +29,7 @@ from .jsonrpc import (
     QueryResponse,
     Result,
 )
+from pathlib import Path
 from .jsonrpc.responses import BaseResponse
 from .query import Query
 from .search_handler import SearchHandler
@@ -88,6 +89,33 @@ class Plugin(Generic[SettingsT]):
         )
         self.jsonrpc: JsonRPCClient = JsonRPCClient(self)
         self.api = FlowLauncherAPI(self.jsonrpc)
+
+    @cached_property
+    def flow_version(self) -> str:
+        """:class:`str`: the flow version from enviroment variables.
+
+        .. versionadded:: 1.0.1
+        """
+
+        return os.environ["FLOW_VERSION"]
+
+    @cached_property
+    def flow_application_directory(self) -> Path:
+        """:class:`~pathlib.Path`: flow's application directory from enviroment variables.
+
+        .. versionadded:: 1.0.1
+        """
+
+        return Path(os.environ["FLOW_APPLICATION_DIRECTORY"])
+
+    @cached_property
+    def flow_program_directory(self) -> Path:
+        """:class:`~pathlib.Path`: flow's application program from enviroment variables.
+
+        .. versionadded:: 1.0.1
+        """
+
+        return Path(os.environ["FLOW_PROGRAM_DIRECTORY"])
 
     @cached_property
     def settings(self) -> SettingsT:
