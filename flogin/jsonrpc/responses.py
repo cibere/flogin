@@ -28,9 +28,8 @@ class BaseResponse(ToMessageBase):
             json.dumps(
                 {
                     "jsonrpc": "2.0",
-                    "result": self.to_dict(),
                     "id": id,
-                }
+                } | self.to_dict()
             )
             + "\r\n"
         ).encode()
@@ -60,7 +59,7 @@ class ErrorResponse(BaseResponse):
         data = self.data
         if isinstance(data, Exception):
             data = f"{data}"
-        return {"code": self.code, "message": self.message, "data": data}
+        return {"error": {"code": self.code, "message": self.message, "data": data}}
 
     @classmethod
     def from_dict(cls: type[ErrorResponse], data: dict[str, Any]) -> ErrorResponse:
@@ -100,6 +99,9 @@ class QueryResponse(BaseResponse):
         self.results = results
         self.settings_changes = settings_changes or {}
         self.debug_message = debug_message or ""
+    
+    def to_dict(self) -> dict:
+        return {"result": super().to_dict()}
 
 
 class ExecuteResponse(BaseResponse):
@@ -115,3 +117,6 @@ class ExecuteResponse(BaseResponse):
 
     def __init__(self, hide: bool = True):
         self.hide = hide
+
+    def to_dict(self) -> dict:
+        return {"result": super().to_dict()}
