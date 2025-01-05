@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class ErrorCode(Enum):
     parser_error = -32700
     invalid_request = -32600

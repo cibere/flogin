@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Any
 from .responses import ErrorResponse
 from .enums import ErrorCode
+
 __all__ = (
     "JsonRPCException",
     "ParserError",

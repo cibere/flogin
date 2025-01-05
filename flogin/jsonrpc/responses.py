@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 from ..utils import MISSING
 from .base_object import ToMessageBase
 from .enums import ErrorCode
+
 if TYPE_CHECKING:
     from .results import Result
 
@@ -68,7 +69,9 @@ class ErrorResponse(BaseResponse):
 
     @classmethod
     def internal_error(cls: type[ErrorResponse], data: Any = None) -> ErrorResponse:
-        return cls(code=ErrorCode.server_error_start.value, message="Internal error", data=data)
+        return cls(
+            code=ErrorCode.server_error_start.value, message="Internal error", data=data
+        )
 
 
 class QueryResponse(BaseResponse):
