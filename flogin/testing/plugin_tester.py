@@ -89,11 +89,11 @@ class PluginTester(Generic[PluginT]):
 
         self.set_flow_api_client(flow_api_client)
 
-        if flow_version is not None:
+        if flow_version is not MISSING:
             os.environ["FLOW_VERSION"] = flow_version
-        if flow_application_dir is not None:
+        if flow_application_dir is not MISSING:
             os.environ["FLOW_APPLICATION_DIRECTORY"] = str(flow_application_dir)
-        if flow_program_dir is not None:
+        if flow_program_dir is not MISSING:
             os.environ["FLOW_PROGRAM_DIRECTORY"] = str(flow_program_dir)
 
     def set_flow_api_client(self, flow_api_client: Any = MISSING) -> None:
