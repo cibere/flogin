@@ -160,6 +160,9 @@ Plugin Errors
 .. autoclass:: flogin.errors.PluginNotInitialized
     :members:
 
+.. autoclass:: flogin.errors.EnvNotSet
+    :members:
+
 JSON-RPC Errors
 ~~~~~~~~~~~~~~~
 
