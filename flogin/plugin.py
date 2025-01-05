@@ -94,7 +94,7 @@ class Plugin(Generic[SettingsT]):
         try:
             return os.environ[name]
         except KeyError:
-            raise EnvNotSet(name, alternative)
+            raise EnvNotSet(name, alternative) from None
 
     @cached_property
     def flow_version(self) -> str:
