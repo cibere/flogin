@@ -58,3 +58,4 @@ If you're having trouble with something, these resources might help.
    search_handlers
    whats_new
    testing
+   version_guarantees
