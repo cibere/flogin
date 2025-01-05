@@ -32,6 +32,8 @@ class InvalidContextDataReceived(ContextMenuHandlerException):
 
 class EnvNotSet(PluginException):
     """This is raised when an environment variable that flow automatically sets is not set and can not be retrieved. This should only get raised when your plugin gets run, but not by flow.
+
+    .. versionadded: 1.0.1
     
     Attributes
     -----------
