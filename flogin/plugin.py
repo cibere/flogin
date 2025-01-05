@@ -20,7 +20,7 @@ from typing import (
 )
 
 from .default_events import get_default_events
-from .errors import InvalidContextDataReceived, PluginNotInitialized
+from .errors import InvalidContextDataReceived, PluginNotInitialized, EnvNotSet
 from .flow import FlowLauncherAPI, FlowSettings, PluginMetadata
 from .jsonrpc import (
     ErrorResponse,
@@ -29,6 +29,7 @@ from .jsonrpc import (
     QueryResponse,
     Result,
 )
+from pathlib import Path
 from .jsonrpc.responses import BaseResponse
 from .query import Query
 from .search_handler import SearchHandler
@@ -88,6 +89,54 @@ class Plugin(Generic[SettingsT]):
         )
         self.jsonrpc: JsonRPCClient = JsonRPCClient(self)
         self.api = FlowLauncherAPI(self.jsonrpc)
+
+    def _get_env(self, name: str, alternative: str | None = None) -> str:
+        try:
+            return os.environ[name]
+        except KeyError:
+            raise EnvNotSet(name, alternative) from None
+
+    @cached_property
+    def flow_version(self) -> str:
+        """:class:`str`: the flow version from environment variables.
+
+        .. versionadded:: 1.0.1
+
+        Raises
+        ------
+        :class:`~flogin.errors.EnvNotSet`
+            This is raised when the environment variable for this property is not set by flow or the plugin tester.
+        """
+
+        return self._get_env("FLOW_VERSION", "flow_version")
+
+    @cached_property
+    def flow_application_dir(self) -> Path:
+        """:class:`~pathlib.Path`: flow's application directory from environment variables.
+
+        .. versionadded:: 1.0.1
+
+        Raises
+        ------
+        :class:`~flogin.errors.EnvNotSet`
+            This is raised when the environment variable for this property is not set by flow or the plugin tester.
+        """
+
+        return Path(self._get_env("FLOW_APPLICATION_DIRECTORY", "flow_application_dir"))
+
+    @cached_property
+    def flow_program_dir(self) -> Path:
+        """:class:`~pathlib.Path`: flow's application program from environment variables.
+
+        .. versionadded:: 1.0.1
+
+        Raises
+        ------
+        :class:`~flogin.errors.EnvNotSet`
+            This is raised when the environment variable for this property is not set by flow or the plugin tester.
+        """
+
+        return Path(self._get_env("FLOW_PROGRAM_DIRECTORY", "flow_program_dir"))
 
     @cached_property
     def settings(self) -> SettingsT:
