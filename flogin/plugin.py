@@ -20,7 +20,7 @@ from typing import (
 )
 
 from .default_events import get_default_events
-from .errors import InvalidContextDataReceived, PluginNotInitialized, EnvNotSet
+from .errors import PluginNotInitialized, EnvNotSet
 from .flow import FlowLauncherAPI, FlowSettings, PluginMetadata
 from .jsonrpc import (
     ErrorResponse,
@@ -236,23 +236,23 @@ class Plugin(Generic[SettingsT]):
         LOG.debug(f"Context Menu Handler: {data=}")
 
         if not data:
-            raise InvalidContextDataReceived()
-
-        result = self._results.get(data[0])
-
-        if result is not None:
-            result.plugin = self
-            task = self._schedule_event(
-                self._coro_or_gen_to_results,
-                event_name=f"ContextMenu-{result.slug}",
-                args=[result.context_menu()],
-                error_handler=lambda e: self._coro_or_gen_to_results(
-                    result.on_context_menu_error(e)
-                ),
-            )
-            results = await task
-        else:
             results = []
+        else:
+            result = self._results.get(data[0])
+
+            if result is not None:
+                result.plugin = self
+                task = self._schedule_event(
+                    self._coro_or_gen_to_results,
+                    event_name=f"ContextMenu-{result.slug}",
+                    args=[result.context_menu()],
+                    error_handler=lambda e: self._coro_or_gen_to_results(
+                        result.on_context_menu_error(e)
+                    ),
+                )
+                results = await task
+            else:
+                results = []
 
         if isinstance(results, ErrorResponse):
             return results

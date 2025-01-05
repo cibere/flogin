@@ -14,19 +14,6 @@ class PluginNotInitialized(PluginException):
         return super().__init__("The plugin hasn't been initialized yet")
 
 
-class ContextMenuHandlerException(PluginException):
-    r"""This is a base class for errors related to context menu handlers."""
-
-    ...
-
-
-class InvalidContextDataReceived(ContextMenuHandlerException):
-    r"""Invalid context menu data was provided"""
-
-    def __init__(self):
-        return super().__init__(f"Invalid context menu data received")
-
-
 class EnvNotSet(PluginException):
     """This is raised when an environment variable that flow automatically sets is not set and can not be retrieved. This should only get raised when your plugin gets run, but not by flow.
 
