@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any
 from .responses import ErrorResponse
-
+from .enums import ErrorCode
 __all__ = (
     "JsonRPCException",
     "ParserError",
@@ -49,7 +49,7 @@ class ParserError(JsonRPCException):
         Any data sent with the error
     """
 
-    code = -32700
+    code = ErrorCode.parser_error.value
 
 
 class InvalidRequest(JsonRPCException):
@@ -65,7 +65,7 @@ class InvalidRequest(JsonRPCException):
         Any data sent with the error
     """
 
-    code = -32600
+    code = ErrorCode.invalid_request.value
 
 
 class MethodNotFound(JsonRPCException):
@@ -81,7 +81,7 @@ class MethodNotFound(JsonRPCException):
         Any data sent with the error
     """
 
-    code = -32601
+    code = ErrorCode.method_not_found.value
 
 
 class InvalidParams(JsonRPCException):
@@ -97,7 +97,7 @@ class InvalidParams(JsonRPCException):
         Any data sent with the error
     """
 
-    code = -32602
+    code = ErrorCode.invalid_params.value
 
 
 class InternalError(JsonRPCException):
@@ -113,7 +113,7 @@ class InternalError(JsonRPCException):
         Any data sent with the error
     """
 
-    code = -32603
+    code = ErrorCode.internal_error.value
 
 
 class FlowError(JsonRPCException):
@@ -129,7 +129,7 @@ class FlowError(JsonRPCException):
         Any data sent with the error
     """
 
-    code = -32000
+    code = ErrorCode.server_error_start.value
 
 
 def get_exception_from_json(data: dict[str, Any]) -> JsonRPCException:
@@ -146,7 +146,7 @@ def get_exception_from_json(data: dict[str, Any]) -> JsonRPCException:
         if code == cls.code:
             return cls(**kwargs)
 
-    if -32099 <= code <= -32000:
+    if ErrorCode.server_error_start <= code <= ErrorCode.server_error_end:
         error = FlowError(**kwargs)
     else:
         error = JsonRPCException(**kwargs)
