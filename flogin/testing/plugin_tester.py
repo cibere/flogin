@@ -42,7 +42,7 @@ class PluginTester(Generic[PluginT]):
         If not passed, flogin will use a filler class which will raise a runtime error whenever an attribute is accessed. If passed, you should be passing an instance of a class which will replace :class:`~flogin.flow.api.FlowLauncherAPI`, so make sure to implement the methods you need and handle them accordingly.
     flow_version: Optional[:class:`str`]
         This is an optional positional keyword that if set, will automatically set the enviroment variable ``FLOW_VERSION`` to the value. This is useful if your code uses the :attr:`~flogin.plugin.Plugin.flow_version` property.
-    
+
         .. versionadded: 1.0.1
     flow_application_dir: Optional[:class:`str` | :class:`~pathlib.Path`]
         This is an optional positional keyword that if set, will automatically set the enviroment variable ``FLOW_APPLICATION_DIRECTORY`` to the value. This is useful if your code uses the :attr:`~flogin.plugin.Plugin.flow_application_dir` property.
@@ -52,7 +52,7 @@ class PluginTester(Generic[PluginT]):
         This is an optional positional keyword that if set, will automatically set the enviroment variable ``FLOW_PROGRAM_DIRECTORY`` to the value. This is useful if your code uses the :attr:`~flogin.plugin.Plugin.flow_program_dir` property.
 
         .. versionadded: 1.0.1
-        
+
     Attributes
     ----------
     plugin: :class:`~flogin.plugin.Plugin`
@@ -95,7 +95,6 @@ class PluginTester(Generic[PluginT]):
             os.environ["FLOW_APPLICATION_DIRECTORY"] = str(flow_application_dir)
         if flow_program_dir is not None:
             os.environ["FLOW_PROGRAM_DIRECTORY"] = str(flow_program_dir)
-
 
     def set_flow_api_client(self, flow_api_client: Any = MISSING) -> None:
         r"""This sets the flow api client that the tests should use.
