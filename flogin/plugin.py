@@ -92,30 +92,39 @@ class Plugin(Generic[SettingsT]):
 
     @cached_property
     def flow_version(self) -> str:
-        """:class:`str`: the flow version from enviroment variables.
+        """:class:`str`: the flow version from environment variables.
 
         .. versionadded:: 1.0.1
         """
 
-        return os.environ["FLOW_VERSION"]
+        try:
+            return os.environ["FLOW_VERSION"]
+        except KeyError:
+            raise RuntimeError(f"The 'FLOW_VERSION' environment variable is not set") from None
 
     @cached_property
     def flow_application_directory(self) -> Path:
-        """:class:`~pathlib.Path`: flow's application directory from enviroment variables.
+        """:class:`~pathlib.Path`: flow's application directory from environment variables.
 
         .. versionadded:: 1.0.1
         """
 
-        return Path(os.environ["FLOW_APPLICATION_DIRECTORY"])
+        try:
+            return Path(os.environ["FLOW_APPLICATION_DIRECTORY"])
+        except KeyError:
+            raise RuntimeError(f"The 'FLOW_APPLICATION_DIRECTORY' environment variable is not set") from None
 
     @cached_property
     def flow_program_directory(self) -> Path:
-        """:class:`~pathlib.Path`: flow's application program from enviroment variables.
+        """:class:`~pathlib.Path`: flow's application program from environment variables.
 
         .. versionadded:: 1.0.1
         """
 
-        return Path(os.environ["FLOW_PROGRAM_DIRECTORY"])
+        try:
+            return Path(os.environ["FLOW_PROGRAM_DIRECTORY"])
+        except KeyError:
+            raise RuntimeError(f"The 'FLOW_PROGRAM_DIRECTORY' environment variable is not set") from None
 
     @cached_property
     def settings(self) -> SettingsT:
