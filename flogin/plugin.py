@@ -101,6 +101,11 @@ class Plugin(Generic[SettingsT]):
         """:class:`str`: the flow version from environment variables.
 
         .. versionadded:: 1.0.1
+
+        Raises
+        ------
+        :class:`~flogin.errors.EnvNotSet`
+            This is raised when the environment variable for this property is not set by flow or the plugin tester.
         """
 
         return self._get_env("FLOW_VERSION", "flow_version")
@@ -110,6 +115,11 @@ class Plugin(Generic[SettingsT]):
         """:class:`~pathlib.Path`: flow's application directory from environment variables.
 
         .. versionadded:: 1.0.1
+
+        Raises
+        ------
+        :class:`~flogin.errors.EnvNotSet`
+            This is raised when the environment variable for this property is not set by flow or the plugin tester.
         """
 
         return Path(self._get_env("FLOW_APPLICATION_DIRECTORY", "flow_application_dir"))
@@ -119,6 +129,11 @@ class Plugin(Generic[SettingsT]):
         """:class:`~pathlib.Path`: flow's application program from environment variables.
 
         .. versionadded:: 1.0.1
+
+        Raises
+        ------
+        :class:`~flogin.errors.EnvNotSet`
+            This is raised when the environment variable for this property is not set by flow or the plugin tester.
         """
 
         return Path(self._get_env("FLOW_PROGRAM_DIRECTORY", "flow_program_dir"))
