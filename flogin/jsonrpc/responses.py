@@ -29,7 +29,8 @@ class BaseResponse(ToMessageBase):
                 {
                     "jsonrpc": "2.0",
                     "id": id,
-                } | self.to_dict()
+                }
+                | self.to_dict()
             )
             + "\r\n"
         ).encode()
@@ -99,7 +100,7 @@ class QueryResponse(BaseResponse):
         self.results = results
         self.settings_changes = settings_changes or {}
         self.debug_message = debug_message or ""
-    
+
     def to_dict(self) -> dict:
         return {"result": super().to_dict()}
 
