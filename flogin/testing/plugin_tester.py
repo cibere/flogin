@@ -4,6 +4,7 @@ import json
 import os
 import random
 import sys
+from pathlib import Path
 import uuid
 from typing import TYPE_CHECKING, Any, Generic
 
@@ -39,6 +40,12 @@ class PluginTester(Generic[PluginT]):
         Your plugin's metadata. If ``None`` is passed, flogin will attempt to get the metadata from your ``plugin.json`` file. The :func:`PluginTester.create_plugin_metadata` and :func:`PluginTester.create_bogus_plugin_metadata` classmethods have been provided for creating :class:`~flogin.flow.plugin_metadata.PluginMetadata` objects.
     flow_api_client: Optional[Any]
         If not passed, flogin will use a filler class which will raise a runtime error whenever an attribute is accessed. If passed, you should be passing an instance of a class which will replace :class:`~flogin.flow.api.FlowLauncherAPI`, so make sure to implement the methods you need and handle them accordingly.
+    flow_version: Optional[:class:`str`]
+        This is an optional positional keyword that if set, will automatically set the enviroment variable ``FLOW_VERSION`` to the value. This is useful if your code uses the :attr:`~flogin.plugin.Plugin.flow_version` property.
+    flow_application_dir: Optional[:class:`str` | :class:`~pathlib.Path`]
+        This is an optional positional keyword that if set, will automatically set the enviroment variable ``FLOW_APPLICATION_DIRECTORY`` to the value. This is useful if your code uses the :attr:`~flogin.plugin.Plugin.flow_application_dir` property.
+    flow_program_dir: Optional[:class:`str` | :class:`~pathlib.Path`]
+        This is an optional positional keyword that if set, will automatically set the enviroment variable ``FLOW_PROGRAM_DIRECTORY`` to the value. This is useful if your code uses the :attr:`~flogin.plugin.Plugin.flow_program_dir` property.
 
     Attributes
     ----------
@@ -54,6 +61,9 @@ class PluginTester(Generic[PluginT]):
         *,
         metadata: PluginMetadata | dict[str, Any] | None,
         flow_api_client: Any = MISSING,
+        flow_version: str = MISSING,
+        flow_application_dir: Path | str = MISSING,
+        flow_program_dir: Path | str = MISSING,
     ) -> None:
         self.plugin = plugin
 
@@ -72,6 +82,14 @@ class PluginTester(Generic[PluginT]):
         self.plugin._metadata = metadata
 
         self.set_flow_api_client(flow_api_client)
+
+        if flow_version is not None:
+            os.environ["FLOW_VERSION"] = flow_version
+        if flow_application_dir is not None:
+            os.environ["FLOW_APPLICATION_DIRECTORY"] = str(flow_application_dir)
+        if flow_program_dir is not None:
+            os.environ["FLOW_PROGRAM_DIRECTORY"] = str(flow_program_dir)
+
 
     def set_flow_api_client(self, flow_api_client: Any = MISSING) -> None:
         r"""This sets the flow api client that the tests should use.

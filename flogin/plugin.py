@@ -20,7 +20,7 @@ from typing import (
 )
 
 from .default_events import get_default_events
-from .errors import InvalidContextDataReceived, PluginNotInitialized
+from .errors import InvalidContextDataReceived, PluginNotInitialized, EnvNotSet
 from .flow import FlowLauncherAPI, FlowSettings, PluginMetadata
 from .jsonrpc import (
     ErrorResponse,
@@ -90,6 +90,12 @@ class Plugin(Generic[SettingsT]):
         self.jsonrpc: JsonRPCClient = JsonRPCClient(self)
         self.api = FlowLauncherAPI(self.jsonrpc)
 
+    def _get_env(self, name: str, alternative: str | None = None) -> str:
+        try:
+            return os.environ[name]
+        except KeyError:
+            raise EnvNotSet(name, alternative)
+
     @cached_property
     def flow_version(self) -> str:
         """:class:`str`: the flow version from environment variables.
@@ -97,12 +103,7 @@ class Plugin(Generic[SettingsT]):
         .. versionadded:: 1.0.1
         """
 
-        try:
-            return os.environ["FLOW_VERSION"]
-        except KeyError:
-            raise RuntimeError(
-                f"The 'FLOW_VERSION' environment variable is not set"
-            ) from None
+        return self._get_env("FLOW_VERSION", "flow_version")
 
     @cached_property
     def flow_application_directory(self) -> Path:
@@ -111,12 +112,7 @@ class Plugin(Generic[SettingsT]):
         .. versionadded:: 1.0.1
         """
 
-        try:
-            return Path(os.environ["FLOW_APPLICATION_DIRECTORY"])
-        except KeyError:
-            raise RuntimeError(
-                f"The 'FLOW_APPLICATION_DIRECTORY' environment variable is not set"
-            ) from None
+        return Path(self._get_env("FLOW_APPLICATION_DIRECTORY", "flow_application_dir"))
 
     @cached_property
     def flow_program_directory(self) -> Path:
@@ -125,12 +121,7 @@ class Plugin(Generic[SettingsT]):
         .. versionadded:: 1.0.1
         """
 
-        try:
-            return Path(os.environ["FLOW_PROGRAM_DIRECTORY"])
-        except KeyError:
-            raise RuntimeError(
-                f"The 'FLOW_PROGRAM_DIRECTORY' environment variable is not set"
-            ) from None
+        return Path(self._get_env("FLOW_PROGRAM_DIRECTORY", "flow_program_dir"))
 
     @cached_property
     def settings(self) -> SettingsT:
