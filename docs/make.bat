@@ -24,12 +24,18 @@ if errorlevel 9009 (
 )
 
 if "%1" == "" goto root
+if "%1" == "help" goto help
 
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
 
 :root
 %SPHINXBUILD% -b html -j auto -a -n -T -W --keep-going . _build/html
+goto end
+
+:help
+%SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+goto end
 
 :end
 popd
