@@ -25,6 +25,7 @@ if errorlevel 9009 (
 
 if "%1" == "" goto root
 if "%1" == "help" goto help
+if "%1" == "live" goto live
 
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
@@ -35,6 +36,11 @@ goto end
 
 :help
 %SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+goto end
+
+:live
+REM https://github.com/executablebooks/sphinx-autobuild#readme
+sphinx-autobuild %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
 
 :end

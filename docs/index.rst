@@ -66,6 +66,9 @@ If you're having trouble with something, these resources might help.
    
    search_handlers
    testing
+   install_plugin
+   settings
+   complex_plugins
    faq
 
 .. toctree::

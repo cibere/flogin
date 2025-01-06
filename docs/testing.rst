@@ -1,6 +1,10 @@
 Testing your plugin
 ===================
 
+Testing with flow
+------------------
+To test your plugin with flow, you will need to install your plugin. See the :doc:`install_plugin` page for information on how to do so.
+
 Using the testing module
 ------------------------
 We can use the :class:`~flogin.testing.plugin_tester.PluginTester` class to test our plugin.
@@ -115,13 +119,6 @@ That one is pretty easy due to it not returning anything, or doing anything that
                 self.plugin.metadata.keywords.append(keyword)
 
             print(f"-- Added {keyword!r} keyword to {plugin_id!r} --")
-
-Testing with flow
-------------------
-To test your plugin with flow itself, you will have to clone your plugin into your userdata folder. To do this, use the ``UserData`` command with the ``System Commands`` plugin to find your userdata folder, head into the ``Plugins`` folder, create a new folder for your plugin, and clone the contents into it. Then, restart flow for the plugin to be activated and run.
-
-.. NOTE::
-    If your plugin does not initialize properly, flow will go into an infinite loop while starting up. The most common cause for an invalid initialization is an error on startup, which can be checked by simply running your plugin's entry file with the same python executable that flow is using. 
 
 Writing Tests
 -------------

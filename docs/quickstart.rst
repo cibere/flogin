@@ -1,20 +1,102 @@
 :orphan:
 
+.. currentmodule:: flogin
+
 .. _quickstart:
 
 Quickstart
 ============
 
-This page gives a brief introduction to the library. It assumes you have the library installed,
-if you don't check the :ref:`installing` portion.
+This page gives a brief introduction to the library and how to use it with flow. It assumes you have the library installed,
+if you don't check the :ref:`installing` portion of the intro page.
 
 .. NOTE::
     To get yourself familiar with flow, check out their `guide <https://www.flowlauncher.com/docs/#/py-develop-plugins?id=about-flow39s-python-plugins>`_ for creating a plugin with the V1 API
 
-A Minimal Plugin
------------------
+Setting up your environment
+---------------------------
 
-Let's make a plugin which compares how similar the user's query is with the word ``Flow``.
+See the :ref:`manual installation instructions <manual_install_instructions>` for instructions on how to find where to create your plugin folder.
+
+Once you have your plugin folder in the right directory, you will need to setup your environment. This guide will go over a simple but manual way of setting up your environment. For a more automated method aimed at more complex plugins, see the :doc:`complex_plugins` page.
+
+.. _pluginjson:
+
+plugin.json
+~~~~~~~~~~~
+In order for flow to actually register your plugin and know how to run it, you will need a ``plugin.json`` file. `Json Scheme <https://www.flowlauncher.com/schemas/plugin.schema.json>`_ 
+
+Keys
+^^^^
+
+.. container::
+
+    .. describe:: ID
+
+        Your plugin's ID, a 32 bit UUID. Can be generated with :func:`uuid.uuid4`
+    
+    .. describe:: ActionKeyword
+
+        Your plugin's default action keyword (``*`` means no specific action keyword). This is only optional if ``ActionKeywords`` is given.
+    
+    .. describe:: ActionKeywords
+
+        A list of keywords your plugin uses. This is optional.
+    
+    .. describe:: Name
+
+        The name of your plugin
+
+    .. describe:: Description
+        
+        A short description of your plugin
+    
+    .. describe:: Author
+        
+        Your github username
+    
+    .. describe:: Version
+        
+        The current version of your plugin (e.g. ``1.0.0``). It is important for automatic plugin updates.
+    
+    .. describe:: Language
+        
+        The language your plugin is written in. In this case, it should be set to 'python_v2'
+    
+    .. describe:: Website
+        
+        The plugin's website. If you don't have a website for it, use your plugin's github repository.
+    
+    .. describe:: IcoPath
+        
+        The relative path to your plugin's icon
+    
+    .. describe:: ExecuteFileName
+        
+        The python file that flow should execute to start your plugin. Ex: ``main.py``
+
+Example
+^^^^^^^
+
+.. code-block:: json
+
+    {
+        "ID":"ed0770f8-5a99-493f-833a-93b34657a03a",
+        "ActionKeyword":"*",
+        "Name":"Example Plugin",
+        "Description":"This is an example plugin to show how to use the plugin.json file",
+        "Author":"cibere",
+        "Version":"1.0.0",
+        "Language":"python_v2",
+        "Website":"https://github.com/cibere/Flow.Launcher.Plugin.ExamplePlugin",
+        "IcoPath": "icon.png",
+        "ExecuteFileName":"main.py",
+    }
+
+A Minimal Plugin
+~~~~~~~~~~~~~~~~
+
+Let's make a plugin which compares how similar the user's query is with the word ``Flow``. Since this is the file that we call :func:`Plugin.run` in, this is the file that we should put as the ``ExecuteFileName`` key in our :ref:`plugin.json file <pluginjson>`.
 
 .. code-block:: python3
     :linenos:
@@ -45,11 +127,8 @@ There's a lot going on here, so let's walk you through it line by line.
 9. Empty Line to increase readability
 10. Now we call plugin's :class:`~flogin.plugin.Plugin.run` method to start the plugin.
 
-Now although we've just made a plugin, we can't use it yet, because it isn't as simple as running the program.
+Running your plugin
+-------------------
+Now that our environment is setup, we can run and test our plugin. If already put your plugin in the correct directory, great. If not, see the :ref:`manual installation instructions <manual_install_instructions>` and make sure that your plugin is in the right place.
 
-What's Next?
-------------
-Here are a couple of good places to go next:
-
-- :doc:`search_handlers`
-- :doc:`api`
+After you have your plugin in the right place, which includes a properly configured :ref:`plugin.json <pluginjson>` file and your plugin file, all you have to do is restart flow.
