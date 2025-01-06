@@ -36,7 +36,7 @@ Documentation = "https://flogin.readthedocs.io/en/latest/"
 docs = [
     "sphinx>=7.0.0,<9.0.0",
     "furo==2024.8.6", # theme // https://pradyunsg.me/furo/customisation/announcement/
-    "sphinx-autodoc-typehints>=1.25.0,<2.0.0",  # https://github.com/tox-dev/sphinx-autodoc-typehints
+    "sphinx-autodoc-typehints>=1.25.0,<4.0.0",  # https://github.com/tox-dev/sphinx-autodoc-typehints
     "sphinx-toolbox>=3.5,<4.0",  # https://sphinx-toolbox.readthedocs.io/en/latest/extensions/index.html
 ]
 dev = [
