@@ -8,19 +8,15 @@ Introduction
 This is an introduction to the flogin library, which aims to make it easy for python developers to create advanced plugins for Flow Launcher using it's V2 jsonrpc api.
 
 Prerequisites
----------------
+-------------
 
-flogin requires python 3.11 or higher.
+flogin requires python 3.11 or higher, however python 3.11 is the recommended version as that is the version that the default embedded python that flow installs is.
+
 
 .. _installing:
 
 Installing
 ----------
-
-**Python 3.11 or higher is required**
-
-.. NOTE::
-    It is best to test your plugin on python 3.11, as that is the default embedded version of python installed with flow launcher.
 
 .. note::
 
@@ -31,38 +27,24 @@ To install flogin, do the following:
 
 .. code:: sh
 
-    pip install flogin
+    pip install -U flogin
 
 To install the development version, ensure `git <https://git-scm.com/>`_ is installed, then do the following:
 
 .. code:: sh
 
-    pip install git+https://github.com/cibere/floginip install git+https://github.com/cibere/flogin
+    pip install git+https://github.com/cibere/flogin
 
 Basic Concepts
 ---------------
 
-Events
-~~~~~~
+Callbacks
+~~~~~~~~~
 
-flogin revolves around a concept called :ref:`events <events>`. An event is something that you listen for, then respond to. For example, when flow starts and runs your plugin, it will send a :ref:`on_initialization <on_initialization>` event that we can listen for.
-
-A quick example code to showcase this:
-
-.. code:: py
-
-    from flogin import Plugin, Query
-
-    plugin = Plugin()
-
-    @plugin.event
-    async def on_initialization():
-        # Plugin has started
-    
-    plugin.run()
+With all of the overhead that flogins has, most of the time you will be dealing with callbacks. Callbacks are when you have a specific function (the callback) tied to a specific object. When an event occurs for that object, the corosponding callback is triggered.
 
 Search handlers
-~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^
 
 For handling search/query requests with flogin, you will use :ref:`search handlers <search_handlers>`. See the :ref:`search handlers section <search_handlers>` for an in-depth look at them, but for now, here is a quick version:
 
@@ -93,8 +75,27 @@ You can use the :class:`~flogin.jsonrpc.results.Result` object constructor to pa
     
     @plugin.search()
     async def my_search_handler(query):
-        return Option(
+        return Result(
             title=f"Your text: {query.text}",
             sub="boo",
             copy_text=query.text
         )
+
+Events
+~~~~~~
+
+At a low level, flogin revolves around a concept called :ref:`events <events>`. An event is something that you listen for, then respond to. For example, when flow starts and runs your plugin, it will send a :ref:`on_initialization <on_initialization>` event that we can listen for.
+
+A quick example code to showcase this:
+
+.. code:: py
+
+    from flogin import Plugin, Query
+
+    plugin = Plugin()
+
+    @plugin.event
+    async def on_initialization():
+        # Plugin has started
+    
+    plugin.run()
