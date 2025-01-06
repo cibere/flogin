@@ -96,7 +96,7 @@ Example
 A Minimal Plugin
 ~~~~~~~~~~~~~~~~
 
-Let's make a plugin which compares how similar the user's query is with the word ``Flow``. Since this is the file that we call :func:`Plugin.run` in, this is the file that we should put as the ``ExecuteFileName`` key in our :ref:`plugin.json file <pluginjson>`.
+Let's make a plugin which compares how similar the user's query is with the word ``Flow``. Since this is the file that we call :func:`flogin.plugin.Plugin.run` in, this is the file that we should put as the ``ExecuteFileName`` key in our :ref:`plugin.json file <pluginjson>`.
 
 .. code-block:: python3
     :linenos:
