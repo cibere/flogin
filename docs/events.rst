@@ -68,7 +68,7 @@ on_error
     :type event: :class:`str`
     :param error: The error that occured
     :type error: :class:`Exception`
-    :param args: The positional arguments that were passed to the event
-    :param kwargs: The keyword arguments that were passed to the event
+    :param \*args: The positional arguments that were passed to the event
+    :param \*\*kwargs: The keyword arguments that were passed to the event
     :returns: Any valid response object for the given event
-    :rtype: :class:`~flogin.jsonrpc.responses.BaseResponse`
+    :rtype: :class:`~flogin.jsonrpc.responses.ErrorResponse` | :class:`~flogin.jsonrpc.responses.QueryResponse` | :class:`~flogin.jsonrpc.responses.ExecuteResponse`

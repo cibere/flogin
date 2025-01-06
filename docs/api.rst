@@ -78,11 +78,6 @@ Results
 Responses
 ~~~~~~~~~
 
-.. attributetable:: flogin.jsonrpc.responses.BaseResponse
-
-.. autoclass:: flogin.jsonrpc.responses.BaseResponse
-    :members:
-
 .. attributetable:: flogin.jsonrpc.responses.ErrorResponse
 
 .. autoclass:: flogin.jsonrpc.responses.ErrorResponse
@@ -299,7 +294,7 @@ Testing
 
 .. autoclass:: flogin.testing.plugin_tester.PluginTester
     :members:
-    
+
 Utils
 -----
 
