@@ -26,7 +26,7 @@ jobs:
 
       - name: Install package
         run: |
-          pip install -e .[docs,tests,dev]
+          pip install -e .[docs,tests]
 
       - name: Build distributions
         run: |
