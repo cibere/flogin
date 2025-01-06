@@ -1,0 +1,177 @@
+/*
+
+From discord.py by Rapptz
+https://raw.githubusercontent.com/Rapptz/discord.py/refs/heads/master/docs/_static/style.css
+
+*/
+
+:root {
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    --monospace-font-family: 'Consolas', 'Menlo', 'Deja Vu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+  
+    /* palette goes here */
+    --white: #ffffff;
+    --grey-1: #f9f9fa;
+    --grey-1-8: rgba(249, 249, 250, 0.8);
+    --grey-2: #ededf0;
+    --grey-3: #d7d7db;
+    --grey-4: #b1b1b3;
+    --grey-5: #737373;
+    --grey-6: #4a4a4f;
+    --grey-7: #38383d;
+    --grey-8: #2a2a2e;
+    --black: #0c0c0d;
+  
+    --blue-1: #3399ff;
+    --blue-2: #0a84ff;
+    --blue-3: #0060df;
+    --blue-4: #003eaa;
+    --blue-5: #002275;
+    --blue-6: #000f40;
+  
+
+    --main-background: var(--grey-7);
+    --link-text: var(--blue-1);
+    --link-hover-text: var(--blue-2);
+    --main-text: var(--white);
+    --sub-header-background: var(--grey-8);
+    --search-border: var(--grey-5);
+    --nav-background: var(--main-background);
+    --nav-text: var(--grey-1);
+    --nav-hover-text: var(--grey-2);
+    --nav-header-text: var(--white);
+    --footer-text: var(--grey-2);
+    --footer-link: var(--grey-1);
+    --hr-border: var(--grey-1);
+    --main-big-headers-text: var(--grey-1);
+    --main-big-headers-border: var(--grey-1);
+    --main-h5-header-text: var(--grey-4);
+    --main-h6-header-text: var(--grey-5);
+    --main-h4-header-border: var(--grey-2);
+    --header-link: var(--grey-2);
+    --header-link-hover-text: var(--grey-6);
+    --admonition-background: var(--grey-8);
+    --note-background: var(--blue-3);
+    --note-text: var(--white);
+    --warning-background: #d7b600;
+    --warning-text: var(--black);
+    --error-background:  #d70022;
+    --error-text: var(--white);
+    --helpful-background: #008ea4;
+    --helpful-text: var(--white);
+    --codeblock-background: var(--grey-6);
+    --codeblock-border: var(--black);
+    --codeblock-text: var(--grey-1);
+    --inline-code-background: var(--grey-8);
+    --xref-code-background: transparent;
+    --api-entry-background: var(--grey-6);
+    --table-header-background: var(--grey-6);
+    --table-text: var(--grey-1);
+    --table-border: var(--grey-4);
+    --active-toc: var(--grey-6);
+    --scrollbar: rgba(0,0,0,0.5);
+    --scrollbar-hover: rgba(0,0,0,0.7);
+    --rtd-ad-border: var(--grey-6);
+    --rtd-ad-background: var(--grey-5);
+    --rtd-ad-main-text: var(--grey-2);
+    --rtd-ad-small-text: var(--grey-1);
+    --attribute-table-title: var(--grey-3);
+    --attribute-table-entry-border: var(--grey-5);
+    --attribute-table-entry-text: var(--grey-3);
+    --attribute-table-entry-hover-border: var(--blue-1);
+    --attribute-table-entry-hover-background: var(--grey-6);
+    --attribute-table-entry-hover-text: var(--blue-1);
+    --attribute-table-badge: var(--grey-4);
+    --highlighted-text: rgba(250, 166, 26, 0.2);
+    --search-sidebar-background: var(--grey-7);
+    --search-sidebar-text: var(--search-text);
+  }
+  
+
+/* attribute tables */
+.py-attribute-table {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    margin: 0 2em;
+    padding-top: 16px;
+  }
+  
+  .py-attribute-table-column {
+    flex: 1 1 auto;
+  }
+  
+  .py-attribute-table-column:not(:first-child) {
+    margin-top: 1em;
+  }
+  
+  .py-attribute-table-column > span {
+    font-weight: bold;
+    color: var(--attribute-table-title);
+  }
+  
+  main .py-attribute-table-column > ul {
+    list-style: none;
+    margin: 4px 0px;
+    padding-left: 0;
+    font-size: 0.95em;
+  }
+  
+  .py-attribute-table-entry {
+    margin: 0;
+    padding: 2px 0;
+    padding-left: 0.2em;
+    border-left: 2px solid var(--attribute-table-entry-border);
+    display: flex;
+    line-height: 1.2em;
+  }
+  
+  .py-attribute-table-entry > a {
+    padding-left: 0.5em;
+    color: var(--attribute-table-entry-text);
+    flex-grow: 1;
+  }
+  
+  .py-attribute-table-entry > a:hover {
+    color: var(--attribute-table-entry-hover-text);
+    text-decoration: none;
+  }
+  
+  .py-attribute-table-entry:hover {
+    background-color: var(--attribute-table-entry-hover-background);
+    border-left: 2px solid var(--attribute-table-entry-hover-border);
+    text-decoration: none;
+  }
+  
+  .py-attribute-table-badge {
+    flex-basis: 3em;
+    text-align: right;
+    font-size: 0.9em;
+    color: var(--attribute-table-badge);
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+
+  
+  dl.class {
+    margin-bottom: 50px;
+  }
+  
+  dl.data > dt,
+  dl.describe > dt,
+  dl.function > dt,
+  dl.attribute > dt,
+  dl.classmethod > dt,
+  dl.method > dt,
+  dl.property > dt,
+  dl.class > dt,
+  dl.exception > dt {
+    background-color: var(--api-entry-background);
+    padding: 1px 10px;
+  }
+
+  .py-attribute-table-column:not(:first-child) {
+    margin-top: unset;
+  }

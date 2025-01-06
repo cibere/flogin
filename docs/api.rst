@@ -22,17 +22,29 @@ There are two main ways to query version information about the library. For guar
     A string representation of the version. e.g. ``'1.0.0rc1'``. This is based
     off of :pep:`440`.
 
-Plugin
-------
+Plugins
+-------
+
+.. attributetable:: flogin.plugin.Plugin
 
 .. autoclass:: flogin.plugin.Plugin
     :members:
 
-Classes
-~~~~~~~
+Models
+-------
+
+Settings
+~~~~~~~~
+
+.. attributetable:: flogin.settings.Settings
 
 .. autoclass:: flogin.settings.Settings
     :members:
+
+Query
+~~~~~
+
+.. attributetable:: flogin.query.Query
 
 .. autoclass:: flogin.query.Query
     :members:
