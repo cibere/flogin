@@ -55,14 +55,22 @@ JSON RPC
 Results
 ~~~~~~~
 
+.. attributetable:: flogin.jsonrpc.results.Result
+
 .. autoclass:: flogin.jsonrpc.results.Result
     :members:
+
+.. attributetable:: flogin.jsonrpc.results.ResultPreview
     
 .. autoclass:: flogin.jsonrpc.results.ResultPreview
     :members:
 
+.. attributetable:: flogin.jsonrpc.results.ProgressBar
+
 .. autoclass:: flogin.jsonrpc.results.ProgressBar
     :members:
+
+.. attributetable:: flogin.jsonrpc.results.Glyph
     
 .. autoclass:: flogin.jsonrpc.results.Glyph
     :members:
@@ -70,14 +78,22 @@ Results
 Responses
 ~~~~~~~~~
 
+.. attributetable:: flogin.jsonrpc.responses.BaseResponse
+
 .. autoclass:: flogin.jsonrpc.responses.BaseResponse
     :members:
+
+.. attributetable:: flogin.jsonrpc.responses.ErrorResponse
 
 .. autoclass:: flogin.jsonrpc.responses.ErrorResponse
     :members:
 
+.. attributetable:: flogin.jsonrpc.responses.QueryResponse
+
 .. autoclass:: flogin.jsonrpc.responses.QueryResponse
     :members:
+
+.. attributetable:: flogin.jsonrpc.responses.ExecuteResponse
 
 .. autoclass:: flogin.jsonrpc.responses.ExecuteResponse
     :members:
@@ -87,6 +103,8 @@ Responses
 Search Handlers
 ---------------
 
+.. attributetable:: flogin.search_handler.SearchHandler
+
 .. autoclass:: flogin.search_handler.SearchHandler
     :members:
 
@@ -95,17 +113,27 @@ Search Handlers
 Builtin Search Conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. attributetable:: flogin.conditions.PlainTextCondition
+
 .. autoclass:: flogin.conditions.PlainTextCondition
     :members:
+
+.. attributetable:: flogin.conditions.RegexCondition
 
 .. autoclass:: flogin.conditions.RegexCondition
     :members:
 
+.. attributetable:: flogin.conditions.KeywordCondition
+
 .. autoclass:: flogin.conditions.KeywordCondition
     :members:
 
+.. attributetable:: flogin.conditions.AllCondition
+
 .. autoclass:: flogin.conditions.AllCondition
     :members:
+
+.. attributetable:: flogin.conditions.AnyCondition
 
 .. autoclass:: flogin.conditions.AnyCondition
     :members:
@@ -116,64 +144,107 @@ Flow
 API
 ~~~~
 
+.. attributetable:: flogin.flow.api.FlowLauncherAPI
+
 .. autoclass:: flogin.flow.api.FlowLauncherAPI
     :members:
 
+.. attributetable:: flogin.flow.fuzzy_search.FuzzySearchResult
+
 .. autoclass:: flogin.flow.fuzzy_search.FuzzySearchResult
     :members:
+
+.. attributetable:: flogin.flow.plugin_metadata.PluginMetadata
 
 .. autoclass:: flogin.flow.plugin_metadata.PluginMetadata
     :members:
 
 Settings
 ~~~~~~~~~
+.. attributetable:: flogin.flow.settings.FlowSettings
 
 .. autoclass:: flogin.flow.settings.FlowSettings
     :members:
     :private-members:
 
+
+.. attributetable:: flogin.flow.settings.CustomQueryShortcut
+
 .. autoclass:: flogin.flow.settings.CustomQueryShortcut
     :members:
+
+
+.. attributetable:: flogin.flow.settings.CustomFileManager
 
 .. autoclass:: flogin.flow.settings.CustomFileManager
     :members:
     :private-members:
 
+
+.. attributetable:: flogin.flow.settings.CustomBrowser
+
 .. autoclass:: flogin.flow.settings.CustomBrowser
     :members:
     :private-members:
+
+
+.. attributetable:: flogin.flow.settings.CustomPluginHotkey
 
 .. autoclass:: flogin.flow.settings.CustomPluginHotkey
     :members:
     :private-members:
 
+
+.. attributetable:: flogin.flow.settings.HttpProxy
+
 .. autoclass:: flogin.flow.settings.HttpProxy
     :members:
     :private-members:
+
+
+.. attributetable:: flogin.flow.settings.PartialPlugin
 
 .. autoclass:: flogin.flow.settings.PartialPlugin
     :members:
     :private-members:
 
+
+.. attributetable:: flogin.flow.settings.PluginsSettings
+
 .. autoclass:: flogin.flow.settings.PluginsSettings
     :members:
     :private-members:
+
+
+.. attributetable:: flogin.flow.settings.LastQueryMode
 
 .. autoclass:: flogin.flow.settings.LastQueryMode
     :members:
     :private-members:
 
+
+.. attributetable:: flogin.flow.settings.SearchWindowScreens
+
 .. autoclass:: flogin.flow.settings.SearchWindowScreens
     :members:
     :private-members:
+
+
+.. attributetable:: flogin.flow.settings.SearchWindowAligns
 
 .. autoclass:: flogin.flow.settings.SearchWindowAligns
     :members:
     :private-members:
 
+
+.. attributetable:: flogin.flow.settings.AnimationSpeeds
+
 .. autoclass:: flogin.flow.settings.AnimationSpeeds
     :members:
     :private-members:
+
+
+.. attributetable:: flogin.flow.settings.SearchPrecisionScore
 
 .. autoclass:: flogin.flow.settings.SearchPrecisionScore
     :members:
@@ -185,11 +256,20 @@ Errors
 Plugin Errors
 ~~~~~~~~~~~~~
 
+
+.. attributetable:: flogin.errors.PluginException
+
 .. autoclass:: flogin.errors.PluginException
     :members:
 
+
+.. attributetable:: flogin.errors.PluginNotInitialized
+
 .. autoclass:: flogin.errors.PluginNotInitialized
     :members:
+
+
+.. attributetable:: flogin.errors.EnvNotSet
 
 .. autoclass:: flogin.errors.EnvNotSet
     :members:
@@ -197,8 +277,14 @@ Plugin Errors
 JSON-RPC Errors
 ~~~~~~~~~~~~~~~
 
+
+.. attributetable:: flogin.jsonrpc.errors.JsonRPCException
+
 .. autoclass:: flogin.jsonrpc.errors.JsonRPCException
     :members:
+
+
+.. attributetable:: flogin.jsonrpc.errors.JsonRPCVersionMismatch
 
 .. autoclass:: flogin.jsonrpc.errors.JsonRPCVersionMismatch
     :members:
@@ -208,9 +294,12 @@ JSON-RPC Errors
 Testing
 -------
 
+
+.. attributetable:: flogin.testing.plugin_tester.PluginTester
+
 .. autoclass:: flogin.testing.plugin_tester.PluginTester
     :members:
-
+    
 Utils
 -----
 
