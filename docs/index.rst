@@ -50,12 +50,20 @@ If you're having trouble with something, these resources might help.
 - Report bugs in the `issue tracker <https://github.com/cibere/flogin/issues>`_.
 
 .. toctree::
-   :caption: API Reference
+   :caption: References
    
    api
    events
-   faq
+
+.. toctree::
+   :caption: Manuals/Guides
+   
    search_handlers
-   whats_new
    testing
+   faq
+
+.. toctree::
+   :caption: Library Meta
+   
+   whats_new
    version_guarantees
