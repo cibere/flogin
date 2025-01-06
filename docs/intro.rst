@@ -10,8 +10,7 @@ This is an introduction to the flogin library, which aims to make it easy for py
 Prerequisites
 -------------
 
-flogin requires python 3.11 or higher, however python 3.11 is the recommended version as that is the version that the default embedded python that flow installs is.
-
+flogin requires Python 3.11 or higher. Python 3.11 is recommended as it matches flow's default embedded Python version.
 
 .. _installing:
 
@@ -41,10 +40,10 @@ Basic Concepts
 Callbacks
 ~~~~~~~~~
 
-With all of the overhead that flogins has, most of the time you will be dealing with callbacks. Callbacks are when you have a specific function (the callback) tied to a specific object. When an event occurs for that object, the corosponding callback is triggered.
+With flogin's architecture, you'll primarily work with callbacks. A callback is a specific function tied to an object that gets triggered when a corresponding event occurs for that object.
 
 Search handlers
-^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~
 
 For handling search/query requests with flogin, you will use :ref:`search handlers <search_handlers>`. See the :ref:`search handlers section <search_handlers>` for an in-depth look at them, but for now, here is a quick version:
 
