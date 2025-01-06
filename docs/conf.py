@@ -50,7 +50,7 @@ extensions = [
     "sphinx_autodoc_typehints",  # https://github.com/tox-dev/sphinx-autodoc-typehints
     "sphinx.ext.intersphinx",  # https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html
     "sphinx_toolbox.more_autodoc.typevars",  # https://sphinx-toolbox.readthedocs.io/en/latest/extensions/more_autodoc/typevars.html
-    "sphinxcontrib_trio", # https://sphinxcontrib-trio.readthedocs.io/en/latest/
+    "sphinxcontrib_trio",  # https://sphinxcontrib-trio.readthedocs.io/en/latest/
     "nitpick_file_ignorer",
     "attributetable",
 ]
@@ -73,10 +73,10 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "furo"
 html_static_path = ["_static"]
 html_css_files = [
-    'style.css',
+    "style.css",
 ]
 html_js_files = [
-    'custom.js',
+    "custom.js",
 ]
 
 
