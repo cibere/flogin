@@ -65,15 +65,6 @@ class Plugin(Generic[SettingsT]):
         Whether or not to let flow update flogin's version of the settings. This can be useful when using a custom settings menu. Defaults to ``False``
     ignore_cancellation_requests: Optional[:class:`bool`]
         Whether or not to ignore cancellation requests sent from flow. Defaults to ``False``
-
-    Attributes
-    ----------
-    settings: :class:`~flogin.settings.Settings`
-        The plugin's settings set by the user
-    api: :class:`~flogin.flow.api.FlowLauncherAPI`
-        An easy way to acess Flow Launcher's API
-    last_query: :class:`~flogin.query.Query` | ``None``
-        The last query request that flow sent. This is ``None`` if no query request has been sent yet.
     """
 
     def __init__(self, **options: Any) -> None:
@@ -82,13 +73,23 @@ class Plugin(Generic[SettingsT]):
         self._search_handlers: list[SearchHandler] = []
         self._results: dict[str, Result] = {}
         self._settings_are_populated: bool = False
-        self.last_query: Query | None = None
+        self._last_query: Query | None = None
 
         self._events: dict[str, Callable[..., Awaitable[Any]]] = get_default_events(
             self
         )
         self.jsonrpc: JsonRPCClient = JsonRPCClient(self)
-        self.api = FlowLauncherAPI(self.jsonrpc)
+
+    @property
+    def last_query(self) -> Query | None:
+        """:class:`~flogin.query.Query` | ``None``: The last query request that flow sent. This is ``None`` if no query request has been sent yet."""
+        return self._last_query
+
+    @cached_property
+    def api(self) -> FlowLauncherAPI:
+        """:class:`~flogin.flow.api.FlowLauncherAPI`: An easy way to acess Flow Launcher's API"""
+
+        return FlowLauncherAPI(self.jsonrpc)
 
     def _get_env(self, name: str, alternative: str | None = None) -> str:
         try:
@@ -140,6 +141,8 @@ class Plugin(Generic[SettingsT]):
 
     @cached_property
     def settings(self) -> SettingsT:
+        """:class:`~flogin.settings.Settings`: The plugin's settings set by the user"""
+
         fp = os.path.join(
             "..", "..", "Settings", "Plugins", self.metadata.name, "Settings.json"
         )
