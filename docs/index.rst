@@ -50,6 +50,12 @@ If you're having trouble with something, these resources might help.
 - Report bugs in the `issue tracker <https://github.com/cibere/flogin/issues>`_.
 
 .. toctree::
+   :caption: First Steps
+
+   intro
+   quickstart
+
+.. toctree::
    :caption: References
    
    api
