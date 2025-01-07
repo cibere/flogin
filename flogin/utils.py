@@ -266,4 +266,4 @@ def print(*values: object, sep: str = MISSING) -> None:
     if sep is MISSING:
         sep = " "
 
-    _print_log.info(sep.join([str(val) for val in values]))
+    _print_log.info(sep.join(str(val) for val in values))
