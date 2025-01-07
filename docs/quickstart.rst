@@ -127,6 +127,88 @@ There's a lot going on here, so let's walk you through it line by line.
 9. Empty Line to increase readability
 10. Now we call plugin's :class:`~flogin.plugin.Plugin.run` method to start the plugin.
 
+Path Additions
+~~~~~~~~~~~~~~
+When flow runs your plugin, it won't detect your venv and run your plugin through it. Because of this, you will have to add some code to the top of the file you set as the execution file in order to add your packages to path.
+
+.. NOTE::
+    Make sure to add these to path before you do anything else.
+
+There are 3 main paths that you will want to add:
+
+1. The parent directory.
+
+| This is so that you can import other files in the same directory.
+
+2. A ``lib`` directory in the same folder as your file.
+
+| This is for when you end up publishing your plugin. Your published plugin will have a copy of its dependencies in the ``lib`` dir.
+
+3. Your venv's site packages directory.
+
+| This is for development, so you can install packages as normal into your venv, and have them run just fine,
+
+.. code-block:: python3
+
+    import os
+    import sys
+
+    parent_folder_path = os.path.abspath(os.path.dirname(__file__)) # get the folder that your file is in
+    sys.path.append(parent_folder_path) # add the folder to path
+    sys.path.append(os.path.join(parent_folder_path, "lib")) # add a 'lib' folder that is in the same dir as your file to path
+    sys.path.append(os.path.join(parent_folder_path, "venv", "lib", "site-packages")) # add your venv to path
+
+Final Review
+~~~~~~~~~~~~~
+
+To review, you should have a folder for your plugin in your flow plugins folder, with the following files:
+
+
+**plugin.json**
+
+.. NOTE::
+    Ensure the ``ExecuteFileName`` key is set to ``main.py``
+
+.. code-block:: json
+    :linenos:
+
+    {
+        "ID":"ed0770f8-5a99-493f-833a-93b34657a03a",
+        "ActionKeyword":"*",
+        "Name":"Example Plugin",
+        "Description":"This is an example plugin to show how to use the plugin.json file",
+        "Author":"cibere",
+        "Version":"1.0.0",
+        "Language":"python_v2",
+        "Website":"https://github.com/cibere/Flow.Launcher.Plugin.ExamplePlugin",
+        "IcoPath": "icon.png",
+        "ExecuteFileName":"main.py",
+    }
+
+**main.py**
+
+.. code-block:: python3
+    :linenos:
+
+    import os
+    import sys
+
+    parent_folder_path = os.path.abspath(os.path.dirname(__file__)) # get the folder that your file is in
+    sys.path.append(parent_folder_path) # add the folder to path
+    sys.path.append(os.path.join(parent_folder_path, "lib")) # add a 'lib' folder that is in the same dir as your file to path
+    sys.path.append(os.path.join(parent_folder_path, "venv", "lib", "site-packages")) # add your venv to path
+
+    from flogin import Plugin, Query
+
+    plugin = Plugin()
+
+    @plugin.search()
+    async def compare_results(data: Query):
+        result = await plugin.api.fuzzy_search(data.text, "Flow")
+        return f"Flow: {result.score}",
+
+    plugin.run()
+
 Running your plugin
 -------------------
 Now that our environment is setup, we can run and test our plugin. If already put your plugin in the correct directory, great. If not, see the :ref:`manual installation instructions <manual_install_instructions>` and make sure that your plugin is in the right place.
