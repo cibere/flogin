@@ -50,7 +50,10 @@ extensions = [
     "sphinx_autodoc_typehints",  # https://github.com/tox-dev/sphinx-autodoc-typehints
     "sphinx.ext.intersphinx",  # https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html
     "sphinx_toolbox.more_autodoc.typevars",  # https://sphinx-toolbox.readthedocs.io/en/latest/extensions/more_autodoc/typevars.html
+    "sphinxcontrib_trio",  # https://sphinxcontrib-trio.readthedocs.io/en/latest/
+    "sphinx_copybutton",  # https://github.com/executablebooks/sphinx-copybutton#readme
     "nitpick_file_ignorer",
+    "attributetable",
 ]
 
 rst_prolog = """
@@ -69,13 +72,20 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "furo"
-# html_static_path = ["_static"]
+html_static_path = ["_static"]
+html_css_files = [
+    "style.css",
+]
+html_js_files = [
+    "custom.js",
+]
+html_favicon = "./images/flow_logo.ico"
 
 
 # autodoc
 # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#
 autodoc_typehints_format = "short"
-# autodoc_typehints = "both"
+autodoc_typehints = "none"
 autodoc_typehints_description_target = "all"
 autodoc_mock_imports = ["typing"]
 autodoc_default_options = {"exclude-members": "__init__", "special-members": ""}
@@ -90,7 +100,7 @@ typehints_defaults = "braces"
 simplify_optional_unions = False
 
 # sphinx_toolbox.more_autodoc.typevars
-all_typevars = True
+all_typevars = False
 
 # intersphinx
 # https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html
@@ -101,12 +111,12 @@ intersphinx_mapping = {
 }
 
 # https://pradyunsg.me/furo/customisation/announcement/
-html_theme_options = {
-    "announcement": (
-        "<b>In Developement</b> Please note that this extension is still in developement. "
-        "If you find any bugs, please report them om the <a href='https://github.com/cibere/flogin/issues'>GitHub repository</a>."
-    ),
-}
+# html_theme_options = {
+#     "announcement": (
+#         "<b>In Developement</b> Please note that this extension is still in developement. "
+#         "If you find any bugs, please report them om the <a href='https://github.com/cibere/flogin/issues'>GitHub repository</a>."
+#     ),
+# }
 
 # Nitpicky mode options
 nitpick_ignore_files = [

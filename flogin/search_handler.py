@@ -1,29 +1,13 @@
 from __future__ import annotations
 
 import logging
-from typing import (
-    TYPE_CHECKING,
-    Callable,
-    Generic,
-    TypeVar,
-    Unpack,
-    TypedDict,
-    NotRequired,
-    Iterable,
-    overload,
-)
+import re
+from typing import TYPE_CHECKING, Callable, Generic, Iterable, TypeVar, overload
 
 from ._types import PluginT, SearchHandlerCallbackReturns, SearchHandlerCondition
+from .conditions import KeywordCondition, PlainTextCondition, RegexCondition
 from .jsonrpc import ErrorResponse
-from .utils import copy_doc, MISSING
-from .conditions import (
-    AllCondition,
-    AnyCondition,
-    RegexCondition,
-    KeywordCondition,
-    PlainTextCondition,
-)
-import re
+from .utils import MISSING, copy_doc, decorator
 
 if TYPE_CHECKING:
     from .query import Query
@@ -285,7 +269,8 @@ class SearchHandler(Generic[PluginT]):
         @copy_doc(on_error)
         async def on_error(self, query: Query, error: Exception):
             LOG.exception(
-                f"Ignoring exception in reuslt callback ({self!r})", exc_info=error
+                f"Ignoring exception in search handler callback ({self!r})",
+                exc_info=error,
             )
             return ErrorResponse.internal_error(error)
 
@@ -294,6 +279,7 @@ class SearchHandler(Generic[PluginT]):
         """:class:`str`: The name of the search handler's callback"""
         return self.callback.__name__
 
+    @decorator(is_factory=False)
     def error(self, func: ErrorHandlerT) -> ErrorHandlerT:
         """A decorator that registers a error handler for this search handler.
 

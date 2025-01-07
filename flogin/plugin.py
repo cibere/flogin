@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import re
+from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -19,9 +20,8 @@ from typing import (
     overload,
 )
 
-from .conditions import PlainTextCondition, RegexCondition
 from .default_events import get_default_events
-from .errors import InvalidContextDataReceived, PluginNotInitialized
+from .errors import EnvNotSet, PluginNotInitialized
 from .flow import FlowLauncherAPI, FlowSettings, PluginMetadata
 from .jsonrpc import (
     ErrorResponse,
@@ -34,7 +34,7 @@ from .jsonrpc.responses import BaseResponse
 from .query import Query
 from .search_handler import SearchHandler
 from .settings import Settings
-from .utils import MISSING, cached_property, coro_or_gen, setup_logging
+from .utils import MISSING, cached_property, coro_or_gen, decorator, setup_logging
 
 if TYPE_CHECKING:
     from typing_extensions import TypeVar
@@ -65,16 +65,9 @@ class Plugin(Generic[SettingsT]):
         Whether or not to let flow update flogin's version of the settings. This can be useful when using a custom settings menu. Defaults to ``False``
     ignore_cancellation_requests: Optional[:class:`bool`]
         Whether or not to ignore cancellation requests sent from flow. Defaults to ``False``
-
-    Attributes
-    ----------
-    settings: :class:`~flogin.settings.Settings`
-        The plugin's settings set by the user
-    api: :class:`~flogin.flow.api.FlowLauncherAPI`
-        An easy way to acess Flow Launcher's API
-    last_query: :class:`~flogin.query.Query` | ``None``
-        The last query request that flow sent. This is ``None`` if no query request has been sent yet.
     """
+
+    __class_events__: list[str] = []
 
     def __init__(self, **options: Any) -> None:
         self.options = options
@@ -82,16 +75,81 @@ class Plugin(Generic[SettingsT]):
         self._search_handlers: list[SearchHandler] = []
         self._results: dict[str, Result] = {}
         self._settings_are_populated: bool = False
-        self.last_query: Query | None = None
+        self._last_query: Query | None = None
 
         self._events: dict[str, Callable[..., Awaitable[Any]]] = get_default_events(
             self
         )
         self.jsonrpc: JsonRPCClient = JsonRPCClient(self)
-        self.api = FlowLauncherAPI(self.jsonrpc)
+
+        # for event_name, event_callback in inspect.getmembers(self, lambda x: getattr(x, "__flogin_add_as_event__", False)):
+        #     self.register_event(event_callback, event_name)
+        for event_name in self.__class_events__:
+            self.register_event(getattr(self, event_name))
+
+    @property
+    def last_query(self) -> Query | None:
+        """:class:`~flogin.query.Query` | ``None``: The last query request that flow sent. This is ``None`` if no query request has been sent yet."""
+        return self._last_query
+
+    @cached_property
+    def api(self) -> FlowLauncherAPI:
+        """:class:`~flogin.flow.api.FlowLauncherAPI`: An easy way to acess Flow Launcher's API"""
+
+        return FlowLauncherAPI(self.jsonrpc)
+
+    def _get_env(self, name: str, alternative: str | None = None) -> str:
+        try:
+            return os.environ[name]
+        except KeyError:
+            raise EnvNotSet(name, alternative) from None
+
+    @cached_property
+    def flow_version(self) -> str:
+        """:class:`str`: the flow version from environment variables.
+
+        .. versionadded:: 1.0.1
+
+        Raises
+        ------
+        :class:`~flogin.errors.EnvNotSet`
+            This is raised when the environment variable for this property is not set by flow or the plugin tester.
+        """
+
+        return self._get_env("FLOW_VERSION", "flow_version")
+
+    @cached_property
+    def flow_application_dir(self) -> Path:
+        """:class:`~pathlib.Path`: flow's application directory from environment variables.
+
+        .. versionadded:: 1.0.1
+
+        Raises
+        ------
+        :class:`~flogin.errors.EnvNotSet`
+            This is raised when the environment variable for this property is not set by flow or the plugin tester.
+        """
+
+        return Path(self._get_env("FLOW_APPLICATION_DIRECTORY", "flow_application_dir"))
+
+    @cached_property
+    def flow_program_dir(self) -> Path:
+        """:class:`~pathlib.Path`: flow's application program from environment variables.
+
+        .. versionadded:: 1.0.1
+
+        Raises
+        ------
+        :class:`~flogin.errors.EnvNotSet`
+            This is raised when the environment variable for this property is not set by flow or the plugin tester.
+        """
+
+        return Path(self._get_env("FLOW_PROGRAM_DIRECTORY", "flow_program_dir"))
 
     @cached_property
     def settings(self) -> SettingsT:
+        """:class:`~flogin.settings.Settings`: The plugin's settings set by the user"""
+
         fp = os.path.join(
             "..", "..", "Settings", "Plugins", self.metadata.name, "Settings.json"
         )
@@ -188,23 +246,23 @@ class Plugin(Generic[SettingsT]):
         LOG.debug(f"Context Menu Handler: {data=}")
 
         if not data:
-            raise InvalidContextDataReceived()
-
-        result = self._results.get(data[0])
-
-        if result is not None:
-            result.plugin = self
-            task = self._schedule_event(
-                self._coro_or_gen_to_results,
-                event_name=f"ContextMenu-{result.slug}",
-                args=[result.context_menu()],
-                error_handler=lambda e: self._coro_or_gen_to_results(
-                    result.on_context_menu_error(e)
-                ),
-            )
-            results = await task
-        else:
             results = []
+        else:
+            result = self._results.get(data[0])
+
+            if result is not None:
+                result.plugin = self
+                task = self._schedule_event(
+                    self._coro_or_gen_to_results,
+                    event_name=f"ContextMenu-{result.slug}",
+                    args=[result.context_menu()],
+                    error_handler=lambda e: self._coro_or_gen_to_results(
+                        result.on_context_menu_error(e)
+                    ),
+                )
+                results = await task
+            else:
+                results = []
 
         if isinstance(results, ErrorResponse):
             return results
@@ -324,10 +382,14 @@ class Plugin(Generic[SettingsT]):
 
         self._events[name or callback.__name__] = callback
 
+    @decorator(is_factory=False)
     def event(self, callback: EventCallbackT) -> EventCallbackT:
-        """A decorator that registers an event to listen for.
+        """A decorator that registers an event to listen for. This decorator can be used with a plugin instance or as a classmethod.
 
         All events must be a :ref:`coroutine <coroutine>`.
+
+        .. versionchanged:: 1.1.0
+            The decorator can now be used as a classmethod
 
         .. NOTE::
             See the :ref:`event reference <events>` to see what valid events there are.
@@ -335,15 +397,32 @@ class Plugin(Generic[SettingsT]):
         Example
         ---------
 
+        With a plugin instance:
+
         .. code-block:: python3
 
             @plugin.event
             async def on_initialization():
                 print('Ready!')
 
+        As a classmethod:
+
+        .. code-block:: python3
+
+            class MyPlugin(Plugin):
+                @Plugin.event
+                async def on_initialization(self):
+                    print('Ready!')
         """
 
         self.register_event(callback)
+        return callback
+
+    @event.classmethod
+    @classmethod
+    def __event_classmethod_deco(cls, callback: EventCallbackT) -> EventCallbackT:
+        # setattr(callback, "__flogin_add_as_event__", True)
+        cls.__class_events__.append(callback.__name__)
         return callback
 
     @overload

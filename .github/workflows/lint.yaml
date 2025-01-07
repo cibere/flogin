@@ -27,12 +27,13 @@ jobs:
       - name: Install dependencies
         id: install-deps
         run: |
-          python -m pip install .[dev,tests]
+          pip install .[tests]
+          pip install black
 
       - name: Run black
         if: ${{ always() && steps.install-deps.outcome == 'success' }}
         run: |
-          black --check flogin examples
+          black --check flogin examples tests
       
       - name: Install pyright
         id: install-pyright

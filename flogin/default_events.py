@@ -27,7 +27,7 @@ async def on_error(
 def get_default_events(plugin: Plugin[Any]) -> dict[str, Callable[..., Awaitable[Any]]]:
     def on_query(data: RawQuery, raw_settings: dict[str, Any]):
         query = Query(data, plugin)
-        plugin.last_query = query
+        plugin._last_query = query
         plugin._results.clear()
 
         if plugin._settings_are_populated is False:

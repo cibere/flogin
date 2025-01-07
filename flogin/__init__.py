@@ -1,10 +1,8 @@
 __title__ = "flogin"
 __author__ = "cibere"
-__version__ = "1.0.0"
+__version__ = "2.0.0a"
 
-
-from typing import Literal, NamedTuple
-
+from .caching import *
 from .conditions import *
 from .errors import *
 from .jsonrpc import *
@@ -12,16 +10,8 @@ from .plugin import *
 from .query import *
 from .search_handler import *
 from .settings import *
-from .caching import *
+from .utils import VersionInfo
 
+version_info: VersionInfo = VersionInfo._from_str(__version__)
 
-class VersionInfo(NamedTuple):
-    major: int
-    minor: int
-    micro: int
-    releaselevel: Literal["alpha", "beta", "candidate", "final"]
-
-
-version_info: VersionInfo = VersionInfo(major=0, minor=1, micro=0, releaselevel="beta")
-
-del NamedTuple, Literal, VersionInfo
+del VersionInfo
