@@ -388,6 +388,9 @@ class Plugin(Generic[SettingsT]):
 
         All events must be a :ref:`coroutine <coroutine>`.
 
+        .. versionchanged:: 1.1.0
+            The decorator can now be used as a classmethod
+
         .. NOTE::
             See the :ref:`event reference <events>` to see what valid events there are.
 
