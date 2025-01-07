@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import re
+from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -20,7 +21,7 @@ from typing import (
 )
 
 from .default_events import get_default_events
-from .errors import PluginNotInitialized, EnvNotSet
+from .errors import EnvNotSet, PluginNotInitialized
 from .flow import FlowLauncherAPI, FlowSettings, PluginMetadata
 from .jsonrpc import (
     ErrorResponse,
@@ -29,18 +30,11 @@ from .jsonrpc import (
     QueryResponse,
     Result,
 )
-from pathlib import Path
 from .jsonrpc.responses import BaseResponse
 from .query import Query
 from .search_handler import SearchHandler
 from .settings import Settings
-from .utils import (
-    MISSING,
-    cached_property,
-    coro_or_gen,
-    setup_logging,
-    decorator,
-)
+from .utils import MISSING, cached_property, coro_or_gen, decorator, setup_logging
 
 if TYPE_CHECKING:
     from typing_extensions import TypeVar

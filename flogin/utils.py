@@ -1,5 +1,6 @@
 import logging
 import logging.handlers
+from functools import wraps
 from inspect import isasyncgen, iscoroutine
 from inspect import signature as _signature
 from typing import (
@@ -10,13 +11,13 @@ from typing import (
     Awaitable,
     Callable,
     Coroutine,
-    TypeVar,
-    Self,
     Generic,
+    Literal,
+    NamedTuple,
+    Self,
+    TypeVar,
+    overload,
 )
-from typing import NamedTuple, Literal
-from typing import overload
-from functools import wraps
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
 AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])

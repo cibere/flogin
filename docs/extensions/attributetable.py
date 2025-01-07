@@ -4,11 +4,12 @@ https://raw.githubusercontent.com/Rapptz/discord.py/refs/heads/master/docs/_stat
 """
 
 from __future__ import annotations
+
 import importlib
 import inspect
 import re
-from typing import Dict, List, NamedTuple, Optional, Tuple, Sequence
-from flogin.utils import decorator
+from typing import Dict, List, NamedTuple, Optional, Sequence, Tuple
+
 from docutils import nodes
 from sphinx import addnodes
 from sphinx.application import Sphinx
@@ -16,6 +17,8 @@ from sphinx.environment import BuildEnvironment
 from sphinx.locale import _
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.typing import OptionSpec
+
+from flogin.utils import decorator
 
 
 class attributetable(nodes.General, nodes.Element):
