@@ -28,8 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             params[0].remove();
             console.log(`Remove`, params[0]);
             let parens = el.getElementsByClassName("sig-paren");
-            if (parens){
-                parens[0].remove();
+            while (parens.length > 0) {
                 parens[0].remove();
             }
         }
