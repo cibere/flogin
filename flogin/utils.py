@@ -255,6 +255,9 @@ def print(*values: object, sep: str = MISSING) -> None:
 
     This helper function is provided to easily "print" text without having to setup a logging object, because the builtin print function does not work as expected due to the jsonrpc pipes.
 
+    .. NOTE::
+        The log/print statements can be viewed in your ``flogin.log`` file under the name ``printing``
+
     Parameters
     -----------
     \*values: :class:`object`
