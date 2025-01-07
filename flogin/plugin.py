@@ -35,7 +35,13 @@ from .jsonrpc.responses import BaseResponse
 from .query import Query
 from .search_handler import SearchHandler
 from .settings import Settings
-from .utils import MISSING, cached_property, coro_or_gen, setup_logging, InstanceAndClassDecorator
+from .utils import (
+    MISSING,
+    cached_property,
+    coro_or_gen,
+    setup_logging,
+    InstanceAndClassDecorator,
+)
 
 if TYPE_CHECKING:
     from typing_extensions import TypeVar
@@ -405,11 +411,11 @@ class Plugin(Generic[SettingsT]):
 
         self.register_event(callback)
         return callback
-    
+
     @event.classmethod
     @classmethod
     def __event_classmethod_deco(cls, callback: EventCallbackT) -> EventCallbackT:
-        #setattr(callback, "__flogin_add_as_event__", True)
+        # setattr(callback, "__flogin_add_as_event__", True)
         cls.__class_events__.append(callback.__name__)
         return callback
 
