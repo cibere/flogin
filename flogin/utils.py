@@ -11,6 +11,7 @@ from typing import (
     Callable,
     Coroutine,
     TypeVar,
+    Self,
 )
 from typing import NamedTuple, Literal
 from typing import overload
@@ -188,10 +189,31 @@ class VersionInfo(NamedTuple):
         return cls(major=major, minor=minor, micro=micro, releaselevel=release_level)
 
 
-class InstanceAndClassDecorator[OwnerT, FuncT, ReturnT]:
-    def __init__(self, instance_func: InstanceMethodT[OwnerT, FuncT, ReturnT]) -> None:
-        self.__instance_func__ = instance_func
+class decorator[OwnerT, FuncT, ReturnT]:
+    @overload
+    def __init__(self, /, *, is_factory: bool = True) -> None: ...
+    @overload
+    def __init__(
+        self, instance_func: InstanceMethodT[OwnerT, FuncT, ReturnT], /
+    ) -> None: ...
+    def __init__(
+        self,
+        instance_func: InstanceMethodT[OwnerT, FuncT, ReturnT] | None = None,
+        /,
+        *,
+        is_factory: bool = True,
+    ) -> None:
+        self.__instance_func__: InstanceMethodT[OwnerT, FuncT, ReturnT] | None = (
+            instance_func
+        )
         self.__classmethod_func__: ClassMethodT[OwnerT, FuncT, ReturnT] | None = None
+        self.is_factory = is_factory
+        self.__doc__ = self.__instance_func__.__doc__
+
+    def __call__(self, instance_func: InstanceMethodT[OwnerT, FuncT, ReturnT]) -> Self:
+        self.__instance_func__ = instance_func
+        self.__doc__ = self.__instance_func__.__doc__
+        return self
 
     @overload
     def __get__(
@@ -204,18 +226,22 @@ class InstanceAndClassDecorator[OwnerT, FuncT, ReturnT]:
     ) -> Callable[[FuncT], ReturnT]: ...
 
     def __get__(self, instance: OwnerT | None, owner: type[OwnerT]) -> Any:
+        if self.__instance_func__ is None:
+            raise RuntimeError("Instance Function is NoneType")
+
         @wraps(self.__instance_func__)
         def wrapper(func):
             if instance is not None:
+                if not self.__instance_func__:
+                    raise RuntimeError("Instance Function is NoneType")
                 return self.__instance_func__(instance, func)
             if self.__classmethod_func__ is not None:
                 return self.__classmethod_func__(owner, func)
-            return func
+            raise RuntimeError("Decorator useage as a classmethod is not supported")
 
         return wrapper
 
     def classmethod[T](self, func: T) -> T:
-        print(f"x deco - {func=}")
         if isinstance(func, classmethod):
             func = func.__func__
         self.__classmethod_func__ = func  # type: ignore

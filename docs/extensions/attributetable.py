@@ -7,8 +7,8 @@ from __future__ import annotations
 import importlib
 import inspect
 import re
-from typing import Dict, List, NamedTuple, Optional, Tuple, Sequence, TYPE_CHECKING
-
+from typing import Dict, List, NamedTuple, Optional, Tuple, Sequence
+from flogin.utils import decorator
 from docutils import nodes
 from sphinx import addnodes
 from sphinx.application import Sphinx
@@ -61,6 +61,9 @@ def visit_attributetablebadge_node(self, node: attributetablebadge) -> None:
         "title": node["badge-type"],
         "data-name": node.attributes["data_element_name"],
     }
+    is_fac = node.attributes.get("data_is_factory")
+    if is_fac is not None:
+        attributes["data-isfactory"] = is_fac
     self.body.append(self.starttag(node, "span", **attributes))
 
 
@@ -96,7 +99,7 @@ class PyAttributeTable(SphinxDirective):
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = False
-    option_spec: OptionSpec = {}
+    option_spec: OptionSpec = {}  # type: ignore
 
     def parse_name(self, content: str) -> Tuple[str, str]:
         match = _name_parser_regex.match(content)
@@ -255,11 +258,16 @@ def get_class_results(
                 label = f"{name}.{attr}"
                 badge = attributetablebadge("cls", "cls", data_element_name=attrlookup)
                 badge["badge-type"] = _("classmethod")
-            elif inspect.isfunction(value):
+            elif inspect.isfunction(value) or isinstance(value, decorator):
                 if doc.startswith(("A decorator", "A shortcut decorator")):
                     # finicky but surprisingly consistent
                     key = _("Methods")
-                    badge = attributetablebadge("@", "@", data_element_name=attrlookup)
+                    badge = attributetablebadge(
+                        "@",
+                        "@",
+                        data_element_name=attrlookup,
+                        data_is_factory=getattr(value, "is_factory", True),
+                    )
                     badge["badge-type"] = _("decorator")
                 elif inspect.isasyncgenfunction(value):
                     key = _("Methods")

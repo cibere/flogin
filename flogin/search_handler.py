@@ -19,6 +19,7 @@ from .conditions import (
     PlainTextCondition,
 )
 import re
+from .utils import decorator
 
 if TYPE_CHECKING:
     from .query import Query
@@ -290,6 +291,7 @@ class SearchHandler(Generic[PluginT]):
         """:class:`str`: The name of the search handler's callback"""
         return self.callback.__name__
 
+    @decorator(is_factory=False)
     def error(self, func: ErrorHandlerT) -> ErrorHandlerT:
         """A decorator that registers a error handler for this search handler.
 

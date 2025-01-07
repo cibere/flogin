@@ -18,7 +18,6 @@ from typing import (
     TypeVarTuple,
     overload,
 )
-import inspect
 
 from .default_events import get_default_events
 from .errors import PluginNotInitialized, EnvNotSet
@@ -40,7 +39,7 @@ from .utils import (
     cached_property,
     coro_or_gen,
     setup_logging,
-    InstanceAndClassDecorator,
+    decorator,
 )
 
 if TYPE_CHECKING:
@@ -389,7 +388,7 @@ class Plugin(Generic[SettingsT]):
 
         self._events[name or callback.__name__] = callback
 
-    @InstanceAndClassDecorator
+    @decorator(is_factory=False)
     def event(self, callback: EventCallbackT) -> EventCallbackT:
         """A decorator that registers an event to listen for.
 
