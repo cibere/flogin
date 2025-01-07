@@ -253,7 +253,7 @@ class decorator(Generic[OwnerT, FuncT, ReturnT]):
         return func
  
 def print(*values: object, sep: str = MISSING) -> None:
-    r"""A function that acts similar to :func:`builtins.print`, but uses the `logging <https://docs.python.org/3/library/logging.html#module-logging>`__ module instead.
+    r"""A function that acts similar to the `builtin print function <https://docs.python.org/3/library/functions.html#print>`__, but uses the `logging <https://docs.python.org/3/library/logging.html#module-logging>`__ module instead.
     
     This helper function is provided to easily "print" text without having to setup a logging object, because the builtin print function does not work as expected due to the jsonrpc pipes.
     
@@ -262,7 +262,7 @@ def print(*values: object, sep: str = MISSING) -> None:
     \*values: :class:`object`
         A list of values to print
     sep: Optional[:class:`str`]
-        The character that is used as the seperator between the values. Defaults to `` ``
+        The character that is used as the seperator between the values. Defaults to a space.
     """
 
     if sep is MISSING:
