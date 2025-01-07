@@ -12,6 +12,7 @@ from typing import (
     Coroutine,
     TypeVar,
     Self,
+    Generic,
 )
 from typing import NamedTuple, Literal
 from typing import overload
@@ -189,7 +190,7 @@ class VersionInfo(NamedTuple):
         return cls(major=major, minor=minor, micro=micro, releaselevel=release_level)
 
 
-class decorator[OwnerT, FuncT, ReturnT]:
+class decorator(Generic[OwnerT, FuncT, ReturnT]):
     @overload
     def __init__(self, /, *, is_factory: bool = True) -> None: ...
     @overload
@@ -241,7 +242,7 @@ class decorator[OwnerT, FuncT, ReturnT]:
 
         return wrapper
 
-    def classmethod[T](self, func: T) -> T:
+    def classmethod(self, func: T) -> T:
         if isinstance(func, classmethod):
             func = func.__func__
         self.__classmethod_func__ = func  # type: ignore
