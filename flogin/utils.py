@@ -31,6 +31,7 @@ InstanceMethodT = Callable[[OwnerT, FuncT], ReturnT]
 LOG = logging.getLogger(__name__)
 _print_log = logging.getLogger("printing")
 
+
 class _cached_property:
     def __init__(self, function) -> None:
         self.function = function
@@ -45,17 +46,13 @@ class _cached_property:
 
         return value
 
+
 if TYPE_CHECKING:
     from functools import cached_property as cached_property
 else:
     cached_property = _cached_property
 
-__all__ = (
-    "setup_logging",
-    "coro_or_gen",
-    "MISSING",
-    "print"
-)
+__all__ = ("setup_logging", "coro_or_gen", "MISSING", "print")
 
 
 def copy_doc(original: Callable[..., Any]) -> Callable[[T], T]:
@@ -251,12 +248,13 @@ class decorator(Generic[OwnerT, FuncT, ReturnT]):
             func = func.__func__
         self.__classmethod_func__ = func  # type: ignore
         return func
- 
+
+
 def print(*values: object, sep: str = MISSING) -> None:
     r"""A function that acts similar to the `builtin print function <https://docs.python.org/3/library/functions.html#print>`__, but uses the `logging <https://docs.python.org/3/library/logging.html#module-logging>`__ module instead.
-    
+
     This helper function is provided to easily "print" text without having to setup a logging object, because the builtin print function does not work as expected due to the jsonrpc pipes.
-    
+
     Parameters
     -----------
     \*values: :class:`object`
