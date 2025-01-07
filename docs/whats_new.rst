@@ -15,6 +15,8 @@ New Features
 - Add :attr:`flogin.plugin.Plugin.flow_application_dir`
 - Add the ``flow_version``, ``flow_program_dir``, and ``flow_application_dir`` keyword arguments to :class:`flogin.testing.plugin_tester.PluginTester`
 - Add :class:`flogin.errors.EnvNotSet`
+- Add :func:`flogin.utils.print`
+- Add the ability to use :meth:`flogin.plugin.Plugin.event` as a classmethod
 
 Bug Fixes
 ~~~~~~~~~
