@@ -384,7 +384,7 @@ class Plugin(Generic[SettingsT]):
 
     @decorator(is_factory=False)
     def event(self, callback: EventCallbackT) -> EventCallbackT:
-        """A decorator that registers an event to listen for.
+        """A decorator that registers an event to listen for. This decorator can be used with a plugin instance or as a classmethod.
 
         All events must be a :ref:`coroutine <coroutine>`.
 
@@ -394,12 +394,22 @@ class Plugin(Generic[SettingsT]):
         Example
         ---------
 
+        With a plugin instance:
+
         .. code-block:: python3
 
             @plugin.event
             async def on_initialization():
                 print('Ready!')
 
+        As a classmethod:
+
+        .. code-block:: python3
+
+            class MyPlugin(Plugin):
+                @Plugin.event
+                async def on_initialization(self):
+                    print('Ready!')
         """
 
         self.register_event(callback)

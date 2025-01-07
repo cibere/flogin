@@ -29,6 +29,7 @@ ClassMethodT = Callable[[type[OwnerT], FuncT], ReturnT]
 InstanceMethodT = Callable[[OwnerT, FuncT], ReturnT]
 
 LOG = logging.getLogger(__name__)
+_print_log = logging.getLogger("printing")
 
 
 class _cached_property:
@@ -51,11 +52,7 @@ if TYPE_CHECKING:
 else:
     cached_property = _cached_property
 
-__all__ = (
-    "setup_logging",
-    "coro_or_gen",
-    "MISSING",
-)
+__all__ = ("setup_logging", "coro_or_gen", "MISSING", "print")
 
 
 def copy_doc(original: Callable[..., Any]) -> Callable[[T], T]:
@@ -251,3 +248,25 @@ class decorator(Generic[OwnerT, FuncT, ReturnT]):
             func = func.__func__
         self.__classmethod_func__ = func  # type: ignore
         return func
+
+
+def print(*values: object, sep: str = MISSING) -> None:
+    r"""A function that acts similar to the `builtin print function <https://docs.python.org/3/library/functions.html#print>`__, but uses the `logging <https://docs.python.org/3/library/logging.html#module-logging>`__ module instead.
+
+    This helper function is provided to easily "print" text without having to setup a logging object, because the builtin print function does not work as expected due to the jsonrpc pipes.
+
+    .. NOTE::
+        The log/print statements can be viewed in your ``flogin.log`` file under the name ``printing``
+
+    Parameters
+    -----------
+    \*values: :class:`object`
+        A list of values to print
+    sep: Optional[:class:`str`]
+        The character that is used as the seperator between the values. Defaults to a space.
+    """
+
+    if sep is MISSING:
+        sep = " "
+
+    _print_log.info(sep.join(str(val) for val in values))

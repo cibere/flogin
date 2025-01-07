@@ -302,6 +302,8 @@ Utils
 
 .. autofunction:: flogin.utils.coro_or_gen
 
+.. autofunction:: flogin.utils.print
+
 .. attribute:: flogin.utils.MISSING
 
     A type safe sentinel used in the library to represent something as missing. Used to distinguish from ``None`` values.
