@@ -18,15 +18,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         span.innerHTML = `@${span.innerHTML}`;
         console.log(`Decorator: ${name}`);
+
+        let isFac = decoBadge.dataset['isfactory']
+
+        console.log(`isFac`, isFac)
         
-        // This removes the parens from any deco with a single param. Will probably need to eventually update
-        let params = el.getElementsByClassName("sig-param");
-        if (params.length === 1){
+        if (isFac === "False"){
+            let params = el.getElementsByClassName("sig-param");
             params[0].remove();
             console.log(`Remove`, params[0]);
             let parens = el.getElementsByClassName("sig-paren");
-            if (parens){
-                parens[0].remove();
+            while (parens.length > 0) {
                 parens[0].remove();
             }
         }

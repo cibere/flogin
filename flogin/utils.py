@@ -11,12 +11,21 @@ from typing import (
     Callable,
     Coroutine,
     TypeVar,
+    Self,
+    Generic,
 )
 from typing import NamedTuple, Literal
+from typing import overload
+from functools import wraps
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
 AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
 T = TypeVar("T")
+OwnerT = TypeVar("OwnerT")
+FuncT = TypeVar("FuncT")
+ReturnT = TypeVar("ReturnT")
+ClassMethodT = Callable[[type[OwnerT], FuncT], ReturnT]
+InstanceMethodT = Callable[[OwnerT, FuncT], ReturnT]
 
 LOG = logging.getLogger(__name__)
 
@@ -179,3 +188,65 @@ class VersionInfo(NamedTuple):
             ) from None
 
         return cls(major=major, minor=minor, micro=micro, releaselevel=release_level)
+
+
+class decorator(Generic[OwnerT, FuncT, ReturnT]):
+    @overload
+    def __init__(self, /, *, is_factory: bool = True) -> None: ...
+    @overload
+    def __init__(
+        self, instance_func: InstanceMethodT[OwnerT, FuncT, ReturnT], /
+    ) -> None: ...
+    def __init__(
+        self,
+        instance_func: InstanceMethodT[OwnerT, FuncT, ReturnT] | None = None,
+        /,
+        *,
+        is_factory: bool = True,
+    ) -> None:
+        self.__instance_func__: InstanceMethodT[OwnerT, FuncT, ReturnT] | None = (
+            instance_func
+        )
+        self.__classmethod_func__: ClassMethodT[OwnerT, FuncT, ReturnT] | None = None
+        self.is_factory = is_factory
+
+        if self.__instance_func__ is None:
+            self.__doc__ = None
+        else:
+            self.__doc__ = self.__instance_func__.__doc__
+
+    def __call__(self, instance_func: InstanceMethodT[OwnerT, FuncT, ReturnT]) -> Self:
+        self.__instance_func__ = instance_func
+        self.__doc__ = self.__instance_func__.__doc__
+        return self
+
+    @overload
+    def __get__(
+        self, instance: None, owner: type[OwnerT]
+    ) -> Callable[[FuncT], ReturnT]: ...
+
+    @overload
+    def __get__(
+        self, instance: OwnerT, owner: type[OwnerT]
+    ) -> Callable[[FuncT], ReturnT]: ...
+
+    def __get__(self, instance: OwnerT | None, owner: type[OwnerT]) -> Any:
+        instance_func = self.__instance_func__
+        if instance_func is None:
+            raise RuntimeError("Instance Function is NoneType")
+
+        @wraps(instance_func)
+        def wrapper(func):
+            if instance is not None:
+                return instance_func(instance, func)
+            if self.__classmethod_func__ is not None:
+                return self.__classmethod_func__(owner, func)
+            raise RuntimeError("Decorator useage as a classmethod is not supported")
+
+        return wrapper
+
+    def classmethod(self, func: T) -> T:
+        if isinstance(func, classmethod):
+            func = func.__func__
+        self.__classmethod_func__ = func  # type: ignore
+        return func

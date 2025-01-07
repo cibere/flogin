@@ -34,7 +34,13 @@ from .jsonrpc.responses import BaseResponse
 from .query import Query
 from .search_handler import SearchHandler
 from .settings import Settings
-from .utils import MISSING, cached_property, coro_or_gen, setup_logging
+from .utils import (
+    MISSING,
+    cached_property,
+    coro_or_gen,
+    setup_logging,
+    decorator,
+)
 
 if TYPE_CHECKING:
     from typing_extensions import TypeVar
@@ -67,6 +73,8 @@ class Plugin(Generic[SettingsT]):
         Whether or not to ignore cancellation requests sent from flow. Defaults to ``False``
     """
 
+    __class_events__: list[str] = []
+
     def __init__(self, **options: Any) -> None:
         self.options = options
         self._metadata: PluginMetadata | None = None
@@ -79,6 +87,11 @@ class Plugin(Generic[SettingsT]):
             self
         )
         self.jsonrpc: JsonRPCClient = JsonRPCClient(self)
+
+        # for event_name, event_callback in inspect.getmembers(self, lambda x: getattr(x, "__flogin_add_as_event__", False)):
+        #     self.register_event(event_callback, event_name)
+        for event_name in self.__class_events__:
+            self.register_event(getattr(self, event_name))
 
     @property
     def last_query(self) -> Query | None:
@@ -375,6 +388,7 @@ class Plugin(Generic[SettingsT]):
 
         self._events[name or callback.__name__] = callback
 
+    @decorator(is_factory=False)
     def event(self, callback: EventCallbackT) -> EventCallbackT:
         """A decorator that registers an event to listen for.
 
@@ -395,6 +409,13 @@ class Plugin(Generic[SettingsT]):
         """
 
         self.register_event(callback)
+        return callback
+
+    @event.classmethod
+    @classmethod
+    def __event_classmethod_deco(cls, callback: EventCallbackT) -> EventCallbackT:
+        # setattr(callback, "__flogin_add_as_event__", True)
+        cls.__class_events__.append(callback.__name__)
         return callback
 
     @overload
