@@ -254,7 +254,7 @@ def print(*values: object, sep: str = MISSING) -> None:
     r"""A function that acts similar to the `builtin print function <https://docs.python.org/3/library/functions.html#print>`__, but uses the `logging <https://docs.python.org/3/library/logging.html#module-logging>`__ module instead.
 
     This helper function is provided to easily "print" text without having to setup a logging object, because the builtin print function does not work as expected due to the jsonrpc pipes.
-    
+
     .. versionadded:: 1.1.0
 
     .. NOTE::
