@@ -209,7 +209,11 @@ class decorator(Generic[OwnerT, FuncT, ReturnT]):
         )
         self.__classmethod_func__: ClassMethodT[OwnerT, FuncT, ReturnT] | None = None
         self.is_factory = is_factory
-        self.__doc__ = self.__instance_func__.__doc__
+
+        if self.__instance_func__ is None:
+            self.__doc__ = None
+        else:
+            self.__doc__ = self.__instance_func__.__doc__
 
     def __call__(self, instance_func: InstanceMethodT[OwnerT, FuncT, ReturnT]) -> Self:
         self.__instance_func__ = instance_func
@@ -227,15 +231,14 @@ class decorator(Generic[OwnerT, FuncT, ReturnT]):
     ) -> Callable[[FuncT], ReturnT]: ...
 
     def __get__(self, instance: OwnerT | None, owner: type[OwnerT]) -> Any:
-        if self.__instance_func__ is None:
+        instance_func = self.__instance_func__
+        if instance_func is None:
             raise RuntimeError("Instance Function is NoneType")
 
-        @wraps(self.__instance_func__)
+        @wraps(instance_func)
         def wrapper(func):
             if instance is not None:
-                if not self.__instance_func__:
-                    raise RuntimeError("Instance Function is NoneType")
-                return self.__instance_func__(instance, func)
+                return instance_func(instance, func)
             if self.__classmethod_func__ is not None:
                 return self.__classmethod_func__(owner, func)
             raise RuntimeError("Decorator useage as a classmethod is not supported")
