@@ -17,16 +17,13 @@ from typing import (
     Self,
     TypeVar,
     overload,
+    ParamSpec,
+    Concatenate,
 )
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
 AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
 T = TypeVar("T")
-OwnerT = TypeVar("OwnerT")
-FuncT = TypeVar("FuncT")
-ReturnT = TypeVar("ReturnT")
-ClassMethodT = Callable[[type[OwnerT], FuncT], ReturnT]
-InstanceMethodT = Callable[[OwnerT, FuncT], ReturnT]
 
 LOG = logging.getLogger(__name__)
 _print_log = logging.getLogger("printing")
@@ -188,66 +185,60 @@ class VersionInfo(NamedTuple):
         return cls(major=major, minor=minor, micro=micro, releaselevel=release_level)
 
 
-class decorator(Generic[OwnerT, FuncT, ReturnT]):
-    @overload
-    def __init__(self, /, *, is_factory: bool = True) -> None: ...
-    @overload
-    def __init__(
-        self, instance_func: InstanceMethodT[OwnerT, FuncT, ReturnT], /
-    ) -> None: ...
+OwnerT = TypeVar("OwnerT")
+# Instance signature
+P = ParamSpec("P")
+ReturnT = TypeVar("ReturnT")
+InstanceMethodT = Callable[Concatenate[OwnerT, P], ReturnT]
+# classmethod signature
+PC = ParamSpec("PC")
+ReturnCT = TypeVar("ReturnCT")
+ClassMethodT = Callable[Concatenate[type[OwnerT], P], ReturnT]
+
+
+class InstanceOrClassmethod(Generic[OwnerT, P, ReturnT, PC, ReturnCT]):
     def __init__(
         self,
-        instance_func: InstanceMethodT[OwnerT, FuncT, ReturnT] | None = None,
-        /,
-        *,
-        is_factory: bool = True,
+        instance_func: InstanceMethodT[OwnerT, P, ReturnT],
+        classmethod_func: ClassMethodT[OwnerT, PC, ReturnCT],
     ) -> None:
-        self.__instance_func__: InstanceMethodT[OwnerT, FuncT, ReturnT] | None = (
-            instance_func
-        )
-        self.__classmethod_func__: ClassMethodT[OwnerT, FuncT, ReturnT] | None = None
-        self.is_factory = is_factory
+        self.__instance_func__: InstanceMethodT[OwnerT, P, ReturnT] = instance_func
+        self.__classmethod_func__: ClassMethodT[OwnerT, PC, ReturnCT] = getattr(classmethod_func, "__func__", classmethod_func)
 
-        if self.__instance_func__ is None:
-            self.__doc__ = None
-        else:
-            self.__doc__ = self.__instance_func__.__doc__
-
-    def __call__(self, instance_func: InstanceMethodT[OwnerT, FuncT, ReturnT]) -> Self:
-        self.__instance_func__ = instance_func
         self.__doc__ = self.__instance_func__.__doc__
-        return self
 
     @overload
     def __get__(
         self, instance: None, owner: type[OwnerT]
-    ) -> Callable[[FuncT], ReturnT]: ...
+    ) -> Callable[PC, ReturnCT]: ...
 
     @overload
     def __get__(
         self, instance: OwnerT, owner: type[OwnerT]
-    ) -> Callable[[FuncT], ReturnT]: ...
+    ) -> Callable[P, ReturnT]: ...
 
     def __get__(self, instance: OwnerT | None, owner: type[OwnerT]) -> Any:
-        instance_func = self.__instance_func__
-        if instance_func is None:
-            raise RuntimeError("Instance Function is NoneType")
-
-        @wraps(instance_func)
-        def wrapper(func):
+        @wraps(self.__instance_func__)
+        def wrapper(*args, **kwargs):
             if instance is not None:
-                return instance_func(instance, func)
-            if self.__classmethod_func__ is not None:
-                return self.__classmethod_func__(owner, func)
-            raise RuntimeError("Decorator useage as a classmethod is not supported")
+                return self.__instance_func__(instance, *args, **kwargs)
+            return self.__classmethod_func__(owner, *args, **kwargs)
 
         return wrapper
 
-    def classmethod(self, func: T) -> T:
-        if isinstance(func, classmethod):
-            func = func.__func__
-        self.__classmethod_func__ = func  # type: ignore
-        return func
+
+def add_classmethod_alt(
+    classmethod_func: ClassMethodT[OwnerT, PC, ReturnCT]
+) -> Callable[
+    [InstanceMethodT[OwnerT, P, ReturnT]],
+    InstanceOrClassmethod[OwnerT, P, ReturnT, PC, ReturnCT],
+]:
+    def decorator(
+        instance_func: InstanceMethodT[OwnerT, P, ReturnT]
+    ) -> InstanceOrClassmethod[OwnerT, P, ReturnT, PC, ReturnCT]:
+        return InstanceOrClassmethod(instance_func, classmethod_func)
+
+    return decorator
 
 
 def print(*values: object, sep: str = MISSING) -> None:
@@ -272,3 +263,24 @@ def print(*values: object, sep: str = MISSING) -> None:
         sep = " "
 
     _print_log.info(sep.join(str(val) for val in values))
+
+@overload
+def decorator(*, is_factory: bool) -> Callable[[T], T]:...
+
+@overload
+def decorator(deco: T) -> T:...
+
+def decorator(deco: T = MISSING, *, is_factory: bool = False) -> T | Callable[[T], T]:
+    def inner(func: T) -> T:
+        setattr(func, "__decorator_factory_status__", is_factory)
+        return func
+    
+    if deco is not MISSING:
+        return inner(deco)
+    return inner
+
+def func_with_self(func: Callable[Concatenate[OwnerT, P], ReturnT], self: OwnerT) -> Callable[P, ReturnT]:
+    @wraps(func)
+    def inner(*args: P.args, **kwargs: P.kwargs) -> ReturnT:
+        return func(self, *args, **kwargs)
+    return inner
