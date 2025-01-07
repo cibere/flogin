@@ -51,6 +51,7 @@ extensions = [
     "sphinx.ext.intersphinx",  # https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html
     "sphinx_toolbox.more_autodoc.typevars",  # https://sphinx-toolbox.readthedocs.io/en/latest/extensions/more_autodoc/typevars.html
     "sphinxcontrib_trio",  # https://sphinxcontrib-trio.readthedocs.io/en/latest/
+    "sphinx_copybutton", # https://github.com/executablebooks/sphinx-copybutton#readme
     "nitpick_file_ignorer",
     "attributetable",
 ]
@@ -78,6 +79,7 @@ html_css_files = [
 html_js_files = [
     "custom.js",
 ]
+html_favicon = "./images/flow_logo.ico"
 
 
 # autodoc
