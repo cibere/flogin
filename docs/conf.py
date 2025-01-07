@@ -111,12 +111,12 @@ intersphinx_mapping = {
 }
 
 # https://pradyunsg.me/furo/customisation/announcement/
-html_theme_options = {
-    "announcement": (
-        "<b>In Developement</b> Please note that this extension is still in developement. "
-        "If you find any bugs, please report them om the <a href='https://github.com/cibere/flogin/issues'>GitHub repository</a>."
-    ),
-}
+# html_theme_options = {
+#     "announcement": (
+#         "<b>In Developement</b> Please note that this extension is still in developement. "
+#         "If you find any bugs, please report them om the <a href='https://github.com/cibere/flogin/issues'>GitHub repository</a>."
+#     ),
+# }
 
 # Nitpicky mode options
 nitpick_ignore_files = [
