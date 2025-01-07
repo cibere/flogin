@@ -1,6 +1,6 @@
 __title__ = "flogin"
 __author__ = "cibere"
-__version__ = "1.0.1a"
+__version__ = "1.1.0"
 
 from .caching import *
 from .conditions import *
