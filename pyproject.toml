@@ -58,7 +58,7 @@ packages = [
 asyncio_default_fixture_loop_scope = "module"
 
 [tool.ruff]
-exclude = ["venv"]
+exclude = ["venv", "docs"]
 
 [tool.ruff.lint]
 ignore = [
