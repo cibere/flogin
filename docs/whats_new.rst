@@ -22,6 +22,7 @@ New Features
 - Add :class:`flogin.jsonrpc.errors.InvalidParams`
 - Add :class:`flogin.jsonrpc.errors.InternalError`
 - Add :class:`flogin.jsonrpc.errors.FlowError`
+- Add the ability to use :meth:`flogin.plugin.Plugin.search` as a classmethod
 
 Bug Fixes
 ~~~~~~~~~
