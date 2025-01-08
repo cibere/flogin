@@ -1,4 +1,4 @@
-name: Lint
+name: Black
 
 on:
   push:
@@ -34,14 +34,3 @@ jobs:
         if: ${{ always() && steps.install-deps.outcome == 'success' }}
         run: |
           black --check flogin examples tests
-      
-      - name: Install pyright
-        id: install-pyright
-        run: |
-          pip install pyright
-      
-      - name: Run pyright
-        id: run-pyright
-        if: ${{ always() && steps.install-pyright.outcome == 'success' }}
-        run: |
-          pyright --pythonversion ${{ matrix.python-version }} --pythonplatform Windows --warnings flogin examples tests
