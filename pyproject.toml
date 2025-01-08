@@ -64,7 +64,6 @@ exclude = ["venv"]
 ignore = [
     "F403"
 ]
-dummy-variable-rgx  = "^_$"
 
 [tool.ruff.format]
 quote-style = "double"
