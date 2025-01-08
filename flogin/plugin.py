@@ -301,6 +301,29 @@ class Plugin(Generic[SettingsT]):
             return results
         return QueryResponse(results, self.settings._get_updates())
 
+    async def _action_callback_wrapper(
+        self, callback: Callable[[], Awaitable[ExecuteResponse | bool | None]]
+    ) -> ExecuteResponse:
+        value = await callback()
+        if isinstance(value, bool):
+            return ExecuteResponse(hide=value)
+        if value is None:
+            return ExecuteResponse()
+        if isinstance(value, ExecuteResponse):
+            return value
+        raise ValueError(f"Expected ExecuteResponse, bool, or NoneType. Got {value!r}")
+
+    def process_action(self, method: str) -> asyncio.Task[ExecuteResponse] | None:
+        slug = method.removeprefix("flogin.action.")
+        result = self._results.get(slug)
+        if result is None:
+            return
+
+        result.plugin = self
+        return self._schedule_event(
+            self._action_callback_wrapper, method, args=[result.callback], error_handler=result.on_error
+        )
+
     @property
     def metadata(self) -> PluginMetadata:
         """
