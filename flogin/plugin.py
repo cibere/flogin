@@ -16,8 +16,7 @@ from typing import (
     Generic,
     Iterable,
     TypeVar,
-    TypeVarTuple,
-    overload,
+    TypeVarTuple,Self
 )
 
 from .default_events import get_default_events
@@ -40,7 +39,6 @@ from .utils import (
     coro_or_gen,
     decorator,
     setup_logging,
-    InstanceOrClassmethod,
     add_classmethod_alt,
     func_with_self,
 )
@@ -52,7 +50,6 @@ if TYPE_CHECKING:
         SearchHandlerCallbackClassmethod,
         SearchHandlerCallback,
         SearchHandlerCondition,
-        SearchHandlerConditionClassmethod,
     )
 
     SettingsT = TypeVar("SettingsT", default=Settings, bound=Settings)
@@ -448,7 +445,7 @@ class Plugin(Generic[SettingsT]):
         keyword: str = MISSING,
         allowed_keywords: Iterable[str] = MISSING,
         disallowed_keywords: Iterable[str] = MISSING,
-    ) -> Callable[[SearchHandlerCallbackClassmethod], SearchHandler]:
+    ) -> Callable[[SearchHandlerCallbackClassmethod[Self]], SearchHandler]:
 
         if condition is None:
             condition = SearchHandler._builtin_condition_kwarg_to_obj(
@@ -459,7 +456,7 @@ class Plugin(Generic[SettingsT]):
                 disallowed_keywords=disallowed_keywords,
             )
 
-        def inner(func: SearchHandlerCallbackClassmethod) -> SearchHandler:
+        def inner(func: SearchHandlerCallbackClassmethod[Self]) -> SearchHandler:
             handler = SearchHandler()
             if condition:
                 handler.condition = condition  # type: ignore
@@ -523,7 +520,7 @@ class Plugin(Generic[SettingsT]):
 
             class MyPlugin(Plugin):
                 @Plugin.search()
-                async def example_search_handler(data: Query):
+                async def example_search_handler(self, data: Query):
                     return "This is a result!"
         """
 

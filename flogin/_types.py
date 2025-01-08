@@ -15,7 +15,6 @@ else:
 
 SearchHandlerCallbackReturns = Coroutine[Any, Any, Any] | AsyncIterable[Any]
 SearchHandlerCallback = Callable[[Query], SearchHandlerCallbackReturns]
-SearchHandlerCallbackClassmethod = Callable[[Any, Query], SearchHandlerCallbackReturns]
+SearchHandlerCallbackClassmethod = Callable[[type[PluginT], Query], SearchHandlerCallbackReturns]
 SearchHandlerCondition = Callable[[Query], bool]
-SearchHandlerConditionClassmethod = Callable[[Any, Query], bool]
 RawSettings = dict[str, Any]
