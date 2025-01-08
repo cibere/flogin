@@ -288,11 +288,6 @@ JSON-RPC Errors
 .. autoclass:: flogin.jsonrpc.errors.InvalidRequest
     :members:
 
-.. attributetable:: flogin.jsonrpc.errors.JsonRPCVersionMismatch
-
-.. autoclass:: flogin.jsonrpc.errors.JsonRPCVersionMismatch
-    :members:
-
 .. attributetable:: flogin.jsonrpc.errors.MethodNotFound
 
 .. autoclass:: flogin.jsonrpc.errors.MethodNotFound
@@ -313,7 +308,6 @@ JSON-RPC Errors
 .. autoclass:: flogin.jsonrpc.errors.FlowError
     :members:
     
-
 .. _testing_module_api_reference:
 
 Testing
