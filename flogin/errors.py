@@ -11,7 +11,7 @@ class PluginNotInitialized(PluginException):
     r"""This is raised when you try to access something that needs data from the initialize method, and it hasn't been called yet."""
 
     def __init__(self) -> None:
-        return super().__init__("The plugin hasn't been initialized yet")
+        super().__init__("The plugin hasn't been initialized yet")
 
 
 class EnvNotSet(PluginException):
