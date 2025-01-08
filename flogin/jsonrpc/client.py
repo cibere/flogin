@@ -91,7 +91,7 @@ class JsonRPCClient:
                 _get_jsonrpc_error_from_json(error.to_dict())
             )
         else:
-            LOG.error(f"cancel with no id found: %d", id)
+            LOG.error(f"Error response received for unknown request, {id=}")
 
     async def handle_notification(self, method: str, params: dict[str, Any]) -> None:
         if method == "$/cancelRequest":
