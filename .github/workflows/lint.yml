@@ -1,4 +1,4 @@
-name: Black
+name: Lint
 
 on:
   push:
@@ -6,14 +6,14 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  check:
+  pyright:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: [ '3.11', '3.12', '3.13' ]
 
-    name: check ${{ matrix.python-version }}
+    name: Pyright on ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -28,9 +28,10 @@ jobs:
         id: install-deps
         run: |
           pip install .[tests]
-          pip install black
-
-      - name: Run black
+          pip install pyright
+      
+      - name: Run pyright
+        id: run-pyright
         if: ${{ always() && steps.install-deps.outcome == 'success' }}
         run: |
-          black --check flogin examples tests
+          pyright --pythonversion ${{ matrix.python-version }} --pythonplatform Windows --warnings flogin examples tests

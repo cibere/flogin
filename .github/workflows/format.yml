@@ -1,19 +1,19 @@
-name: build-dist
+name: Format
 
 on:
   push:
   pull_request:
-    types: [ opened, reopened, synchronize ]
+    types: [opened, reopened, synchronize]
 
 jobs:
-  dists-and-docs:
+  black:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python-version: [ '3.11', '3.12', '3.13' ]
 
-    name: dists & docs (${{ matrix.python-version }})
+    name: Black on ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -24,11 +24,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install package
+      - name: Install dependencies
+        id: install-deps
         run: |
-          pip install -e .[docs,tests]
+          pip install .[tests]
+          pip install black
 
-      - name: Build distributions
+      - name: Run black
+        if: ${{ always() && steps.install-deps.outcome == 'success' }}
         run: |
-          python -m pip install build
-          python -m build
+          black --check flogin examples tests
