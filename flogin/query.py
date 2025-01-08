@@ -102,6 +102,11 @@ class Query(Generic[T]):
         results: list[:class:`~flogin.jsonrpc.results.Result`]
             The new results
 
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
         Returns
         -------
         None
@@ -126,6 +131,11 @@ class Query(Generic[T]):
             The keyword that will be used with the query. Defaults to the pre-existing value of :attr:`Query.keyword`. Set this to ``None`` or `"*"` for no keyword to be used.
         requery: :class:`bool`
             Whether or not to re-send a query request in the event that the new query is the same as the current query
+
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
 
         Returns
         --------

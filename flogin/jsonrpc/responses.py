@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from ..utils import MISSING
 from .base_object import ToMessageBase
+from .enums import ErrorCode
 
 if TYPE_CHECKING:
     from .results import Result
@@ -28,9 +29,9 @@ class BaseResponse(ToMessageBase):
             json.dumps(
                 {
                     "jsonrpc": "2.0",
-                    "result": self.to_dict(),
                     "id": id,
                 }
+                | self.to_dict()
             )
             + "\r\n"
         ).encode()
@@ -60,15 +61,17 @@ class ErrorResponse(BaseResponse):
         data = self.data
         if isinstance(data, Exception):
             data = f"{data}"
-        return {"code": self.code, "message": self.message, "data": data}
+        return {"error": {"code": self.code, "message": self.message, "data": data}}
 
     @classmethod
     def from_dict(cls: type[ErrorResponse], data: dict[str, Any]) -> ErrorResponse:
-        return cls(code=data["code"], message=data["message"], data=data["data"])
+        return cls(code=data["code"], message=data["message"], data=data.get("data"))
 
     @classmethod
     def internal_error(cls: type[ErrorResponse], data: Any = None) -> ErrorResponse:
-        return cls(code=-32603, message="Internal error", data=data)
+        return cls(
+            code=ErrorCode.server_error_start.value, message="Internal error", data=data
+        )
 
 
 class QueryResponse(BaseResponse):
@@ -101,6 +104,9 @@ class QueryResponse(BaseResponse):
         self.settings_changes = settings_changes or {}
         self.debug_message = debug_message or ""
 
+    def to_dict(self) -> dict:
+        return {"result": super().to_dict()}
+
 
 class ExecuteResponse(BaseResponse):
     r"""This response is a generic response for jsonrpc requests, most notably result callbacks.
@@ -115,3 +121,6 @@ class ExecuteResponse(BaseResponse):
 
     def __init__(self, hide: bool = True):
         self.hide = hide
+
+    def to_dict(self) -> dict:
+        return {"result": super().to_dict()}
