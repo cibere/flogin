@@ -206,6 +206,10 @@ class InstanceOrClassmethod(Generic[OwnerT, P, ReturnT, PC, ReturnCT]):
         self.__classmethod_func__: ClassMethodT[OwnerT, PC, ReturnCT] = getattr(classmethod_func, "__func__", classmethod_func)
 
         self.__doc__ = self.__instance_func__.__doc__
+    
+    def __call__(self, func: Callable):
+        self.__doc__ = func.__doc__
+        return self
 
     @overload
     def __get__(

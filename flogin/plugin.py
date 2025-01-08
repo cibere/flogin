@@ -436,50 +436,6 @@ class Plugin(Generic[SettingsT]):
         self.register_event(callback)
         return callback
 
-    @overload
-    @classmethod
-    def __search_classmethod_deco(
-        cls, condition: SearchHandlerCondition = MISSING
-    ) -> Callable[[SearchHandlerCallbackClassmethod], SearchHandler]: ...
-
-    @overload
-    @classmethod
-    def __search_classmethod_deco(
-        cls, *, text: str
-    ) -> Callable[[SearchHandlerCallbackClassmethod], SearchHandler]: ...
-
-    @overload
-    @classmethod
-    def __search_classmethod_deco(
-        cls,
-        *,
-        pattern: re.Pattern | str = MISSING,
-    ) -> Callable[[SearchHandlerCallbackClassmethod], SearchHandler]: ...
-
-    @overload
-    @classmethod
-    def __search_classmethod_deco(
-        cls,
-        *,
-        keyword: str = MISSING,
-    ) -> Callable[[SearchHandlerCallbackClassmethod], SearchHandler]: ...
-
-    @overload
-    @classmethod
-    def __search_classmethod_deco(
-        cls,
-        *,
-        allowed_keywords: Iterable[str] = MISSING,
-    ) -> Callable[[SearchHandlerCallbackClassmethod], SearchHandler]: ...
-
-    @overload
-    @classmethod
-    def __search_classmethod_deco(
-        cls,
-        *,
-        disallowed_keywords: Iterable[str] = MISSING,
-    ) -> Callable[[SearchHandlerCallbackClassmethod], SearchHandler]: ...
-
     @classmethod
     def __search_classmethod_deco(
         cls,
@@ -511,51 +467,9 @@ class Plugin(Generic[SettingsT]):
 
         return inner
 
-    @overload
-    def __search_instance_deco(
-        self, condition: SearchHandlerCondition
-    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
-
-    @overload
-    def __search_instance_deco(
-        self, *, text: str
-    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
-
-    @overload
-    def __search_instance_deco(
-        self,
-        *,
-        pattern: re.Pattern | str = MISSING,
-    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
-
-    @overload
-    def __search_instance_deco(
-        self,
-        *,
-        keyword: str = MISSING,
-    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
-
-    @overload
-    def __search_instance_deco(
-        self,
-        *,
-        allowed_keywords: Iterable[str] = MISSING,
-    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
-
-    @overload
-    def __search_instance_deco(
-        self,
-        *,
-        disallowed_keywords: Iterable[str] = MISSING,
-    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
-
-    @overload
-    def __search_instance_deco(
-        self,
-    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
-
     @decorator(is_factory=True)
-    def __search_instance_deco(
+    @add_classmethod_alt(__search_classmethod_deco)
+    def search(
         self,
         condition: SearchHandlerCondition | None = None,
         *,
@@ -609,7 +523,6 @@ class Plugin(Generic[SettingsT]):
                 @Plugin.search()
                 async def example_search_handler(data: Query):
                     return "This is a result!"
-
         """
 
         if condition is None:
@@ -630,9 +543,6 @@ class Plugin(Generic[SettingsT]):
             return handler
 
         return inner
-    
-    search = decorator(is_factory=True)(InstanceOrClassmethod(__search_instance_deco, __search_classmethod_deco))
-    search.__doc__ = __search_instance_deco.__doc__
 
     def fetch_flow_settings(self) -> FlowSettings:
         """Fetches flow's settings from flow's config file
