@@ -17,7 +17,8 @@ from typing import (
     Iterable,
     TypeVar,
     TypeVarTuple,
-    Self,
+    overload,
+    Literal,
 )
 
 from .default_events import get_default_events
@@ -97,7 +98,9 @@ class Plugin(Generic[SettingsT]):
 
         for event_name in self.__class_events__:
             self.register_event(getattr(self, event_name))
-        self.register_search_handlers(*self.__class_search_handlers__)
+        for handler in self.__class_search_handlers__:
+            setattr(handler.callback, "owner", self)
+            self.register_search_handler(handler)
 
     @property
     def last_query(self) -> Query | None:
@@ -436,6 +439,57 @@ class Plugin(Generic[SettingsT]):
         self.register_event(callback)
         return callback
 
+    @overload
+    @classmethod
+    def __handle_search_deco(
+        cls,
+        registrate: Callable[[SearchHandler], None],
+        *,
+        add_self: Literal[True],
+        condition: SearchHandlerCondition | None = None,
+        **kwargs,
+    ) -> Callable[[SearchHandlerCallbackWithSelf], SearchHandler]: ...
+
+    @overload
+    @classmethod
+    def __handle_search_deco(
+        cls,
+        registrate: Callable[[SearchHandler], None],
+        *,
+        add_self: Literal[False],
+        condition: SearchHandlerCondition | None = None,
+        **kwargs,
+    ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
+
+    @classmethod
+    def __handle_search_deco(
+        cls,
+        registrate: Callable[[SearchHandler], None],
+        *,
+        add_self: bool,
+        condition: SearchHandlerCondition | None = None,
+        **kwargs,
+    ) -> (
+        Callable[[SearchHandlerCallbackWithSelf], SearchHandler]
+        | Callable[[SearchHandlerCallback], SearchHandler]
+    ):
+        if condition is None:
+            condition = SearchHandler._builtin_condition_kwarg_to_obj(**kwargs)
+
+        def inner(
+            func: SearchHandlerCallbackWithSelf | SearchHandlerCallback,
+        ) -> SearchHandler:
+            handler = SearchHandler()
+            if condition:
+                setattr(handler, "condition", condition)
+            if add_self:
+                func = func_with_self(func)  # type: ignore # union causes TypeError
+            setattr(handler, "callback", func)
+            registrate(handler)
+            return handler
+
+        return inner
+
     @classmethod
     def __search_classmethod_deco(
         cls,
@@ -447,25 +501,16 @@ class Plugin(Generic[SettingsT]):
         allowed_keywords: Iterable[str] = MISSING,
         disallowed_keywords: Iterable[str] = MISSING,
     ) -> Callable[[SearchHandlerCallbackWithSelf], SearchHandler]:
-
-        if condition is None:
-            condition = SearchHandler._builtin_condition_kwarg_to_obj(
-                text=text,
-                pattern=pattern,
-                keyword=keyword,
-                allowed_keywords=allowed_keywords,
-                disallowed_keywords=disallowed_keywords,
-            )
-
-        def inner(func: SearchHandlerCallbackWithSelf) -> SearchHandler:
-            handler = SearchHandler()
-            if condition:
-                handler.condition = condition  # type: ignore
-            handler.callback = func_with_self(func, handler)  # type: ignore # same type
-            cls.__class_search_handlers__.append(handler)
-            return handler
-
-        return inner
+        return cls.__handle_search_deco(
+            cls.__class_search_handlers__.append,
+            add_self=True,
+            condition=condition,
+            text=text,
+            pattern=pattern,
+            keyword=keyword,
+            allowed_keywords=allowed_keywords,
+            disallowed_keywords=disallowed_keywords,
+        )
 
     @decorator(is_factory=True)
     @add_classmethod_alt(__search_classmethod_deco)
@@ -525,24 +570,16 @@ class Plugin(Generic[SettingsT]):
                     return "This is a result!"
         """
 
-        if condition is None:
-            condition = SearchHandler._builtin_condition_kwarg_to_obj(
-                text=text,
-                pattern=pattern,
-                keyword=keyword,
-                allowed_keywords=allowed_keywords,
-                disallowed_keywords=disallowed_keywords,
-            )
-
-        def inner(func: SearchHandlerCallback) -> SearchHandler:
-            handler = SearchHandler()
-            if condition:
-                handler.condition = condition  # type: ignore
-            handler.callback = func  # type: ignore # type is the same
-            self.register_search_handler(handler)
-            return handler
-
-        return inner
+        return self.__handle_search_deco(
+            self.register_search_handler,
+            add_self=False,
+            condition=condition,
+            text=text,
+            pattern=pattern,
+            keyword=keyword,
+            allowed_keywords=allowed_keywords,
+            disallowed_keywords=disallowed_keywords,
+        )
 
     def fetch_flow_settings(self) -> FlowSettings:
         """Fetches flow's settings from flow's config file
