@@ -77,7 +77,7 @@ select = [
     "ANN",  # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
 ]
 ignore = [
-    "F403",
+    "F403", # https://docs.astral.sh/ruff/rules/undefined-local-with-import-star/#undefined-local-with-import-star-f403
     "G004", # https://docs.astral.sh/ruff/rules/logging-f-string/
     "SIM105", # https://docs.astral.sh/ruff/rules/suppressible-exception/
     "E501", # https://docs.astral.sh/ruff/rules/#error-e_1
