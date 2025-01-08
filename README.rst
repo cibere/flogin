@@ -73,12 +73,3 @@ Links
 
 - `Documentation <https://flogin.readthedocs.io/en/latest/index.html>`_
 - `Flow Launcher's Official Discord Server <https://discord.gg/QDbDfUJaGH>`_
-
-Contributing
-============
-Contributions are greatly appriciated, I just have a couple of requests:
-
-1. Your code is run through isort and black
-2. Your code is properly typed
-3. Your code is tested
-4. Your code is documented
