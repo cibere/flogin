@@ -16,7 +16,8 @@ from typing import (
     Generic,
     Iterable,
     TypeVar,
-    TypeVarTuple,Self
+    TypeVarTuple,
+    Self,
 )
 
 from .default_events import get_default_events
