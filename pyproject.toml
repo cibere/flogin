@@ -58,11 +58,30 @@ packages = [
 asyncio_default_fixture_loop_scope = "module"
 
 [tool.ruff]
-exclude = ["venv", "docs"]
+exclude = ["venv", "docs", "tests", "docs"]
 
 [tool.ruff.lint]
+select = [
+    "C4", # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+    "E", # https://docs.astral.sh/ruff/rules/#error-e_1
+    "F", # https://docs.astral.sh/ruff/rules/#pyflakes-f
+    "G", # https://docs.astral.sh/ruff/rules/#flake8-logging-format-g
+    "I", # https://docs.astral.sh/ruff/rules/#isort-i
+    #"PTH", # https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
+    "RUF", # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+    "SIM", # https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
+    "TC", # https://docs.astral.sh/ruff/rules/#flake8-type-checking-tc
+    "UP", # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "W", # https://docs.astral.sh/ruff/rules/#warning-w
+    "PERF", # https://docs.astral.sh/ruff/rules/#perflint-perf
+    "ANN",  # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
+]
 ignore = [
-    "F403"
+    "F403",
+    "G004", # https://docs.astral.sh/ruff/rules/logging-f-string/
+    "SIM105", # https://docs.astral.sh/ruff/rules/suppressible-exception/
+    "E501", # https://docs.astral.sh/ruff/rules/#error-e_1
+    "ANN401", # https://docs.astral.sh/ruff/rules/any-type/
 ]
 
 [tool.ruff.format]
