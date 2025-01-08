@@ -233,13 +233,13 @@ class InstanceOrClassmethod(Generic[OwnerT, P, ReturnT, PC, ReturnCT]):
 
 
 def add_classmethod_alt(
-    classmethod_func: ClassMethodT[OwnerT, PC, ReturnCT]
+    classmethod_func: ClassMethodT[OwnerT, PC, ReturnCT],
 ) -> Callable[
     [InstanceMethodT[OwnerT, P, ReturnT]],
     InstanceOrClassmethod[OwnerT, P, ReturnT, PC, ReturnCT],
 ]:
     def decorator(
-        instance_func: InstanceMethodT[OwnerT, P, ReturnT]
+        instance_func: InstanceMethodT[OwnerT, P, ReturnT],
     ) -> InstanceOrClassmethod[OwnerT, P, ReturnT, PC, ReturnCT]:
         return InstanceOrClassmethod(instance_func, classmethod_func)
 

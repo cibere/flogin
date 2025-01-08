@@ -31,7 +31,7 @@ def get_default_events(plugin: Plugin[Any]) -> dict[str, Callable[..., Awaitable
         plugin._results.clear()
 
         if plugin._settings_are_populated is False:
-            LOG.info(f"Settings have not been populated yet, creating a new instance")
+            LOG.info("Settings have not been populated yet, creating a new instance")
             plugin._settings_are_populated = True
             plugin.settings = Settings(
                 raw_settings, no_update=plugin.options.get("settings_no_update", False)

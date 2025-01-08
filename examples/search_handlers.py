@@ -1,11 +1,11 @@
-from flogin import Plugin, Query, Result, SearchHandler
+from flogin import Plugin, Query, SearchHandler
 
 plugin = Plugin()
 
 
 class MyHandler(SearchHandler):
     async def callback(self, query: Query):
-        return f"This comes from my subclassed handler"
+        return "This comes from my subclassed handler"
 
     async def on_error(self, query: Query, error: Exception):
         """Handle errors from the 'callback' method"""
@@ -17,7 +17,7 @@ plugin.register_search_handler(MyHandler())
 
 @plugin.search()
 async def my_simple_search_handler(data: Query):
-    return f"This comes from my simple handler"
+    return "This comes from my simple handler"
 
 
 @my_simple_search_handler.error

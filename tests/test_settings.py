@@ -39,4 +39,4 @@ def test_get_updates(settings: Settings):
 
 def test_get_nonexistant_key(settings: Settings):
     val = settings.a_random_key
-    assert val == None
+    assert val is None
