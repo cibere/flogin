@@ -111,20 +111,11 @@ class JsonRPCClient:
         method: str = request["method"]
         params: list[Any] = request["params"]
         task = None
-        error_handler = "on_error"
 
         self.request_id = request["id"]
 
         if method.startswith("flogin.action"):
-            slug = method.removeprefix("flogin.action.")
-            result = self.plugin._results.get(slug)
-            if result:
-                callback = result.callback
-                error_handler = result.on_error
-                result.plugin = self.plugin
-                task = self.plugin._schedule_event(
-                    callback, method, error_handler=error_handler
-                )
+            task = self.plugin.process_action(method)
 
         if task is None:
             task = self.plugin.dispatch(method, *params)

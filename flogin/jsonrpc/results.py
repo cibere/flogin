@@ -239,15 +239,18 @@ class Result(Base, Generic[PluginT]):
         )
         return ErrorResponse.internal_error(error)
 
-    async def callback(self) -> ExecuteResponse:
+    async def callback(self) -> ExecuteResponse | bool | None:
         r"""|coro|
 
         Override this function to add a callback behavior to your result. This method will run when the user clicks on your result.
 
+        .. versionchanged:: 2.0.0
+            A result callback can not return :class:`bool` or ``None``
+
         Returns
         -------
-        :class:`~flogin.jsonrpc.responses.ExecuteResponse`
-            A response to flow determining whether or not to hide flow's menu
+        :class:`~flogin.jsonrpc.responses.ExecuteResponse` | :class:`bool` | ``None``
+            A response to flow determining whether or not to hide flow's menu, or a bool that will be turned into a response. ``None`` will be converted into ``True`` to align with the default value for :attr:`~flogin.jsonrpc.responses.ExecuteResponse.hide`
         """
 
         return ExecuteResponse(False)
