@@ -23,6 +23,7 @@ New Features
 - Add :class:`flogin.jsonrpc.errors.InternalError`
 - Add :class:`flogin.jsonrpc.errors.FlowError`
 - Add the ability to use :meth:`flogin.plugin.Plugin.search` as a classmethod
+- Allow :meth:`flogin.jsonrpc.results.Result.callback` to return :class:`bool` and ``None`` ontop of :class:`flogin.jsonrpc.responses.ExecuteResponse`
 
 Bug Fixes
 ~~~~~~~~~
