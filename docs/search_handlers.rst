@@ -92,11 +92,11 @@ Condition Example
 Registering Handlers
 --------------------
 
-There are 2 main ways to register handlers:
+There are 3 main ways to register handlers:
 
 1. :ref:`Using the plugin.search decorator <register_search_handler_by_plugin.search_deco>`
-
-2. :ref:`Subclassing and registering your search handler <subclass_and_register_search_handler>`
+2. :ref:`Using plugin.search as a classmethod <register_search_hander_by_plugin.search_deco_classmethod>`
+3. :ref:`Subclassing and registering your search handler <subclass_and_register_search_handler>`
 
 .. _register_search_handler_by_plugin.search_deco:
 
@@ -107,6 +107,17 @@ If you want to create a handler outside of your :class:`~flogin.plugin.Plugin` c
     @plugin.search()
     async def my_handler(query: Query):
         return f"Your query was: {query.text}"
+
+.. _register_search_hander_by_plugin.search_deco_classmethod:
+
+Plugin.search decorator as classmethod
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The :func:`~flogin.plugin.Plugin.search` decorator can also be used as a classmethod to define search handlers inside of a plugin class. Like so: ::
+
+    class MyPlugin(Plugin):
+        @Plugin.search()
+        async def my_handler(self, query: Query):
+            return f"Your query was: {query.text}"
 
 .. _subclass_and_register_search_handler:
 
