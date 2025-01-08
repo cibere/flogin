@@ -3,6 +3,31 @@ Whats New
 
 This page keeps a detailed human friendly rendering of what's new and changed in specific versions.
 
+v2.0.0
+-------
+
+Breaking Changes
+~~~~~~~~~~~~~~~~~
+
+- Remove ``flogin.jsonrpc.errors.JsonRPCVersionMismatch``
+- API Methods now raise :class:`flogin.jsonrpc.errors.JsonRPCException` instead of returning an instance of :class:`flogin.jsonrpc.responses.ErrorResponse`
+
+New Features
+~~~~~~~~~~~~
+
+- Rewrite :class:`flogin.jsonrpc.errors.JsonRPCException`
+- Add :class:`flogin.jsonrpc.errors.ParserError`
+- Add :class:`flogin.jsonrpc.errors.InvalidRequest`
+- Add :class:`flogin.jsonrpc.errors.MethodNotFound`
+- Add :class:`flogin.jsonrpc.errors.InvalidParams`
+- Add :class:`flogin.jsonrpc.errors.InternalError`
+- Add :class:`flogin.jsonrpc.errors.FlowError`
+
+Bug Fixes
+~~~~~~~~~
+
+- Fix bugs with how errors were handled inproperly
+
 v1.1.0
 ------
 

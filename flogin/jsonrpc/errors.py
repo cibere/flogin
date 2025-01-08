@@ -21,10 +21,16 @@ class JsonRPCException(Exception):
     ----------
     code: :class:`int`
         The JsonRPC Error Code
+
+        .. versionadded: 2.0.0
     message: :class:`str`
         The message sent with the error
+
+        .. versionadded: 2.0.0
     data: Optional[Any]
         Any data sent with the error
+
+        .. versionadded: 2.0.0
     """
 
     code: int
@@ -39,6 +45,8 @@ class JsonRPCException(Exception):
 
 class ParserError(JsonRPCException):
     r"""This is a specialized JsonRPCException specifically for the error code -32700, which should mean that flogin sent invalid data and flow was unable to parse it.
+
+    .. versionadded: 2.0.0
 
     Attributes
     ----------
@@ -56,6 +64,8 @@ class ParserError(JsonRPCException):
 class InvalidRequest(JsonRPCException):
     r"""This is a specialized JsonRPCException specifically for the error code -32600, which should mean that flogin sent an invalid request object.
 
+    .. versionadded: 2.0.0
+
     Attributes
     ----------
     code: :class:`int` = -32600
@@ -71,6 +81,8 @@ class InvalidRequest(JsonRPCException):
 
 class MethodNotFound(JsonRPCException):
     r"""This is a specialized JsonRPCException specifically for the error code -32601, which should mean that flogin is attempting to use a method that doesn't exist.
+
+    .. versionadded: 2.0.0
 
     Attributes
     ----------
@@ -88,6 +100,8 @@ class MethodNotFound(JsonRPCException):
 class InvalidParams(JsonRPCException):
     r"""This is a specialized JsonRPCException specifically for the error code -32602, which should mean that flogin is attempting to use a method, but is sending the wrong parameters.
 
+    .. versionadded: 2.0.0
+
     Attributes
     ----------
     code: :class:`int` = -32602
@@ -104,6 +118,8 @@ class InvalidParams(JsonRPCException):
 class InternalError(JsonRPCException):
     r"""This is a specialized JsonRPCException specifically for the error code -32603, which should mean that flogin has received an error.
 
+    .. versionadded: 2.0.0
+
     Attributes
     ----------
     code: :class:`int` = -32603
@@ -119,6 +135,8 @@ class InternalError(JsonRPCException):
 
 class FlowError(JsonRPCException):
     r"""This is a specialized JsonRPCException specifically for error codes between -32000 and -32099, which means that flow has ran into an error.
+
+    .. versionadded: 2.0.0
 
     Attributes
     ----------
