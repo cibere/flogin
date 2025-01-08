@@ -59,7 +59,7 @@ __all__ = ("MISSING", "coro_or_gen", "print", "setup_logging")
 def copy_doc(original: Callable[..., Any]) -> Callable[[T], T]:
     def decorator(overridden: T) -> T:
         overridden.__doc__ = original.__doc__
-        overridden.__signature__ = _signature(original)  # type: ignore
+        setattr(overridden, "__sigature__", _signature(original))
         return overridden
 
     return decorator

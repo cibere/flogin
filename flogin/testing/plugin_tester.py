@@ -160,7 +160,8 @@ class PluginTester(Generic[PluginT]):
         if coro is None:
             raise RuntimeError("Query event handler not found")
 
-        return await coro  # type: ignore
+        resp = await coro
+        return resp # type: ignore[returnTypeError]
 
     async def test_context_menu(
         self, result: Result, *, bypass_registration: bool = False
@@ -199,7 +200,8 @@ class PluginTester(Generic[PluginT]):
 
             raise ValueError("Result has not been registered.")
 
-        return await coro  # type: ignore
+        resp = await coro
+        return resp # type: ignore[returnTypeError]
 
     @classmethod
     def create_bogus_plugin_metadata(cls: type[PluginTester]) -> PluginMetadata:
@@ -293,7 +295,8 @@ class PluginTester(Generic[PluginT]):
             "icoPath": icon_path or "",
         }
 
-        return PluginMetadata(data, FillerObject(API_FILLER_TEXT))  # type: ignore
+        filler_object = FillerObject(API_FILLER_TEXT)
+        return PluginMetadata(data, filler_object)  # type: ignore[reportArgumentType]
 
     def __repr__(self) -> str:
         return f"<PluginTester id={id(self)} {self.plugin=}>"

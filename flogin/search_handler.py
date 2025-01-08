@@ -120,7 +120,7 @@ class SearchHandler(Generic[PluginT]):
                 disallowed_keywords=disallowed_keywords,
             )
         if condition:
-            self.condition = condition  # type: ignore
+            setattr(self, "condition", condition)
 
         self.plugin: PluginT | None = None
 
@@ -172,7 +172,7 @@ class SearchHandler(Generic[PluginT]):
             disallowed_keywords=disallowed_keywords,
         )
         if con is not None:
-            cls.condition = con  # type: ignore
+            setattr(cls, "condition", con)
 
     @classmethod
     def _builtin_condition_kwarg_to_obj(
@@ -302,5 +302,5 @@ class SearchHandler(Generic[PluginT]):
 
         """
 
-        self.on_error = func  # type: ignore
+        setattr(self, "on_error", func)
         return func

@@ -250,7 +250,7 @@ def cached_property(
                 ...
     """
 
-    return _cached_deco(CachedProperty)(obj)  # type: ignore
+    return _cached_deco(CachedProperty)(obj)  # type: ignore[reportReturnType]
 
 
 @overload

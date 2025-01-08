@@ -171,7 +171,7 @@ class Plugin(Generic[SettingsT]):
         self._settings_are_populated = True
         LOG.debug(f"Settings filled from file: {data!r}")
         sets = Settings(data, no_update=self.options.get("settings_no_update", False))
-        return sets  # type: ignore
+        return sets  # type: ignore[reportReturnType]
 
     async def _run_event(
         self,
@@ -481,7 +481,7 @@ class Plugin(Generic[SettingsT]):
             if condition:
                 setattr(handler, "condition", condition)
             if add_self:
-                func = func_with_self(func)  # type: ignore # union causes TypeError
+                func = func_with_self(func)  # type: ignore[reportArgumentType]
             setattr(handler, "callback", func)
             registrate(handler)
             return handler
