@@ -1,3 +1,0 @@
-@echo OFF
-isort .
-black .
