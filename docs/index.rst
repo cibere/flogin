@@ -7,8 +7,8 @@ Welcome to flogin's documentation!
 .. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/build.yml?label=build
     :target: https://github.com/cibere/flogin/actions/workflows/build.yml
     :alt: Build Workflow Status
-.. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/lint.yaml?label=lint
-    :target: https://github.com/cibere/flogin/actions/workflows/lint.yaml
+.. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/lint.yml?label=lint
+    :target: https://github.com/cibere/flogin/actions/workflows/lint.yml
     :alt: Lint Workflow Status
 .. image:: https://img.shields.io/pypi/v/flogin.svg
    :target: https://pypi.python.org/pypi/flogin
@@ -17,10 +17,10 @@ Welcome to flogin's documentation!
    :target: https://pypi.python.org/pypi/flogin
    :alt: PyPI supported Python versions
 .. image:: https://img.shields.io/badge/Documentation-Stable-blue
-   :target: https://flogin.readthedocs.io/en/stable
+   :target: https://flogin.cibere.dev/en/stable
    :alt: Stable Documentation
 .. image:: https://img.shields.io/badge/Documentation-Dev/Latest-blue
-   :target: https://flogin.readthedocs.io/en/latest
+   :target: https://flogin.cibere.dev/en/latest
    :alt: Dev/Latest Documentation
 
 A wrapper for Flow Lancher's V2 jsonrpc api using python, to easily and quickly make **Flo**\ w launcher plu\ **gin**\ s.
