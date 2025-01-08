@@ -86,6 +86,7 @@ ignore = [
     "E501", # https://docs.astral.sh/ruff/rules/#error-e_1
     "ANN401", # https://docs.astral.sh/ruff/rules/any-type/
     "RET503", # https://docs.astral.sh/ruff/rules/implicit-return/
+    "RET502", # https://docs.astral.sh/ruff/rules/implicit-return-value/
 ]
 
 [tool.ruff.format]
