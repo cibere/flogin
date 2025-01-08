@@ -20,7 +20,7 @@ class FlowLauncherAPI:
         Do not initialize this class yourself, instead use :class:`~flogin.plugin.Plugin`'s :attr:`~flogin.plugin.Plugin.api` attribute to get an instance.
     """
 
-    def __init__(self, jsonrpc: JsonRPCClient):
+    def __init__(self, jsonrpc: JsonRPCClient) -> None:
         self.jsonrpc = jsonrpc
 
     async def __call__(self, method: str, *args: Any, **kwargs: Any) -> ExecuteResponse:

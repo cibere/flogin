@@ -12,14 +12,14 @@ Double = (
 )  # C# doubles are just floats in python, however there is some typemismatch, so some "doubles" are integers.
 
 __all__ = (
-    "CustomFileManager",
     "CustomBrowser",
+    "CustomFileManager",
     "CustomPluginHotkey",
     "CustomQueryShortcut",
+    "FlowSettings",
     "HttpProxy",
     "PartialPlugin",
     "PluginsSettings",
-    "FlowSettings",
 )
 
 

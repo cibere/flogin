@@ -1,11 +1,11 @@
 from enum import Enum
 
 __all__ = (
-    "LastQueryMode",
-    "SearchWindowScreens",
-    "SearchWindowAligns",
     "AnimationSpeeds",
+    "LastQueryMode",
     "SearchPrecisionScore",
+    "SearchWindowAligns",
+    "SearchWindowScreens",
 )
 
 

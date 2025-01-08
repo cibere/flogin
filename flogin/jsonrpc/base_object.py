@@ -1,14 +1,15 @@
 import json
-from typing import Any, Self
+from typing import Any, ClassVar, Self
 
 __all__ = ("Base",)
 
 
 class Base:
     __slots__ = ()
-    __jsonrpc_option_names__: dict[str, str] = {}
+    __jsonrpc_option_names__: ClassVar[dict[str, str]] = {}
 
     def to_dict(self) -> dict:
+        names = self.__jsonrpc_option_names__ or {}
         foo = {}
         for name in self.__slots__:
             item = getattr(self, name)
@@ -16,7 +17,7 @@ class Base:
                 item = item.to_dict()
             elif item and isinstance(item, list) and isinstance(item[0], Base):
                 item = [item.to_dict() for item in item]
-            foo[self.__jsonrpc_option_names__.get(name, name)] = item
+            foo[names.get(name, name)] = item
         return foo
 
     @classmethod
@@ -24,9 +25,7 @@ class Base:
         raise RuntimeError("This should be overriden")
 
     def __repr__(self) -> str:
-        args = []
-        for item in self.__slots__:
-            args.append(f"{item}={getattr(self, item)!r}")
+        args = [f"{item}={getattr(self, item)!r}" for item in self.__slots__]
         return f"<{self.__class__.__name__} {' '.join(args)}>"
 
 

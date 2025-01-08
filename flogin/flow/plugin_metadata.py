@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Awaitable, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from .base import Base, add_prop
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable
+
     from .api import FlowLauncherAPI
 
 __all__ = ("PluginMetadata",)

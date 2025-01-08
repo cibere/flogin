@@ -4,21 +4,17 @@ import asyncio
 import json
 import logging
 import os
-import re
+from collections.abc import AsyncIterable, Awaitable, Callable, Coroutine, Iterable
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
-    AsyncIterable,
-    Awaitable,
-    Callable,
-    Coroutine,
+    ClassVar,
     Generic,
-    Iterable,
+    Literal,
     TypeVar,
     TypeVarTuple,
     overload,
-    Literal,
 )
 
 from .default_events import get_default_events
@@ -31,28 +27,30 @@ from .jsonrpc import (
     QueryResponse,
     Result,
 )
-from .jsonrpc.responses import BaseResponse
-from .query import Query
 from .search_handler import SearchHandler
 from .settings import Settings
 from .utils import (
     MISSING,
+    add_classmethod_alt,
     cached_property,
     coro_or_gen,
     decorator,
-    setup_logging,
-    add_classmethod_alt,
     func_with_self,
+    setup_logging,
 )
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeVar
+    import re
+
+    from typing_extensions import TypeVar  # noqa: TC004
 
     from ._types import (
-        SearchHandlerCallbackWithSelf,
         SearchHandlerCallback,
+        SearchHandlerCallbackWithSelf,
         SearchHandlerCondition,
     )
+    from .jsonrpc.responses import BaseResponse
+    from .query import Query
 
     SettingsT = TypeVar("SettingsT", default=Settings, bound=Settings)
 else:
@@ -80,8 +78,8 @@ class Plugin(Generic[SettingsT]):
         Whether or not to ignore cancellation requests sent from flow. Defaults to ``False``
     """
 
-    __class_events__: list[str] = []
-    __class_search_handlers__: list[SearchHandler] = []
+    __class_events__: ClassVar[list[str]] = []
+    __class_search_handlers__: ClassVar[list[SearchHandler]] = []
 
     def __init__(self, **options: Any) -> None:
         self.options = options
@@ -168,7 +166,7 @@ class Plugin(Generic[SettingsT]):
         fp = os.path.join(
             "..", "..", "Settings", "Plugins", self.metadata.name, "Settings.json"
         )
-        with open(fp, "r") as f:
+        with open(fp) as f:
             data = json.load(f)
         self._settings_are_populated = True
         LOG.debug(f"Settings filled from file: {data!r}")
@@ -319,7 +317,7 @@ class Plugin(Generic[SettingsT]):
             return self._metadata
         raise PluginNotInitialized()
 
-    async def start(self):
+    async def start(self) -> None:
         r"""|coro|
 
         The default startup/setup method. This can be overriden for advanced startup behavior, but make sure to run ``await super().start()`` to actually start your plugin.
@@ -447,7 +445,7 @@ class Plugin(Generic[SettingsT]):
         *,
         add_self: Literal[True],
         condition: SearchHandlerCondition | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Callable[[SearchHandlerCallbackWithSelf], SearchHandler]: ...
 
     @overload
@@ -458,7 +456,7 @@ class Plugin(Generic[SettingsT]):
         *,
         add_self: Literal[False],
         condition: SearchHandlerCondition | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> Callable[[SearchHandlerCallback], SearchHandler]: ...
 
     @classmethod
@@ -468,7 +466,7 @@ class Plugin(Generic[SettingsT]):
         *,
         add_self: bool,
         condition: SearchHandlerCondition | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> (
         Callable[[SearchHandlerCallbackWithSelf], SearchHandler]
         | Callable[[SearchHandlerCallback], SearchHandler]
@@ -591,6 +589,6 @@ class Plugin(Generic[SettingsT]):
         """
 
         path = os.path.join("..", "..", "Settings", "Settings.json")
-        with open(path, "r") as f:
+        with open(path) as f:
             data = json.load(f)
         return FlowSettings(data)

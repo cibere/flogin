@@ -8,9 +8,9 @@ __all__ = ("Request",)
 
 
 class Request(ToMessageBase):
-    __slots__ = "method", "id", "params"
+    __slots__ = "id", "method", "params"
 
-    def __init__(self, method: str, id: int, params: list[Any] | None = None):
+    def __init__(self, method: str, id: int, params: list[Any] | None = None) -> None:
         self.method = method
         self.id = id
         self.params = params

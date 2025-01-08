@@ -1,18 +1,20 @@
 from __future__ import annotations
 
-import re
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    import re
+    from collections.abc import Iterable
+
     from ._types import SearchHandlerCondition
     from .query import Query
 
 __all__ = (
-    "PlainTextCondition",
-    "RegexCondition",
-    "KeywordCondition",
     "AllCondition",
     "AnyCondition",
+    "KeywordCondition",
+    "PlainTextCondition",
+    "RegexCondition",
 )
 
 
@@ -30,7 +32,7 @@ class PlainTextCondition:
 
     __slots__ = ("text",)
 
-    def __init__(self, text: str):
+    def __init__(self, text: str) -> None:
         self.text = text
 
     def __call__(self, query: Query) -> bool:
@@ -54,7 +56,7 @@ class RegexCondition:
 
     __slots__ = ("pattern",)
 
-    def __init__(self, pattern: re.Pattern):
+    def __init__(self, pattern: re.Pattern) -> None:
         self.pattern = pattern
 
     def __call__(self, query: Query[re.Match]) -> bool:
@@ -71,7 +73,7 @@ class _MultiCondition:
     def __init__(self, *conditions: SearchHandlerCondition) -> None:
         self.conditions = conditions
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__} {self.conditions=}"
 
 

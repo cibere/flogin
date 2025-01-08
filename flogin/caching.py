@@ -1,16 +1,15 @@
+# ruff: noqa: ANN001, ANN002, ANN003, ANN202
+
 from __future__ import annotations
 
 import logging
 import logging.handlers
 from collections import defaultdict
+from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine
 from functools import _make_key as make_cached_key
 from typing import (
     TYPE_CHECKING,
     Any,
-    AsyncGenerator,
-    Awaitable,
-    Callable,
-    Coroutine,
     Generic,
     Self,
     TypeVar,
@@ -26,11 +25,11 @@ T = TypeVar("T")
 LOG = logging.getLogger(__name__)
 
 __all__ = (
-    "cached_property",
+    "cached_callable",
     "cached_coro",
     "cached_gen",
+    "cached_property",
     "clear_cache",
-    "cached_callable",
 )
 
 __cached_objects__: defaultdict[Any, list[BaseCachedObject]] = defaultdict(list)
@@ -65,11 +64,11 @@ class BaseCachedObject:
         self.cache = {}
         __cached_objects__[name].append(self)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> None:
         key = make_cached_key(args, kwargs, False)
         return self.call(key, args, kwargs)
 
-    def call(self, key, args, kwargs):
+    def call(self, key, args, kwargs) -> Any:
         raise NotImplementedError
 
     def clear_cache(self):

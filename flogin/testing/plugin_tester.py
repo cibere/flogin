@@ -5,7 +5,6 @@ import os
 import random
 import sys
 import uuid
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generic
 
 from .._types import PluginT, RawSettings
@@ -16,6 +15,8 @@ from ..utils import MISSING
 from .filler import FillerObject
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from ..jsonrpc.responses import QueryResponse
     from ..jsonrpc.results import Result
 
@@ -78,7 +79,7 @@ class PluginTester(Generic[PluginT]):
                 raise ValueError(
                     "plugin.json file can not be located, consider passing the metadata instead"
                 )
-            with open("plugin.json", "r") as f:
+            with open("plugin.json") as f:
                 metadata = json.load(f)
             assert metadata
 
@@ -294,5 +295,5 @@ class PluginTester(Generic[PluginT]):
 
         return PluginMetadata(data, FillerObject(API_FILLER_TEXT))  # type: ignore
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<PluginTester id={id(self)} {self.plugin=}>"

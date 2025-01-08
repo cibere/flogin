@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import TYPE_CHECKING, Callable, Generic, Iterable, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
 
 from ._types import PluginT, SearchHandlerCallbackReturns, SearchHandlerCondition
 from .conditions import KeywordCondition, PlainTextCondition, RegexCondition
@@ -10,6 +10,8 @@ from .jsonrpc import ErrorResponse
 from .utils import MISSING, copy_doc, decorator
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
+
     from .query import Query
 
     ErrorHandlerT = TypeVar(
@@ -263,11 +265,11 @@ class SearchHandler(Generic[PluginT]):
     if not TYPE_CHECKING:
 
         @copy_doc(callback)
-        async def callback(self, query: Query):
+        async def callback(self, query: Query) -> Any:
             raise RuntimeError("Callback was not overriden")
 
         @copy_doc(on_error)
-        async def on_error(self, query: Query, error: Exception):
+        async def on_error(self, query: Query, error: Exception) -> Any:
             LOG.exception(
                 f"Ignoring exception in search handler callback ({self!r})",
                 exc_info=error,
