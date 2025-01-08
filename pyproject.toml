@@ -56,3 +56,18 @@ packages = [
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "module"
+
+[tool.ruff]
+exclude = ["venv"]
+
+[tool.ruff.lint]
+ignore = [
+    "F403"
+]
+dummy-variable-rgx  = "^_$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
