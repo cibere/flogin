@@ -48,7 +48,7 @@ if TYPE_CHECKING:
     from typing_extensions import TypeVar
 
     from ._types import (
-        SearchHandlerCallbackClassmethod,
+        SearchHandlerCallbackWithSelf,
         SearchHandlerCallback,
         SearchHandlerCondition,
     )
@@ -446,7 +446,7 @@ class Plugin(Generic[SettingsT]):
         keyword: str = MISSING,
         allowed_keywords: Iterable[str] = MISSING,
         disallowed_keywords: Iterable[str] = MISSING,
-    ) -> Callable[[SearchHandlerCallbackClassmethod[Self]], SearchHandler]:
+    ) -> Callable[[SearchHandlerCallbackWithSelf], SearchHandler]:
 
         if condition is None:
             condition = SearchHandler._builtin_condition_kwarg_to_obj(
@@ -457,7 +457,7 @@ class Plugin(Generic[SettingsT]):
                 disallowed_keywords=disallowed_keywords,
             )
 
-        def inner(func: SearchHandlerCallbackClassmethod[Self]) -> SearchHandler:
+        def inner(func: SearchHandlerCallbackWithSelf) -> SearchHandler:
             handler = SearchHandler()
             if condition:
                 handler.condition = condition  # type: ignore
