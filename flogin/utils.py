@@ -1,6 +1,6 @@
 import logging
 import logging.handlers
-from functools import wraps
+from functools import wraps, update_wrapper
 from inspect import isasyncgen, iscoroutine
 from inspect import signature as _signature
 from typing import (
@@ -14,7 +14,6 @@ from typing import (
     Generic,
     Literal,
     NamedTuple,
-    Self,
     TypeVar,
     overload,
     ParamSpec,
@@ -289,11 +288,15 @@ def decorator(deco: T = MISSING, *, is_factory: bool = False) -> T | Callable[[T
     return inner
 
 
-def func_with_self(
-    func: Callable[Concatenate[OwnerT, P], ReturnT], self: OwnerT
-) -> Callable[P, ReturnT]:
-    @wraps(func)
-    def inner(*args: P.args, **kwargs: P.kwargs) -> ReturnT:
-        return func(self, *args, **kwargs)
+class func_with_self(Generic[P, ReturnT, OwnerT]):
+    def __init__(self, func: Callable[Concatenate[OwnerT, P], ReturnT]):
+        self.func = func
+        self.owner: OwnerT | None = None
 
-    return inner
+        update_wrapper(wrapped=func, wrapper=self)
+
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> ReturnT:
+        if self.owner is None:
+            raise RuntimeError("Owner has not been set")
+
+        return self.func(self.owner, *args, **kwargs)
