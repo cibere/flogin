@@ -18,8 +18,6 @@ from sphinx.locale import _
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.typing import OptionSpec
 
-from flogin.utils import decorator
-
 
 class attributetable(nodes.General, nodes.Element):
     pass
@@ -261,18 +259,19 @@ def get_class_results(
                 label = f"{name}.{attr}"
                 badge = attributetablebadge("cls", "cls", data_element_name=attrlookup)
                 badge["badge-type"] = _("classmethod")
-            elif inspect.isfunction(value) or isinstance(value, decorator):
-                if doc.startswith(("A decorator", "A shortcut decorator")):
-                    # finicky but surprisingly consistent
-                    key = _("Methods")
-                    badge = attributetablebadge(
-                        "@",
-                        "@",
-                        data_element_name=attrlookup,
-                        data_is_factory=getattr(value, "is_factory", True),
-                    )
-                    badge["badge-type"] = _("decorator")
-                elif inspect.isasyncgenfunction(value):
+            elif (
+                deco_status := getattr(value, "__decorator_factory_status__", None)
+            ) is not None:
+                key = _("Methods")
+                badge = attributetablebadge(
+                    "@",
+                    "@",
+                    data_element_name=attrlookup,
+                    data_is_factory=deco_status,
+                )
+                badge["badge-type"] = _("decorator")
+            elif inspect.isfunction(value):
+                if inspect.isasyncgenfunction(value):
                     key = _("Methods")
                     badge = attributetablebadge(
                         "async for", "async for", data_element_name=attrlookup
