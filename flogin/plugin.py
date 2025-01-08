@@ -321,7 +321,10 @@ class Plugin(Generic[SettingsT]):
 
         result.plugin = self
         return self._schedule_event(
-            self._action_callback_wrapper, method, args=[result.callback], error_handler=result.on_error
+            self._action_callback_wrapper,
+            method,
+            args=[result.callback],
+            error_handler=result.on_error,
         )
 
     @property
