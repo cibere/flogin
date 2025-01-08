@@ -203,10 +203,12 @@ class InstanceOrClassmethod(Generic[OwnerT, P, ReturnT, PC, ReturnCT]):
         classmethod_func: ClassMethodT[OwnerT, PC, ReturnCT],
     ) -> None:
         self.__instance_func__: InstanceMethodT[OwnerT, P, ReturnT] = instance_func
-        self.__classmethod_func__: ClassMethodT[OwnerT, PC, ReturnCT] = getattr(classmethod_func, "__func__", classmethod_func)
+        self.__classmethod_func__: ClassMethodT[OwnerT, PC, ReturnCT] = getattr(
+            classmethod_func, "__func__", classmethod_func
+        )
 
         self.__doc__ = self.__instance_func__.__doc__
-    
+
     def __call__(self, func: Callable):
         self.__doc__ = func.__doc__
         return self
@@ -268,23 +270,30 @@ def print(*values: object, sep: str = MISSING) -> None:
 
     _print_log.info(sep.join(str(val) for val in values))
 
-@overload
-def decorator(*, is_factory: bool) -> Callable[[T], T]:...
 
 @overload
-def decorator(deco: T) -> T:...
+def decorator(*, is_factory: bool) -> Callable[[T], T]: ...
+
+
+@overload
+def decorator(deco: T) -> T: ...
+
 
 def decorator(deco: T = MISSING, *, is_factory: bool = False) -> T | Callable[[T], T]:
     def inner(func: T) -> T:
         setattr(func, "__decorator_factory_status__", is_factory)
         return func
-    
+
     if deco is not MISSING:
         return inner(deco)
     return inner
 
-def func_with_self(func: Callable[Concatenate[OwnerT, P], ReturnT], self: OwnerT) -> Callable[P, ReturnT]:
+
+def func_with_self(
+    func: Callable[Concatenate[OwnerT, P], ReturnT], self: OwnerT
+) -> Callable[P, ReturnT]:
     @wraps(func)
     def inner(*args: P.args, **kwargs: P.kwargs) -> ReturnT:
         return func(self, *args, **kwargs)
+
     return inner

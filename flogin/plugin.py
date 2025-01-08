@@ -39,8 +39,10 @@ from .utils import (
     cached_property,
     coro_or_gen,
     decorator,
-    setup_logging,InstanceOrClassmethod,
-    add_classmethod_alt,func_with_self
+    setup_logging,
+    InstanceOrClassmethod,
+    add_classmethod_alt,
+    func_with_self,
 )
 
 if TYPE_CHECKING:
@@ -461,7 +463,7 @@ class Plugin(Generic[SettingsT]):
             handler = SearchHandler()
             if condition:
                 handler.condition = condition  # type: ignore
-            handler.callback = func_with_self(func, handler) # type: ignore # same type
+            handler.callback = func_with_self(func, handler)  # type: ignore # same type
             cls.__class_search_handlers__.append(handler)
             return handler
 
@@ -514,7 +516,7 @@ class Plugin(Generic[SettingsT]):
             @plugin.search()
             async def example_search_handler(data: Query):
                 return "This is a result!"
-        
+
         As a classmethod:
 
         .. code-block:: python3

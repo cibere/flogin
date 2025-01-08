@@ -259,7 +259,9 @@ def get_class_results(
                 label = f"{name}.{attr}"
                 badge = attributetablebadge("cls", "cls", data_element_name=attrlookup)
                 badge["badge-type"] = _("classmethod")
-            elif (deco_status := getattr(value, "__decorator_factory_status__", None)) is not None:
+            elif (
+                deco_status := getattr(value, "__decorator_factory_status__", None)
+            ) is not None:
                 key = _("Methods")
                 badge = attributetablebadge(
                     "@",
