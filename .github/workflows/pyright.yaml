@@ -1,0 +1,37 @@
+name: Pyright
+
+on:
+  push:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ '3.11', '3.12', '3.13' ]
+
+    name: check ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up CPython ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        id: install-deps
+        run: |
+          pip install .[tests]
+          pip install pyright
+      
+      - name: Run pyright
+        id: run-pyright
+        if: ${{ always() && steps.install-deps.outcome == 'success' }}
+        run: |
+          pyright --pythonversion ${{ matrix.python-version }} --pythonplatform Windows --warnings flogin examples tests
