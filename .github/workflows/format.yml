@@ -42,7 +42,7 @@ jobs:
       matrix:
         python-version: [ '3.11', '3.12', '3.13' ]
 
-    name: Ruff Formatter on ${{ matrix.python-version }}
+    name: Ruff on ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v3
         with:

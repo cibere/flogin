@@ -13,7 +13,7 @@ jobs:
       matrix:
         python-version: [ '3.11', '3.12', '3.13' ]
 
-    name: build docs on ${{ matrix.python-version }}
+    name: docs on ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -41,7 +41,7 @@ jobs:
       matrix:
         python-version: [ '3.11', '3.12', '3.13' ]
 
-    name: Build dist on ${{ matrix.python-version }}
+    name: dist on ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v3
         with:
