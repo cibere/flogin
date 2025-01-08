@@ -4,7 +4,7 @@ from typing import Any
 
 
 class FillerObject:
-    def __init__(self, text: str):
+    def __init__(self, text: str) -> None:
         self.__error_text__ = text
 
     def __getattribute__(self, name: str) -> Any:

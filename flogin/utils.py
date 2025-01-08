@@ -1,23 +1,28 @@
+from __future__ import annotations
+
 import logging
 import logging.handlers
-from functools import wraps, update_wrapper
-from inspect import isasyncgen, iscoroutine
-from inspect import signature as _signature
-from typing import (
-    TYPE_CHECKING,
-    Any,
+from collections.abc import (
     AsyncGenerator,
     AsyncIterable,
     Awaitable,
     Callable,
     Coroutine,
+)
+from functools import update_wrapper, wraps
+from inspect import isasyncgen, iscoroutine
+from inspect import signature as _signature
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Concatenate,
     Generic,
     Literal,
     NamedTuple,
+    ParamSpec,
+    Self,
     TypeVar,
     overload,
-    ParamSpec,
-    Concatenate,
 )
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
@@ -28,12 +33,12 @@ LOG = logging.getLogger(__name__)
 _print_log = logging.getLogger("printing")
 
 
-class _cached_property:
-    def __init__(self, function) -> None:
+class _cached_property(Generic[T]):
+    def __init__(self, function: Callable[..., T]) -> None:
         self.function = function
         self.__doc__ = getattr(function, "__doc__")
 
-    def __get__(self, instance, owner):
+    def __get__(self, instance: object | None, owner: type[object]) -> Any:
         if instance is None:
             return self
 
@@ -48,13 +53,13 @@ if TYPE_CHECKING:
 else:
     cached_property = _cached_property
 
-__all__ = ("setup_logging", "coro_or_gen", "MISSING", "print")
+__all__ = ("MISSING", "coro_or_gen", "print", "setup_logging")
 
 
 def copy_doc(original: Callable[..., Any]) -> Callable[[T], T]:
     def decorator(overridden: T) -> T:
         overridden.__doc__ = original.__doc__
-        overridden.__signature__ = _signature(original)  # type: ignore
+        setattr(overridden, "__sigature__", _signature(original))
         return overridden
 
     return decorator
@@ -131,10 +136,9 @@ async def coro_or_gen(coro: Awaitable[T] | AsyncIterable[T]) -> list[T] | T:
 
     if iscoroutine(coro):
         return await coro
-    elif isasyncgen(coro):
+    if isasyncgen(coro):
         return [item async for item in coro]
-    else:
-        raise TypeError(f"Not a coro or gen: {coro!r}")
+    raise TypeError(f"Not a coro or gen: {coro!r}")
 
 
 ReleaseLevel = Literal["alpha", "beta", "candidate", "final"]
@@ -147,7 +151,7 @@ class VersionInfo(NamedTuple):
     releaselevel: ReleaseLevel
 
     @classmethod
-    def _from_str(cls, txt: str):
+    def _from_str(cls, txt: str) -> VersionInfo:
         raw_major, raw_minor, raw_micro_w_rel = txt.split(".")
 
         rlevel_shorthands: dict[str, ReleaseLevel] = {
@@ -208,7 +212,7 @@ class InstanceOrClassmethod(Generic[OwnerT, P, ReturnT, PC, ReturnCT]):
 
         self.__doc__ = self.__instance_func__.__doc__
 
-    def __call__(self, func: Callable):
+    def __call__(self, func: Callable) -> Self:
         self.__doc__ = func.__doc__
         return self
 
@@ -224,7 +228,7 @@ class InstanceOrClassmethod(Generic[OwnerT, P, ReturnT, PC, ReturnCT]):
 
     def __get__(self, instance: OwnerT | None, owner: type[OwnerT]) -> Any:
         @wraps(self.__instance_func__)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> ReturnCT | ReturnT:
             if instance is not None:
                 return self.__instance_func__(instance, *args, **kwargs)
             return self.__classmethod_func__(owner, *args, **kwargs)
@@ -233,13 +237,13 @@ class InstanceOrClassmethod(Generic[OwnerT, P, ReturnT, PC, ReturnCT]):
 
 
 def add_classmethod_alt(
-    classmethod_func: ClassMethodT[OwnerT, PC, ReturnCT]
+    classmethod_func: ClassMethodT[OwnerT, PC, ReturnCT],
 ) -> Callable[
     [InstanceMethodT[OwnerT, P, ReturnT]],
     InstanceOrClassmethod[OwnerT, P, ReturnT, PC, ReturnCT],
 ]:
     def decorator(
-        instance_func: InstanceMethodT[OwnerT, P, ReturnT]
+        instance_func: InstanceMethodT[OwnerT, P, ReturnT],
     ) -> InstanceOrClassmethod[OwnerT, P, ReturnT, PC, ReturnCT]:
         return InstanceOrClassmethod(instance_func, classmethod_func)
 
@@ -289,7 +293,7 @@ def decorator(deco: T = MISSING, *, is_factory: bool = False) -> T | Callable[[T
 
 
 class func_with_self(Generic[P, ReturnT, OwnerT]):
-    def __init__(self, func: Callable[Concatenate[OwnerT, P], ReturnT]):
+    def __init__(self, func: Callable[Concatenate[OwnerT, P], ReturnT]) -> None:
         self.func = func
         self.owner: OwnerT | None = None
 

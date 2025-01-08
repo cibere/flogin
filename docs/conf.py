@@ -20,8 +20,16 @@ author = "Unknown Author"
 try:
     with open("../flogin/__init__.py") as f:
         read = f.read()
-        version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', read, re.MULTILINE).group(1)  # type: ignore
-        author = re.search(r'^__author__\s*=\s*[\'"]([^\'"]*)[\'"]', read, re.MULTILINE).group(1)  # type: ignore
+        version = re.search(
+            r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', read, re.MULTILINE
+        ).group(
+            1
+        )  # type: ignore
+        author = re.search(
+            r'^__author__\s*=\s*[\'"]([^\'"]*)[\'"]', read, re.MULTILINE
+        ).group(
+            1
+        )  # type: ignore
 except Exception:
     pass
 
@@ -34,8 +42,6 @@ copyright = f"{current_year}, {author}"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-import os
-import sys
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the

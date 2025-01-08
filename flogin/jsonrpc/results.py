@@ -5,10 +5,8 @@ import random
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
-    Coroutine,
+    ClassVar,
     Generic,
-    Iterable,
     NotRequired,
     Self,
     TypedDict,
@@ -21,10 +19,13 @@ from ..utils import MISSING, cached_property, copy_doc
 from .base_object import Base
 from .responses import ErrorResponse, ExecuteResponse
 
+if TYPE_CHECKING:
+    from collections.abc import Callable, Coroutine, Iterable
+
 TS = TypeVarTuple("TS")
 LOG = logging.getLogger(__name__)
 
-__all__ = ("Result", "ResultPreview", "ProgressBar", "Glyph")
+__all__ = ("Glyph", "ProgressBar", "Result", "ResultPreview")
 
 
 class Glyph(Base):
@@ -38,8 +39,11 @@ class Glyph(Base):
         The font that the text should be shown in
     """
 
-    __slots__ = "text", "font_family"
-    __jsonrpc_option_names__ = {"text": "Glyph", "font_family": "FontFamily"}
+    __slots__ = "font_family", "text"
+    __jsonrpc_option_names__: ClassVar[dict[str, str]] = {
+        "text": "Glyph",
+        "font_family": "FontFamily",
+    }
 
     def __init__(self, text: str, font_family: str) -> None:
         self.text = text
@@ -72,8 +76,8 @@ class ProgressBar(Base):
         The color that the progress bar should be in hex code form. Defaults to #26a0da.
     """
 
-    __slots__ = "percentage", "color"
-    __jsonrpc_option_names__ = {
+    __slots__ = "color", "percentage"
+    __jsonrpc_option_names__: ClassVar[dict[str, str]] = {
         "percentage": "ProgressBar",
         "color": "ProgressBarColor",
     }
@@ -99,8 +103,8 @@ class ResultPreview(Base):
         Whther the preview should be treated as media or not
     """
 
-    __slots__ = "image_path", "description", "is_media", "preview_deligate"
-    __jsonrpc_option_names__ = {
+    __slots__ = "description", "image_path", "is_media", "preview_deligate"
+    __jsonrpc_option_names__: ClassVar[dict[str, str]] = {
         "image_path": "previewImagePath",
         "is_media": "isMedia",
         "description": "description",
@@ -298,11 +302,11 @@ class Result(Base, Generic[PluginT]):
     if not TYPE_CHECKING:
 
         @copy_doc(context_menu)
-        async def context_menu(self):
+        async def context_menu(self) -> Any:
             return []
 
         @copy_doc(on_context_menu_error)
-        async def on_context_menu_error(self, error: Exception):
+        async def on_context_menu_error(self, error: Exception) -> Any:
             LOG.exception(
                 f"Ignoring exception in result's context menu callback ({self!r})",
                 exc_info=error,
@@ -387,10 +391,9 @@ class Result(Base, Generic[PluginT]):
     def from_anything(cls: type[Result], item: Any) -> Result:
         if isinstance(item, dict):
             return cls.from_dict(item)
-        elif isinstance(item, Result):
+        if isinstance(item, Result):
             return item
-        else:
-            return cls(str(item))
+        return cls(str(item))
 
     @classmethod
     def create_with_partial(
@@ -437,5 +440,5 @@ class Result(Base, Generic[PluginT]):
             )
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__} {self.title=} {self.sub=} {self.icon=} {self.title_highlight_data=} {self.title_tooltip=} {self.sub_tooltip=} {self.copy_text=} {self.score=} {self.auto_complete_text=} {self.preview=} {self.progress_bar=} {self.rounded_icon=} {self.glyph=}>"

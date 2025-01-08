@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Awaitable, Callable
+from typing import TYPE_CHECKING, Any
 
-from .jsonrpc import ErrorResponse
+from .jsonrpc import ErrorResponse, QueryResponse
 from .query import Query, RawQuery
 from .settings import Settings
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable
+
     from .plugin import Plugin
 
 
@@ -25,13 +27,15 @@ async def on_error(
 
 
 def get_default_events(plugin: Plugin[Any]) -> dict[str, Callable[..., Awaitable[Any]]]:
-    def on_query(data: RawQuery, raw_settings: dict[str, Any]):
+    def on_query(
+        data: RawQuery, raw_settings: dict[str, Any]
+    ) -> Awaitable[ErrorResponse | QueryResponse]:
         query = Query(data, plugin)
         plugin._last_query = query
         plugin._results.clear()
 
         if plugin._settings_are_populated is False:
-            LOG.info(f"Settings have not been populated yet, creating a new instance")
+            LOG.info("Settings have not been populated yet, creating a new instance")
             plugin._settings_are_populated = True
             plugin.settings = Settings(
                 raw_settings, no_update=plugin.options.get("settings_no_update", False)
@@ -40,7 +44,7 @@ def get_default_events(plugin: Plugin[Any]) -> dict[str, Callable[..., Awaitable
             plugin.settings._update(raw_settings)
         return plugin.process_search_handlers(query)
 
-    def on_context_menu(data: list[str]):
+    def on_context_menu(data: list[str]) -> Awaitable[ErrorResponse | QueryResponse]:
         return plugin.process_context_menus(data)
 
     return {

@@ -14,13 +14,11 @@ def show_version() -> None:
     entries = []
 
     entries.append(
-        "- Python v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}".format(
-            sys.version_info
-        )
+        f"- Python v{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}-{sys.version_info.releaselevel}"
     )
 
     entries.append(
-        "- flogin v{0.major}.{0.minor}.{0.micro}-{0.releaselevel}".format(version_info)
+        f"- flogin v{version_info.major}.{version_info.minor}.{version_info.micro}-{version_info.releaselevel}"
     )
 
     try:
@@ -31,7 +29,7 @@ def show_version() -> None:
         pass
 
     uname = platform.uname()
-    entries.append("- system info: {0.system} {0.release} {0.version}".format(uname))
+    entries.append(f"- system info: {uname.system} {uname.release} {uname.version}")
     print("\n".join(entries))
 
 
@@ -57,8 +55,8 @@ body:
       name: prepend_result
       label: Text to prepend to result output
       description: >
-        This text will be added to the beginning of the result output. For example, if you set this to 
-        "The result is: ", and the result is "42", the output will be "The result is: 42". 
+        This text will be added to the beginning of the result output. For example, if you set this to
+        "The result is: ", and the result is "42", the output will be "The result is: 42".
   - type: dropdown
     attributes:
       name: programming_language
@@ -198,11 +196,11 @@ jobs:
       - name: get version
         id: version
         uses: notiz-dev/github-action-json-property@release
-        with: 
+        with:
           path: 'plugin.json'
           prop_path: 'Version'
 
-      - run: echo ${{steps.version.outputs.prop}} 
+      - run: echo ${{steps.version.outputs.prop}}
 
       - name: Install dependencies
         run: |
@@ -317,11 +315,13 @@ def write_to_file(path: Path, content: str, parser: argparse.ArgumentParser) -> 
 
 def create_new_handler(
     parser: argparse.ArgumentParser, *, path: Path, name: str, plugin: str
-):
+) -> None:
     write_to_file(path, _handler_template.format(plugin=plugin, name=name), parser)
 
 
-def create_plugin_directory(parser: argparse.ArgumentParser, args: argparse.Namespace):
+def create_plugin_directory(
+    parser: argparse.ArgumentParser, args: argparse.Namespace
+) -> None:
     plugin_dir = Path("plugin")
     plugin_name = args.plugin_name
 
@@ -349,7 +349,7 @@ def create_plugin_directory(parser: argparse.ArgumentParser, args: argparse.Name
     create_new_handler(parser, path=root_handler_file, name="Root", plugin=plugin_name)
 
 
-def create_git_files(parser: argparse.ArgumentParser, args: argparse.Namespace):
+def create_git_files(parser: argparse.ArgumentParser, args: argparse.Namespace) -> None:
     github_dir = Path(".github")
     issue_template_dir = github_dir / "ISSUE_TEMPLATE"
     workflows_dir = github_dir / "workflows"

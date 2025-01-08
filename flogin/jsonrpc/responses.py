@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from ..utils import MISSING
 from .base_object import ToMessageBase
@@ -12,8 +12,8 @@ if TYPE_CHECKING:
 
 __all__ = (
     "ErrorResponse",
-    "QueryResponse",
     "ExecuteResponse",
+    "QueryResponse",
 )
 
 
@@ -50,9 +50,9 @@ class ErrorResponse(BaseResponse):
         Any extra data
     """
 
-    __slots__ = "code", "message", "data"
+    __slots__ = "code", "data", "message"
 
-    def __init__(self, code: int, message: str, data: Any | None = None):
+    def __init__(self, code: int, message: str, data: Any | None = None) -> None:
         self.code = code
         self.message = message
         self.data = data
@@ -87,8 +87,8 @@ class QueryResponse(BaseResponse):
         A debug message if you want
     """
 
-    __slots__ = "results", "settings_changes", "debug_message"
-    __jsonrpc_option_names__ = {
+    __slots__ = "debug_message", "results", "settings_changes"
+    __jsonrpc_option_names__: ClassVar[dict[str, str]] = {
         "settings_changes": "SettingsChange",
         "debug_message": "debugMessage",
         "results": "result",
@@ -99,7 +99,7 @@ class QueryResponse(BaseResponse):
         results: list[Result],
         settings_changes: dict[str, Any] | None = None,
         debug_message: str = MISSING,
-    ):
+    ) -> None:
         self.results = results
         self.settings_changes = settings_changes or {}
         self.debug_message = debug_message or ""
@@ -119,7 +119,7 @@ class ExecuteResponse(BaseResponse):
 
     __slots__ = ("hide",)
 
-    def __init__(self, hide: bool = True):
+    def __init__(self, hide: bool = True) -> None:
         self.hide = hide
 
     def to_dict(self) -> dict:

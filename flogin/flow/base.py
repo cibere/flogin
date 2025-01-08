@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from inspect import getmembers
-from typing import Any, Callable
+from typing import Any
 
 from ..utils import MISSING
 
@@ -16,15 +17,17 @@ def _convert_cls(orig: ValidCls, is_list: bool) -> ValidCls:
     return orig
 
 
-def _get_prop_func(cls: ValidCls, name: str, *, default: Any = MISSING):
+def _get_prop_func(
+    cls: ValidCls, name: str, *, default: Any = MISSING
+) -> Callable[[Any], Any]:
     if default is MISSING:
 
-        def func(self):
+        def func(self: Any) -> Any:
             return cls(self._data[name])
 
     else:
 
-        def func(self):
+        def func(self: Any) -> Any:
             return cls(self._data.get(name, default))
 
     return func
@@ -44,7 +47,7 @@ def add_prop(
 
 
 class Base:
-    __slots__ = ("_data", "__repr_attributes__")
+    __slots__ = ("__repr_attributes__", "_data")
 
     def __init__(self, data: dict[str, Any]) -> None:
         self._data = data
@@ -56,7 +59,5 @@ class Base:
         ]
 
     def __repr__(self) -> str:
-        args = []
-        for item in self.__repr_attributes__:
-            args.append(f"{item}={getattr(self, item)!r}")
+        args = [f"{item}={getattr(self, item)!r}" for item in self.__repr_attributes__]
         return f"<{self.__class__.__name__} {' '.join(args)}>"

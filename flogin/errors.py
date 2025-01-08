@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = ("PluginException", "PluginNotInitialized", "EnvNotSet")
+__all__ = ("EnvNotSet", "PluginException", "PluginNotInitialized")
 
 
 class PluginException(Exception):
@@ -10,8 +10,8 @@ class PluginException(Exception):
 class PluginNotInitialized(PluginException):
     r"""This is raised when you try to access something that needs data from the initialize method, and it hasn't been called yet."""
 
-    def __init__(self):
-        return super().__init__("The plugin hasn't been initialized yet")
+    def __init__(self) -> None:
+        super().__init__("The plugin hasn't been initialized yet")
 
 
 class EnvNotSet(PluginException):

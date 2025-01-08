@@ -1,18 +1,20 @@
 from __future__ import annotations
 
-import re
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    import re
+    from collections.abc import Iterable
+
     from ._types import SearchHandlerCondition
     from .query import Query
 
 __all__ = (
-    "PlainTextCondition",
-    "RegexCondition",
-    "KeywordCondition",
     "AllCondition",
     "AnyCondition",
+    "KeywordCondition",
+    "PlainTextCondition",
+    "RegexCondition",
 )
 
 
@@ -30,7 +32,7 @@ class PlainTextCondition:
 
     __slots__ = ("text",)
 
-    def __init__(self, text: str):
+    def __init__(self, text: str) -> None:
         self.text = text
 
     def __call__(self, query: Query) -> bool:
@@ -54,7 +56,7 @@ class RegexCondition:
 
     __slots__ = ("pattern",)
 
-    def __init__(self, pattern: re.Pattern):
+    def __init__(self, pattern: re.Pattern) -> None:
         self.pattern = pattern
 
     def __call__(self, query: Query[re.Match]) -> bool:
@@ -71,7 +73,7 @@ class _MultiCondition:
     def __init__(self, *conditions: SearchHandlerCondition) -> None:
         self.conditions = conditions
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__} {self.conditions=}"
 
 
@@ -151,7 +153,7 @@ class KeywordCondition:
             raise TypeError(
                 "Either the 'allowed_keywords' arg or the 'disallowed_keywords' arg must be given"
             )
-        elif allowed_keywords is not None and disallowed_keywords is not None:
+        if allowed_keywords is not None and disallowed_keywords is not None:
             raise TypeError(
                 "'allowed_keywords' and 'disallowed_keywords' can not be passed together. Use `MultiCondition` if you would like to achieve it."
             )
@@ -162,15 +164,14 @@ class KeywordCondition:
     def __call__(self, query: Query) -> bool:
         if self.allowed_keywords is None and self.disallowed_keywords is not None:
             return query.keyword not in self.disallowed_keywords
-        elif self.allowed_keywords is not None and self.disallowed_keywords is None:
+        if self.allowed_keywords is not None and self.disallowed_keywords is None:
             return query.keyword in self.allowed_keywords
-        elif self.allowed_keywords is None and self.disallowed_keywords is None:
+        if self.allowed_keywords is None and self.disallowed_keywords is None:
             raise RuntimeError(
                 "'allowed_keywords' and 'disallowed_keywords' are both set to None. How did this happen?"
             )
-        elif self.allowed_keywords is not None and self.disallowed_keywords is not None:
+        if self.allowed_keywords is not None and self.disallowed_keywords is not None:
             raise RuntimeError(
                 "'allowed_keywords' and 'disallowed_keywords' are provided. How did this happen?"
             )
-        else:
-            raise RuntimeError("How did we get here")
+        raise RuntimeError("How did we get here")

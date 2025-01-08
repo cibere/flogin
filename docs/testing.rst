@@ -184,7 +184,7 @@ Here is an example of writing tests for the plugin: ::
         assert result.title == "Blanket Handler Called"
 
         execute_response = await result.callback()
-        assert execute_response.hide == True
+        assert execute_response.hide is True
 
 
     @pytest.mark.asyncio

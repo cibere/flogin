@@ -14,7 +14,6 @@ from docutils import nodes
 from sphinx import addnodes
 from sphinx.application import Sphinx
 from sphinx.environment import BuildEnvironment
-from sphinx.locale import _
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.typing import OptionSpec
 
@@ -225,8 +224,8 @@ def get_class_results(
     cls = getattr(module, name)
 
     groups: Dict[str, List[TableElement]] = {
-        _("Attributes"): [],
-        _("Methods"): [],
+        ("Attributes"): [],
+        ("Methods"): [],
     }
 
     try:
@@ -236,7 +235,7 @@ def get_class_results(
 
     for attr in members:
         attrlookup = f"{fullname}.{attr}"
-        key = _("Attributes")
+        key = "Attributes"
         badge = None
         label = attr
         value = None
@@ -249,40 +248,40 @@ def get_class_results(
         if value is not None:
             doc = value.__doc__ or ""
             if inspect.iscoroutinefunction(value) or doc.startswith("|coro|"):
-                key = _("Methods")
+                key = "Methods"
                 badge = attributetablebadge(
                     "async", "async", data_element_name=attrlookup
                 )
-                badge["badge-type"] = _("coroutine")
+                badge["badge-type"] = "coroutine"
             elif isinstance(value, classmethod):
-                key = _("Methods")
+                key = "Methods"
                 label = f"{name}.{attr}"
                 badge = attributetablebadge("cls", "cls", data_element_name=attrlookup)
-                badge["badge-type"] = _("classmethod")
+                badge["badge-type"] = "classmethod"
             elif (
                 deco_status := getattr(value, "__decorator_factory_status__", None)
             ) is not None:
-                key = _("Methods")
+                key = "Methods"
                 badge = attributetablebadge(
                     "@",
                     "@",
                     data_element_name=attrlookup,
                     data_is_factory=deco_status,
                 )
-                badge["badge-type"] = _("decorator")
+                badge["badge-type"] = "decorator"
             elif inspect.isfunction(value):
                 if inspect.isasyncgenfunction(value):
-                    key = _("Methods")
+                    key = "Methods"
                     badge = attributetablebadge(
                         "async for", "async for", data_element_name=attrlookup
                     )
-                    badge["badge-type"] = _("async iterable")
+                    badge["badge-type"] = "async iterable"
                 else:
-                    key = _("Methods")
+                    key = "Methods"
                     badge = attributetablebadge(
                         "def", "def", data_element_name=attrlookup
                     )
-                    badge["badge-type"] = _("method")
+                    badge["badge-type"] = "method"
 
         groups[key].append(TableElement(fullname=attrlookup, label=label, badge=badge))
 

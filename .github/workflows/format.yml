@@ -15,12 +15,12 @@ jobs:
 
     name: Black on ${{ matrix.python-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Set up CPython ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -34,3 +34,32 @@ jobs:
         if: ${{ always() && steps.install-deps.outcome == 'success' }}
         run: |
           black --check flogin examples tests
+
+  ruff:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ '3.11', '3.12', '3.13' ]
+
+    name: Ruff on ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up CPython ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        id: install-deps
+        run: |
+          pip install .[tests]
+          pip install ruff
+      
+      - name: Run Ruff Formatter
+        if: ${{ always() && steps.install-deps.outcome == 'success' }}
+        run: |
+            ruff format --check

@@ -56,3 +56,40 @@ packages = [
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "module"
+
+[tool.ruff]
+exclude = ["venv", "docs", "tests", "examples"]
+
+[tool.ruff.lint]
+select = [
+    "C4", # https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+    "E", # https://docs.astral.sh/ruff/rules/#error-e_1
+    "F", # https://docs.astral.sh/ruff/rules/#pyflakes-f
+    "G", # https://docs.astral.sh/ruff/rules/#flake8-logging-format-g
+    "I", # https://docs.astral.sh/ruff/rules/#isort-i
+    #"PTH", # https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
+    "RUF", # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+    "SIM", # https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
+    "TC", # https://docs.astral.sh/ruff/rules/#flake8-type-checking-tc
+    "UP", # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "W", # https://docs.astral.sh/ruff/rules/#warning-w
+    "PERF", # https://docs.astral.sh/ruff/rules/#perflint-perf
+    "ANN",  # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
+    "PGH", # https://docs.astral.sh/ruff/rules/#pygrep-hooks-pgh
+    "RET", # https://docs.astral.sh/ruff/rules/#flake8-return-ret
+    "PLE", # https://docs.astral.sh/ruff/rules/#error-e_1
+]
+ignore = [
+    "F403", # https://docs.astral.sh/ruff/rules/undefined-local-with-import-star/#undefined-local-with-import-star-f403
+    "G004", # https://docs.astral.sh/ruff/rules/logging-f-string/
+    "SIM105", # https://docs.astral.sh/ruff/rules/suppressible-exception/
+    "E501", # https://docs.astral.sh/ruff/rules/#error-e_1
+    "ANN401", # https://docs.astral.sh/ruff/rules/any-type/
+    "RET503", # https://docs.astral.sh/ruff/rules/implicit-return/
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

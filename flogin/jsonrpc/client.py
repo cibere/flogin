@@ -3,13 +3,14 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from asyncio.streams import StreamReader, StreamWriter
 from typing import TYPE_CHECKING, Any
 
 from .errors import (
-    MethodNotFound,
-    get_exception_from_json as _get_jsonrpc_error_from_json,
     InternalError,
+    MethodNotFound,
+)
+from .errors import (
+    get_exception_from_json as _get_jsonrpc_error_from_json,
 )
 from .requests import Request
 from .responses import BaseResponse, ErrorResponse
@@ -17,6 +18,8 @@ from .responses import BaseResponse, ErrorResponse
 LOG = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
+    from asyncio.streams import StreamReader, StreamWriter
+
     from ..plugin import Plugin
 
 __all__ = ("JsonRPCClient",)
@@ -138,15 +141,14 @@ class JsonRPCClient:
 
         if isinstance(result, BaseResponse):
             return await self.write(result.to_message(id=request["id"]))
-        else:
-            err = InternalError("Internal Error: Invalid Response Object", repr(result))
-            LOG.exception(
-                f"Invalid Response Object: {result!r}",
-                exc_info=err,
-            )
-            return await self.write(err.to_response().to_message(id=request["id"]))
+        err = InternalError("Internal Error: Invalid Response Object", repr(result))
+        LOG.exception(
+            f"Invalid Response Object: {result!r}",
+            exc_info=err,
+        )
+        return await self.write(err.to_response().to_message(id=request["id"]))
 
-    async def process_input(self, line: str):
+    async def process_input(self, line: str) -> None:
         LOG.debug(f"Processing {line!r}")
         message = json.loads(line)
 
@@ -171,11 +173,12 @@ class JsonRPCClient:
                 exc_info=err,
             )
 
-    async def start_listening(self, reader: StreamReader, writer: StreamWriter):
+    async def start_listening(self, reader: StreamReader, writer: StreamWriter) -> None:
         self.reader = reader
         self.writer = writer
 
         stream_log = logging.getLogger("flogin.stream_reader")
+        tasks = set()
 
         while 1:
             async for line in reader:
@@ -184,7 +187,9 @@ class JsonRPCClient:
                 if line == "":
                     continue
 
-                asyncio.create_task(self.process_input(line))
+                task = asyncio.create_task(self.process_input(line))
+                tasks.add(task)
+                task.add_done_callback(tasks.discard)
 
     async def write(self, msg: bytes, drain: bool = True) -> None:
         LOG.debug(f"Sending: {msg!r}")

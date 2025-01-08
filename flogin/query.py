@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar
 
-from ._types import PluginT
 from .utils import MISSING
 
 if TYPE_CHECKING:
+    from ._types import PluginT
     from .jsonrpc.results import Result
 
 T = TypeVar("T")

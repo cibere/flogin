@@ -27,7 +27,7 @@ def _create_query(text: str, plugin, keyword: str = "*", is_requery: bool = Fals
 
 @pytest.fixture
 def plugin():
-    return FillerObject(f"Fake plugin object provided")
+    return FillerObject("Fake plugin object provided")
 
 
 @pytest.fixture
@@ -61,12 +61,12 @@ def condition(request):
 
 def test_conditions_1(condition, yes_query: Query):
     res = condition(yes_query)
-    assert res == True
+    assert res is True
 
 
 def test_conditions_2(condition, no_query: Query):
     res = condition(no_query)
-    assert res == False
+    assert res is False
 
 
 allcondition_yes_tests = [
@@ -107,15 +107,15 @@ class TestAllCondition:
 
     def test_allcondition_1(self, allcondition_yes: AllCondition, yes_query: Query):
         res = allcondition_yes(yes_query)
-        assert res == True
+        assert res is True
 
     def test_allcondition_2(self, allcondition_yes: AllCondition, no_query: Query):
         res = allcondition_yes(no_query)
-        assert res == False
+        assert res is False
 
     def test_allcondition_3(self, allcondition_no: AllCondition, query: Query):
         res = allcondition_no(query)
-        assert res == False
+        assert res is False
 
     def test_condition_data(self, yes_query: Query):
         def condition1(query: Query):
@@ -127,7 +127,7 @@ class TestAllCondition:
             return True
 
         cond = AllCondition(condition1, condition2)
-        assert cond(yes_query) == True
+        assert cond(yes_query) is True
         assert yes_query.condition_data == {
             condition2: 20,
             condition1: 25,
@@ -159,11 +159,11 @@ class TestAnyCondition:
 
     def test_multicondition_any_1(self, anycondition_yes: AnyCondition, query: Query):
         res = anycondition_yes(query)
-        assert res == True
+        assert res is True
 
     def test_multicondition_any_2(self, anycondition_no: AnyCondition, query: Query):
         res = anycondition_no(query)
-        assert res == False
+        assert res is False
 
     def test_condition_data(self, yes_query: Query):
         def condition(query: Query):
@@ -173,5 +173,5 @@ class TestAnyCondition:
         cond = AnyCondition(
             condition,
         )
-        assert cond(yes_query) == True
+        assert cond(yes_query) is True
         assert yes_query.condition_data == (condition, 25)

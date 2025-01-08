@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import TYPE_CHECKING, Callable, Generic, Iterable, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
 
 from ._types import PluginT, SearchHandlerCallbackReturns, SearchHandlerCondition
 from .conditions import KeywordCondition, PlainTextCondition, RegexCondition
@@ -10,6 +10,8 @@ from .jsonrpc import ErrorResponse
 from .utils import MISSING, copy_doc, decorator
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
+
     from .query import Query
 
     ErrorHandlerT = TypeVar(
@@ -118,7 +120,7 @@ class SearchHandler(Generic[PluginT]):
                 disallowed_keywords=disallowed_keywords,
             )
         if condition:
-            self.condition = condition  # type: ignore
+            setattr(self, "condition", condition)
 
         self.plugin: PluginT | None = None
 
@@ -170,7 +172,7 @@ class SearchHandler(Generic[PluginT]):
             disallowed_keywords=disallowed_keywords,
         )
         if con is not None:
-            cls.condition = con  # type: ignore
+            setattr(cls, "condition", con)
 
     @classmethod
     def _builtin_condition_kwarg_to_obj(
@@ -184,15 +186,15 @@ class SearchHandler(Generic[PluginT]):
     ) -> SearchHandlerCondition | None:
         if text is not MISSING:
             return PlainTextCondition(text)
-        elif pattern is not MISSING:
+        if pattern is not MISSING:
             if isinstance(pattern, str):
                 pattern = re.compile(pattern)
             return RegexCondition(pattern)
-        elif keyword is not MISSING:
+        if keyword is not MISSING:
             return KeywordCondition(allowed_keywords=[keyword])
-        elif allowed_keywords is not MISSING:
+        if allowed_keywords is not MISSING:
             return KeywordCondition(allowed_keywords=allowed_keywords)
-        elif disallowed_keywords is not MISSING:
+        if disallowed_keywords is not MISSING:
             return KeywordCondition(disallowed_keywords=disallowed_keywords)
 
     def condition(self, query: Query) -> bool:
@@ -263,11 +265,11 @@ class SearchHandler(Generic[PluginT]):
     if not TYPE_CHECKING:
 
         @copy_doc(callback)
-        async def callback(self, query: Query):
+        async def callback(self, query: Query) -> Any:
             raise RuntimeError("Callback was not overriden")
 
         @copy_doc(on_error)
-        async def on_error(self, query: Query, error: Exception):
+        async def on_error(self, query: Query, error: Exception) -> Any:
             LOG.exception(
                 f"Ignoring exception in search handler callback ({self!r})",
                 exc_info=error,
@@ -300,5 +302,5 @@ class SearchHandler(Generic[PluginT]):
 
         """
 
-        self.on_error = func  # type: ignore
+        setattr(self, "on_error", func)
         return func
