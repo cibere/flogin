@@ -137,8 +137,7 @@ def _cached_deco(cls: type[BaseCachedObject], doc: str | None = None):
                 return cls(obj2, obj)
 
             return inner
-        else:
-            return cls(obj)
+        return cls(obj)
 
     deco.__doc__ = doc
     return deco

@@ -76,6 +76,7 @@ select = [
     "PERF", # https://docs.astral.sh/ruff/rules/#perflint-perf
     "ANN",  # https://docs.astral.sh/ruff/rules/#flake8-annotations-ann
     "PGH", # https://docs.astral.sh/ruff/rules/#pygrep-hooks-pgh
+    "RET", # https://docs.astral.sh/ruff/rules/#flake8-return-ret
 ]
 ignore = [
     "F403", # https://docs.astral.sh/ruff/rules/undefined-local-with-import-star/#undefined-local-with-import-star-f403
@@ -83,6 +84,7 @@ ignore = [
     "SIM105", # https://docs.astral.sh/ruff/rules/suppressible-exception/
     "E501", # https://docs.astral.sh/ruff/rules/#error-e_1
     "ANN401", # https://docs.astral.sh/ruff/rules/any-type/
+    "RET503", # https://docs.astral.sh/ruff/rules/implicit-return/
 ]
 
 [tool.ruff.format]

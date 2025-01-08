@@ -170,8 +170,7 @@ class Plugin(Generic[SettingsT]):
             data = json.load(f)
         self._settings_are_populated = True
         LOG.debug(f"Settings filled from file: {data!r}")
-        sets = Settings(data, no_update=self.options.get("settings_no_update", False))
-        return sets  # type: ignore[reportReturnType]
+        return Settings(data, no_update=self.options.get("settings_no_update", False))  # type: ignore[reportReturnType]
 
     async def _run_event(
         self,
@@ -190,8 +189,7 @@ class Plugin(Generic[SettingsT]):
                 error_handler = "on_error"
             if isinstance(error_handler, str):
                 return await self._events[error_handler](event_name, e, *args, **kwargs)
-            else:
-                return await error_handler(e)
+            return await error_handler(e)
 
     def _schedule_event(
         self,

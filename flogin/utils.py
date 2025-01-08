@@ -136,10 +136,9 @@ async def coro_or_gen(coro: Awaitable[T] | AsyncIterable[T]) -> list[T] | T:
 
     if iscoroutine(coro):
         return await coro
-    elif isasyncgen(coro):
+    if isasyncgen(coro):
         return [item async for item in coro]
-    else:
-        raise TypeError(f"Not a coro or gen: {coro!r}")
+    raise TypeError(f"Not a coro or gen: {coro!r}")
 
 
 ReleaseLevel = Literal["alpha", "beta", "candidate", "final"]

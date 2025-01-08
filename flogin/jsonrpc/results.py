@@ -391,10 +391,9 @@ class Result(Base, Generic[PluginT]):
     def from_anything(cls: type[Result], item: Any) -> Result:
         if isinstance(item, dict):
             return cls.from_dict(item)
-        elif isinstance(item, Result):
+        if isinstance(item, Result):
             return item
-        else:
-            return cls(str(item))
+        return cls(str(item))
 
     @classmethod
     def create_with_partial(

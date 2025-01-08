@@ -141,13 +141,12 @@ class JsonRPCClient:
 
         if isinstance(result, BaseResponse):
             return await self.write(result.to_message(id=request["id"]))
-        else:
-            err = InternalError("Internal Error: Invalid Response Object", repr(result))
-            LOG.exception(
-                f"Invalid Response Object: {result!r}",
-                exc_info=err,
-            )
-            return await self.write(err.to_response().to_message(id=request["id"]))
+        err = InternalError("Internal Error: Invalid Response Object", repr(result))
+        LOG.exception(
+            f"Invalid Response Object: {result!r}",
+            exc_info=err,
+        )
+        return await self.write(err.to_response().to_message(id=request["id"]))
 
     async def process_input(self, line: str) -> None:
         LOG.debug(f"Processing {line!r}")

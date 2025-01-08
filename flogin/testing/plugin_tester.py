@@ -160,8 +160,7 @@ class PluginTester(Generic[PluginT]):
         if coro is None:
             raise RuntimeError("Query event handler not found")
 
-        resp = await coro
-        return resp # type: ignore[returnTypeError]
+        return await coro # type: ignore[returnTypeError]
 
     async def test_context_menu(
         self, result: Result, *, bypass_registration: bool = False
@@ -200,8 +199,7 @@ class PluginTester(Generic[PluginT]):
 
             raise ValueError("Result has not been registered.")
 
-        resp = await coro
-        return resp # type: ignore[returnTypeError]
+        return await coro # type: ignore[returnTypeError]
 
     @classmethod
     def create_bogus_plugin_metadata(cls: type[PluginTester]) -> PluginMetadata:

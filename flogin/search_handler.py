@@ -186,15 +186,15 @@ class SearchHandler(Generic[PluginT]):
     ) -> SearchHandlerCondition | None:
         if text is not MISSING:
             return PlainTextCondition(text)
-        elif pattern is not MISSING:
+        if pattern is not MISSING:
             if isinstance(pattern, str):
                 pattern = re.compile(pattern)
             return RegexCondition(pattern)
-        elif keyword is not MISSING:
+        if keyword is not MISSING:
             return KeywordCondition(allowed_keywords=[keyword])
-        elif allowed_keywords is not MISSING:
+        if allowed_keywords is not MISSING:
             return KeywordCondition(allowed_keywords=allowed_keywords)
-        elif disallowed_keywords is not MISSING:
+        if disallowed_keywords is not MISSING:
             return KeywordCondition(disallowed_keywords=disallowed_keywords)
 
     def condition(self, query: Query) -> bool:
