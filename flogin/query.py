@@ -115,7 +115,7 @@ class Query(Generic[T]):
         return await self.plugin.api.update_results(self.raw_text, results)
 
     async def update(
-        self, *, text: str, keyword: str | None = MISSING, requery: bool = False
+        self, *, text: str | None, keyword: str | None = MISSING, requery: bool = False
     ) -> None:
         r"""|coro|
 
@@ -125,8 +125,10 @@ class Query(Generic[T]):
 
         Parameters
         ----------
-        text: :class:`str`
+        text: :class:`str` | ``None``
             The text that will be used with the query.
+
+            .. versionchanged:: ``text`` can now be ``None``
         keyword: :class:`str`
             The keyword that will be used with the query. Defaults to the pre-existing value of :attr:`Query.keyword`. Set this to ``None`` or `"*"` for no keyword to be used.
         requery: :class:`bool`
@@ -144,16 +146,22 @@ class Query(Generic[T]):
 
         if keyword is MISSING:
             keyword = self.keyword
+        elif keyword is None:
+            keyword = "*"
 
-        if keyword is None or keyword == "*":
-            raw_text = text
-            self._data["actionKeyword"] = "*"
+        if text is None:
+            raw_text = "" if keyword == "*" else keyword
+            self._data["actionKeyword"] = raw_text
         else:
-            raw_text = f"{keyword} {text}"
-            self._data["actionKeyword"] = keyword
+            if keyword == "*":
+                raw_text = text
+                self._data["actionKeyword"] = "*"
+            else:
+                raw_text = f"{keyword} {text}"
+                self._data["actionKeyword"] = keyword
 
         self._data["rawQuery"] = raw_text
-        self._data["search"] = text
+        self._data["search"] = text or ""
         self._data["isReQuery"] = requery
 
         return await self.plugin.api.change_query(raw_text, requery=requery)
