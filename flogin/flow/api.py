@@ -439,7 +439,7 @@ class FlowLauncherAPI:
 
         await self.jsonrpc.request("OpenDirectory", [directory, file])
 
-    async def update_results(self, raw_query: str, results: list[Result]) -> None:
+    async def update_results(self, raw_query: str, results: list[Result[Any]]) -> None:
         r"""|coro|
 
         Tells flow to change the results shown to the user
@@ -469,5 +469,5 @@ class FlowLauncherAPI:
         self.jsonrpc.plugin._results.update({res.slug: res for res in results})
 
         await self.jsonrpc.request(
-            "UpdateResults", [raw_query, QueryResponse(results).to_dict()]
+            "UpdateResults", [raw_query, QueryResponse(results).to_dict()["result"]]
         )
