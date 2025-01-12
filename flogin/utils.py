@@ -12,6 +12,7 @@ from collections.abc import (
 from functools import update_wrapper, wraps
 from inspect import isasyncgen, iscoroutine
 from inspect import signature as _signature
+from inspect import stack as _stack
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -30,7 +31,6 @@ AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
 T = TypeVar("T")
 
 LOG = logging.getLogger(__name__)
-_print_log = logging.getLogger("printing")
 
 
 class _cached_property(Generic[T]):
@@ -250,15 +250,14 @@ def add_classmethod_alt(
     return decorator
 
 
-def print(*values: object, sep: str = MISSING) -> None:
+def print(*values: object, sep: str = MISSING, name: str = MISSING) -> None:
     r"""A function that acts similar to the `builtin print function <https://docs.python.org/3/library/functions.html#print>`__, but uses the `logging <https://docs.python.org/3/library/logging.html#module-logging>`__ module instead.
 
     This helper function is provided to easily "print" text without having to setup a logging object, because the builtin print function does not work as expected due to the jsonrpc pipes.
 
     .. versionadded:: 1.1.0
-
-    .. NOTE::
-        The log/print statements can be viewed in your ``flogin.log`` file under the name ``printing``
+    .. versionchanged:: 2.0.0
+        The default log name now defaults to the filepath of the file that called the function opposed to ``printing``.
 
     Parameters
     -----------
@@ -266,12 +265,18 @@ def print(*values: object, sep: str = MISSING) -> None:
         A list of values to print
     sep: Optional[:class:`str`]
         The character that is used as the seperator between the values. Defaults to a space.
+    name: Optional[:class:`str`]
+        The name of the logger. Defaults to the filepath of the file the function is called from.
+
+        .. versionadded:: 2.0.0
     """
 
     if sep is MISSING:
         sep = " "
+    if name is MISSING:
+        name = _stack()[1].filename
 
-    _print_log.info(sep.join(str(val) for val in values))
+    logging.getLogger(name).info(sep.join(str(val) for val in values))
 
 
 @overload
