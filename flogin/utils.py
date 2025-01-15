@@ -98,7 +98,7 @@ def setup_logging(
 
     if handler is None:
         handler = logging.handlers.RotatingFileHandler(
-            "flogin.log", maxBytes=1000000, encoding="UTF-8"
+            "flogin.log", maxBytes=1000000, encoding="UTF-8", backupCount=1
         )
 
     if formatter is None:
