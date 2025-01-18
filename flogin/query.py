@@ -67,7 +67,7 @@ class Query(Generic[T]):
 
     @property
     def keyword(self) -> str:
-        return self._data["actionKeyword"]
+        return self._data["actionKeyword"] or "*"
 
     @property
     def raw_text(self) -> str:
