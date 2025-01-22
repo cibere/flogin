@@ -14,4 +14,4 @@ jobs:
 
       - name: Echo git
         run: |
-            echo git
+            echo ${{ github }}
