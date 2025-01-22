@@ -444,6 +444,8 @@ class Plugin(Generic[SettingsT]):
 
         .. code-block:: python3
 
+            from flogin.utils import print
+
             @plugin.event
             async def on_initialization():
                 print('Ready!')
@@ -451,6 +453,8 @@ class Plugin(Generic[SettingsT]):
         As a classmethod:
 
         .. code-block:: python3
+
+            from flogin.utils import print
 
             class MyPlugin(Plugin):
                 @Plugin.event
