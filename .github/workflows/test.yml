@@ -1,0 +1,17 @@
+name: Test Workflow
+
+on:
+  push:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    name: Checkout
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Echo git
+        run: |
+            echo git
