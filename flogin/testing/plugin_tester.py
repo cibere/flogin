@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import random
 import sys
 import uuid
 from typing import TYPE_CHECKING, Any, Generic
@@ -81,7 +80,6 @@ class PluginTester(Generic[PluginT]):
                 )
             with open("plugin.json") as f:
                 metadata = json.load(f)
-            assert metadata
 
         if isinstance(metadata, dict):
             metadata = PluginMetadata(metadata, self.plugin.api)
@@ -216,8 +214,8 @@ class PluginTester(Generic[PluginT]):
 
         return cls.create_plugin_metadata(
             id=str(uuid.uuid4()),
-            name="".join(random.choices(CHARACTERS, k=10)),
-            author="".join(random.choices(CHARACTERS, k=5)),
+            name="Test Plugin",
+            author="flogin",
             version="1.0.0",
             description="A plugin with bogus metadata to test",
         )
