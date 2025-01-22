@@ -33,3 +33,7 @@ jobs:
         env:
             VARS_JSON: ${{ toJSON(vars) }}
         run: echo "${VARS_JSON}"
+      - name: Test Python Version Imp
+        run: echo ${{ toJson(vars.PYTHON_VERSIONS) }}
+      - name: Test Python Version Imp2
+        run: echo ${{ toJson(vars.PYTHON_VERSIONS2) }}
