@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.11', '3.12', '3.13' ]
+        python-version: ${{ vars.PYTHON_VERSIONS }}
 
     name: Pyright on ${{ matrix.python-version }}
     steps:
@@ -41,7 +41,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.11', '3.12', '3.13' ]
+        python-version: ${{ vars.PYTHON_VERSIONS }}
 
     name: Ruff on ${{ matrix.python-version }}
     steps:
@@ -69,7 +69,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.11', '3.12', '3.13' ]
+        python-version: ${{ vars.PYTHON_VERSIONS }}
 
     name: Bandit on ${{ matrix.python-version }}
     steps:
