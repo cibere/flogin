@@ -87,7 +87,7 @@ jobs:
         run: |
           pip install .[tests]
           pip install bandit
-      
+
       - name: Run Bandit
         run: |
           bandit -c pyproject.toml -r flogin
