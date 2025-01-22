@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ${{ vars.PYTHON_VERSIONS }}
+        python-version: ${{ toJson(vars.PYTHON_VERSIONS) }}
 
     name: Black on ${{ matrix.python-version }}
     steps:
@@ -40,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ${{ vars.PYTHON_VERSIONS }}
+        python-version: ${{ toJson(vars.PYTHON_VERSIONS) }}
 
     name: Ruff on ${{ matrix.python-version }}
     steps:
