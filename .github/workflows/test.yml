@@ -29,3 +29,7 @@ jobs:
         env:
           MATRIX_CONTEXT: ${{ toJson(matrix) }}
         run: echo "$MATRIX_CONTEXT"
+      - name: Dump vars context
+        env:
+            VARS_JSON: ${{ toJSON(vars) }}
+        run: echo "${VARS_JSON}"
