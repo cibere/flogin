@@ -63,3 +63,32 @@ jobs:
       - name: Run Ruff Linter
         if: ${{ always() && steps.install-deps.outcome == 'success' }}
         uses: astral-sh/ruff-action@v3
+
+  bandit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ '3.11', '3.12', '3.13' ]
+
+    name: Bandit on ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up CPython ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        id: install-deps
+        run: |
+          pip install .[tests]
+          pip install bandit
+      
+      - name: Run Bandit
+        run: |
+          bandit -c pyproject.toml -r flogin
+          bandit -c pyproject.toml -r tests --skip B101
