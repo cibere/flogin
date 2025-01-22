@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-import random
+import secrets
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -437,11 +437,7 @@ class Result(Base, Generic[PluginT]):
 
     @cached_property
     def slug(self) -> str:
-        return "".join(
-            random.choices(
-                "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890", k=15
-            )
-        )
+        return secrets.token_hex(15)
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} {self.title=} {self.sub=} {self.icon=} {self.title_highlight_data=} {self.title_tooltip=} {self.sub_tooltip=} {self.copy_text=} {self.score=} {self.auto_complete_text=} {self.preview=} {self.progress_bar=} {self.rounded_icon=} {self.glyph=}>"
