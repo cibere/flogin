@@ -12,6 +12,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Echo git
-        run: |
-            echo ${{ github }}
+      - name: Dump vars context
+        env:
+            VARS_JSON: ${{ toJSON(vars) }}
+        run: echo "${VARS_JSON}"
