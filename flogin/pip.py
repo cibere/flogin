@@ -184,9 +184,16 @@ class Pip:
         try:
             proc = subprocess.run(cmd, capture_output=True, check=True)
         except subprocess.CalledProcessError as e:
+            log.debug(
+                f"Pip command failed. stdout: {e.output.decode()!r}, stderr: {e.stderr.decode()!r}"
+            )
             raise PipExecutionError(e)
+
         output = proc.stdout.decode()
-        log.debug(f"Received response: {output!r}")
+        log.debug(f"Pip stdout: {output!r}")
+        if proc.stderr:
+            log.debug(f"Pip stderr: {proc.stderr.decode()!r}")
+
         return output
 
     def install_packages(self, *packages: str) -> None:
