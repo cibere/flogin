@@ -92,13 +92,15 @@ class PipExecutionError(PipException):
     """
 
     def __init__(self, err: CalledProcessError) -> None:
-        super().__init__(f"An error occurred while attempting to use pip: {err.stderr}")
+        super().__init__(
+            f"An error occurred while attempting to use pip: {err.stderr.decode()}"
+        )
         self.error = err
 
     @property
     def output(self) -> str:
         """:class:`str` The output from :attr:`subprocess.CalledProcessError.output`"""
-        return self.error.output
+        return self.error.output.decode()
 
     @property
     def returncode(self) -> int:
@@ -108,4 +110,4 @@ class PipExecutionError(PipException):
     @property
     def stderr(self) -> str:
         """:class:`str` The stderr from :attr:`subprocess.CalledProcessError.stderr`"""
-        return self.error.stderr
+        return self.error.stderr.decode()
