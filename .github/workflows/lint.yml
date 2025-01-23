@@ -57,7 +57,7 @@ jobs:
       - name: Install dependencies
         id: install-deps
         run: |
-          pip install .[tests,docs]
+          pip install .[tests,pip]
           pip install ruff
       
       - name: Run Ruff Linter
