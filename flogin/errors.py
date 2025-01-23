@@ -6,9 +6,7 @@ if TYPE_CHECKING:
         CalledProcessError,  # noqa: TC003 # https://github.com/astral-sh/ruff/issues/15681
     )
 
-    from requests import (
-        HTTPError,  # noqa: TC002 # https://github.com/astral-sh/ruff/issues/15681
-    )
+    import requests  # noqa: TC002 # https://github.com/astral-sh/ruff/issues/15681
 
 __all__ = (
     "EnvNotSet",
@@ -71,18 +69,15 @@ class UnableToDownloadPip(PipException):
 
     Attributes
     ----------
-    error: :class:`requests.exceptions.HTTPError`
+    error: :class:`requests.exceptions.HTTPError` | :class:`requests.Timeout` | :class:`requests.ConnectionError`
         The error that was raised by the :doc:`req:index` module.
     """
 
-    def __init__(self, err: HTTPError) -> None:
-        super().__init__(f"HTTP Error {err.response.status_code}")
+    def __init__(
+        self, err: requests.HTTPError | requests.Timeout | requests.ConnectionError
+    ) -> None:
+        super().__init__(err)
         self.error = err
-
-    @property
-    def code(self) -> int:
-        """:class:`int`: The status code from the :class:`requests.exceptions.HTTPError` object."""
-        return self.error.response.status_code
 
 
 class PipExecutionError(PipException):

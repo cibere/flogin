@@ -106,10 +106,10 @@ class Pip:
         -------
         ``None``
         """
-        res = requests.get("https://bootstrap.pypa.io/pip/pip.pyz", timeout=10)
         try:
+            res = requests.get("https://bootstrap.pypa.io/pip/pip.pyz", timeout=10)
             res.raise_for_status()
-        except requests.HTTPError as e:
+        except (requests.HTTPError, requests.Timeout, requests.ConnectionError) as e:
             raise UnableToDownloadPip(e) from e
 
         with tempfile.NamedTemporaryFile("wb", suffix="-pip.pyz", delete=False) as f:
@@ -149,6 +149,9 @@ class Pip:
 
         This method is used to interact directly with pip.
 
+        .. NOTE::
+            This method can not be used until :meth:`download_pip` is ran, which you can do by calling it manually or using :class:`Pip` as a context manager.
+
         Parameters
         -----------
         \*args: :class:`str`
@@ -182,16 +185,16 @@ class Pip:
         log.debug(f"Received response: {output!r}")
         return output
 
-    def install_package(self, package: str) -> None:
-        r"""An easy way to install a new version of a package for your plugin.
+    def install_packages(self, *packages: str) -> None:
+        r"""An easy way to install packages for your plugin.
 
         .. NOTE::
-            The package will be installed to the directory set in :attr:`Pip.libs_dir`.
+            The packages will be installed to the directory set in :attr:`Pip.libs_dir`.
 
         Parameters
         ----------
-        package: :class:`str`
-            The name of the package on PyPi that you want to install.
+        \*packages: :class:`str`
+            The name of the packages on PyPi that you want to install.
 
         Raises
         ------
@@ -207,7 +210,7 @@ class Pip:
             "install",
             "--upgrade",
             "--force-reinstall",
-            package,
+            *packages,
             "-t",
             self.libs_dir.as_posix(),
         )
@@ -237,7 +240,7 @@ class Pip:
         try:
             __import__(module or package)
         except (ImportError, ModuleNotFoundError):
-            self.install_package(package)
+            self.install_packages(package)
             return True
         return False
 
