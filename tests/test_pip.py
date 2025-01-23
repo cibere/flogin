@@ -35,6 +35,7 @@ def test_libs_dir_property(temp_dir):
     pip = Pip(str(temp_dir))
     assert pip.libs_dir == temp_dir
 
+    Path("lib").mkdir(exist_ok=True)
     pip = Pip()
     assert pip.libs_dir == Path("lib")
 
