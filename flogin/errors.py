@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+TYPE_CHECKING = False
+if TYPE_CHECKING:
+    from subprocess import (
+        CalledProcessError,  # noqa: TC003 # https://github.com/astral-sh/ruff/issues/15681
+    )
+
+    from requests import (
+        HTTPError,  # noqa: TC002 # https://github.com/astral-sh/ruff/issues/15681
+    )
+
 __all__ = (
     "EnvNotSet",
     "PipException",
@@ -57,12 +67,22 @@ class PipException(Exception):
 class UnableToDownloadPip(PipException):
     r"""This is an exception which is used to indicate that an error occurred while attempting to download pip.
 
-    See the exception that this exception was raised from for more info.
-
     .. versionadded:: 2.0.0
+
+    Attributes
+    ----------
+    error: :class:`requests.exceptions.HTTPError`
+        The error that was raised by the :doc:`req:index` module.
     """
 
-    ...
+    def __init__(self, err: HTTPError) -> None:
+        super().__init__(f"HTTP Error {err.response.status_code}")
+        self.error = err
+
+    @property
+    def code(self) -> int:
+        """:class:`int`: The status code from the :class:`requests.exceptions.HTTPError` object."""
+        return self.error.response.status_code
 
 
 class PipExecutionError(PipException):
@@ -71,11 +91,26 @@ class PipExecutionError(PipException):
     .. versionadded:: 2.0.0
 
     Attributes
-    -----------
-    traceback: :class:`str`
-        The error message returned by pip
+    ----------
+    error: :class:`subprocess.CalledProcessError`
+        The original error that was raised by subprocess
     """
 
-    def __init__(self, traceback: str) -> None:
-        super().__init__(f"An error occurred while attempting to use pip: {traceback}")
-        self.traceback = traceback
+    def __init__(self, err: CalledProcessError) -> None:
+        super().__init__(f"An error occurred while attempting to use pip: {err.stderr}")
+        self.error = err
+
+    @property
+    def output(self) -> str:
+        """:class:`str` The output from :attr:`subprocess.CalledProcessError.output`"""
+        return self.error.output
+
+    @property
+    def returncode(self) -> int:
+        """:class:`int` The returncode from :attr:`subprocess.CalledProcessError.returncode`"""
+        return self.error.returncode
+
+    @property
+    def stderr(self) -> str:
+        """:class:`str` The stderr from :attr:`subprocess.CalledProcessError.stderr`"""
+        return self.error.stderr

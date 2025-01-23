@@ -9,7 +9,7 @@ from pathlib import Path
 try:
     import requests
 except ImportError:
-    raise RuntimeError(
+    raise ImportError(
         "Pip's Extra Dependencies are not installed. You can install them with flogin[pip]"
     ) from None
 
@@ -110,9 +110,7 @@ class Pip:
         try:
             res.raise_for_status()
         except requests.HTTPError as e:
-            raise UnableToDownloadPip(
-                f"HTTP Error {res.status_code}: {res.reason}"
-            ) from e
+            raise UnableToDownloadPip(e) from e
 
         with tempfile.NamedTemporaryFile("wb", suffix="-pip.pyz", delete=False) as f:
             f.write(res.content)
@@ -130,7 +128,7 @@ class Pip:
         """
 
         if self._pip_fp:
-            self._pip_fp.unlink()
+            self._pip_fp.unlink(missing_ok=True)
             log.info(f"Pip deleted from {self._pip_fp}")
 
     def __enter__(self) -> Self:
@@ -175,11 +173,11 @@ class Pip:
         pip = self._pip_fp.as_posix()
         cmd = [sys.executable, pip, *args]
         log.debug(f"Sending command: {cmd!r}")
-        proc = subprocess.run(cmd, capture_output=True)
+
         try:
-            proc.check_returncode()
-        except subprocess.CalledProcessError:
-            raise PipExecutionError(proc.stderr.decode())
+            proc = subprocess.run(cmd, capture_output=True, check=True)
+        except subprocess.CalledProcessError as e:
+            raise PipExecutionError(e)
         output = proc.stdout.decode()
         log.debug(f"Received response: {output!r}")
         return output
