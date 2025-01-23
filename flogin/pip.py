@@ -107,9 +107,7 @@ class Pip:
         except requests.HTTPError:
             raise UnableToDownloadPip("an http error")
 
-        with tempfile.TemporaryFile(
-            "wb", suffix="-pip.pyz", delete=False
-        ) as f:
+        with tempfile.TemporaryFile("wb", suffix="-pip.pyz", delete=False) as f:
             f.write(res.content)
             self._pip_fp = Path(f.name)
 
