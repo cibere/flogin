@@ -307,6 +307,25 @@ JSON-RPC Errors
 
 .. autoclass:: flogin.jsonrpc.errors.FlowError
     :members:
+
+Pip Errors
+~~~~~~~~~~~
+
+.. attributetable:: flogin.errors.PipException
+
+.. autoclass:: flogin.errors.PipException
+    :members:
+
+.. attributetable:: flogin.errors.UnableToDownloadPip
+
+.. autoclass:: flogin.errors.UnableToDownloadPip
+    :members:
+
+.. attributetable:: flogin.errors.PipExecutionError
+
+.. autoclass:: flogin.errors.PipExecutionError
+    :members:
+
     
 .. _testing_module_api_reference:
 
@@ -346,3 +365,11 @@ Caching
 .. autodecorator:: flogin.caching.cached_callable()
 
 .. autofunction:: flogin.caching.clear_cache
+
+Pip
+---
+
+.. attributetable:: flogin.pip.Pip
+
+.. autoclass:: flogin.pip.Pip
+    :members:

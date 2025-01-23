@@ -1,6 +1,13 @@
 from __future__ import annotations
 
-__all__ = ("EnvNotSet", "PluginException", "PluginNotInitialized")
+__all__ = (
+    "EnvNotSet",
+    "PipException",
+    "PipExecutionError",
+    "PluginException",
+    "PluginNotInitialized",
+    "UnableToDownloadPip",
+)
 
 
 class PluginException(Exception):
@@ -38,3 +45,38 @@ class EnvNotSet(PluginException):
         super().__init__(
             f"The {name!r} environment variable is not set. These should be set by flow when it runs your plugin. {alt}"
         )
+
+
+class PipException(Exception):
+    r"""This is a base class to represent errors derived from the :class:`~flogin.pip.Pip` object.
+
+    .. versionadded:: 2.0.0
+    """
+
+
+class UnableToDownloadPip(PipException):
+    r"""This is an exception which is used to indicate that an error occured while attempting to download pip.
+
+    See the exception that this exception was raised from for more info.
+
+    .. versionadded:: 2.0.0
+    """
+
+    def __init__(self, reason: str) -> None:
+        super().__init__(f"I am unable to download pip due to {reason}.")
+
+
+class PipExecutionError(PipException):
+    r"""This is an exception which is raised whenever :meth:`flogin.pip.Pip.run` gets a return code that isn't ``0``.
+
+    .. versionadded:: 2.0.0
+
+    Attributes
+    -----------
+    traceback: :class:`str`
+        The error message returned by pip
+    """
+
+    def __init__(self, traceback: str) -> None:
+        super().__init__(f"An error occured while attempting to use pip: {traceback}")
+        self.traceback = traceback
