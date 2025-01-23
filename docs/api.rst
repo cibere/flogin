@@ -351,6 +351,14 @@ Utils
 
     A type safe sentinel used in the library to represent something as missing. Used to distinguish from ``None`` values.
 
+Pip
+---
+
+.. attributetable:: flogin.pip.Pip
+
+.. autoclass:: flogin.pip.Pip
+    :members:
+
 .. _caching_reference:
 
 Caching
@@ -365,11 +373,3 @@ Caching
 .. autodecorator:: flogin.caching.cached_callable()
 
 .. autofunction:: flogin.caching.clear_cache
-
-Pip
----
-
-.. attributetable:: flogin.pip.Pip
-
-.. autoclass:: flogin.pip.Pip
-    :members:
