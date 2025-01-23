@@ -1,6 +1,21 @@
 from __future__ import annotations
 
-__all__ = ("EnvNotSet", "PluginException", "PluginNotInitialized")
+TYPE_CHECKING = False
+if TYPE_CHECKING:
+    from subprocess import (
+        CalledProcessError,  # noqa: TC003 # https://github.com/astral-sh/ruff/issues/15681
+    )
+
+    import requests  # noqa: TC002 # https://github.com/astral-sh/ruff/issues/15681
+
+__all__ = (
+    "EnvNotSet",
+    "PipException",
+    "PipExecutionError",
+    "PluginException",
+    "PluginNotInitialized",
+    "UnableToDownloadPip",
+)
 
 
 class PluginException(Exception):
@@ -38,3 +53,61 @@ class EnvNotSet(PluginException):
         super().__init__(
             f"The {name!r} environment variable is not set. These should be set by flow when it runs your plugin. {alt}"
         )
+
+
+class PipException(Exception):
+    r"""This is a base class to represent errors derived from the :class:`~flogin.pip.Pip` object.
+
+    .. versionadded:: 2.0.0
+    """
+
+
+class UnableToDownloadPip(PipException):
+    r"""This is an exception which is used to indicate that an error occurred while attempting to download pip.
+
+    .. versionadded:: 2.0.0
+
+    Attributes
+    ----------
+    error: :class:`requests.exceptions.HTTPError` | :class:`requests.Timeout` | :class:`requests.ConnectionError`
+        The error that was raised by the :doc:`req:index` module.
+    """
+
+    def __init__(
+        self, err: requests.HTTPError | requests.Timeout | requests.ConnectionError
+    ) -> None:
+        super().__init__(err)
+        self.error = err
+
+
+class PipExecutionError(PipException):
+    r"""This is an exception which is raised whenever :meth:`flogin.pip.Pip.run` gets a return code that isn't ``0``.
+
+    .. versionadded:: 2.0.0
+
+    Attributes
+    ----------
+    error: :class:`subprocess.CalledProcessError`
+        The original error that was raised by subprocess
+    """
+
+    def __init__(self, err: CalledProcessError) -> None:
+        super().__init__(
+            f"An error occurred while attempting to use pip: {err.stderr.decode()}"
+        )
+        self.error = err
+
+    @property
+    def output(self) -> str:
+        """:class:`str` The output from :attr:`subprocess.CalledProcessError.output`"""
+        return self.error.output.decode()
+
+    @property
+    def returncode(self) -> int:
+        """:class:`int` The returncode from :attr:`subprocess.CalledProcessError.returncode`"""
+        return self.error.returncode
+
+    @property
+    def stderr(self) -> str:
+        """:class:`str` The stderr from :attr:`subprocess.CalledProcessError.stderr`"""
+        return self.error.stderr.decode()

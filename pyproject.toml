@@ -45,6 +45,9 @@ tests = [
     "pytest==8.3.4",
     "pytest-asyncio==0.25.2",
 ]
+pip = [
+    "requests==2.32.3"
+]
 
 [tool.setuptools]
 packages = [
@@ -94,3 +97,9 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+
+[tool.bandit]
+skips = [
+    "B603", # https://bandit.readthedocs.io/en/latest/plugins/b603_subprocess_without_shell_equals_true.html
+    "B404", # https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html#b404-import-subprocess
+]

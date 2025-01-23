@@ -12,3 +12,4 @@ plugin.json
 test.py
 main.py
 flogin.log.1
+*.lock

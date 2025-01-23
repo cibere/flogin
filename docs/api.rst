@@ -307,6 +307,25 @@ JSON-RPC Errors
 
 .. autoclass:: flogin.jsonrpc.errors.FlowError
     :members:
+
+Pip Errors
+~~~~~~~~~~~
+
+.. attributetable:: flogin.errors.PipException
+
+.. autoclass:: flogin.errors.PipException
+    :members:
+
+.. attributetable:: flogin.errors.UnableToDownloadPip
+
+.. autoclass:: flogin.errors.UnableToDownloadPip
+    :members:
+
+.. attributetable:: flogin.errors.PipExecutionError
+
+.. autoclass:: flogin.errors.PipExecutionError
+    :members:
+
     
 .. _testing_module_api_reference:
 
@@ -331,6 +350,14 @@ Utils
 .. attribute:: flogin.utils.MISSING
 
     A type safe sentinel used in the library to represent something as missing. Used to distinguish from ``None`` values.
+
+Pip
+---
+
+.. attributetable:: flogin.pip.Pip
+
+.. autoclass:: flogin.pip.Pip
+    :members:
 
 .. _caching_reference:
 

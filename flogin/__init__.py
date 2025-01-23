@@ -6,6 +6,7 @@ from .caching import *
 from .conditions import *
 from .errors import *
 from .jsonrpc import *
+from .pip import *
 from .plugin import *
 from .query import *
 from .search_handler import *

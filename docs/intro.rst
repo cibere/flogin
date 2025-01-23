@@ -28,11 +28,24 @@ To install flogin, do the following:
 
     pip install -U flogin
 
+    # or with extra dependencies
+
+    pip install -U flogin[extra]
+
 To install the development version, ensure `git <https://git-scm.com/>`_ is installed, then do the following:
 
 .. code:: sh
 
     pip install git+https://github.com/cibere/flogin
+
+Extra Dependencies
+~~~~~~~~~~~~~~~~~~
+
+.. container::
+
+    .. describe:: pip
+
+        This will install the extra dependencies required by the :class:`~flogin.pip.Pip` class.
 
 Basic Concepts
 ---------------
