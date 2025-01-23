@@ -6,7 +6,12 @@ import sys
 import tempfile
 from pathlib import Path
 
-import requests
+try:
+    import requests
+except ImportError:
+    raise RuntimeError(
+        "Pip's Extra Dependencies are not installed. You can install them with flogin[pip]"
+    ) from None
 
 from .errors import PipExecutionError, UnableToDownloadPip
 
