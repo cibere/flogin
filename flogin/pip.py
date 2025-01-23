@@ -30,7 +30,7 @@ log = logging.getLogger(__name__)
 class Pip:
     r"""This is a helper class for dealing with pip in a production environment.
 
-    When flow launcher installs python, it does not install pip. Because of that, this class will temp-install pip while you need it, then delete it when your done with it.
+    When flow launcher installs python, it does not install pip. Because of that, this class will temp-install pip while you need it, then delete it when you're done with it.
 
     .. versionadded:: 2.0.0
 
@@ -85,7 +85,7 @@ class Pip:
             new = Path(new)
 
         if not new.exists():
-            # Despite the fact that installing works perfectly fine with a nonexistant directory
+            # Despite the fact that installing works perfectly fine with a nonexistent directory
             # adding it to path before its created then trying to import from it doesn't.
             raise ValueError(f"Directory Not Found: {new}")
 
@@ -109,8 +109,10 @@ class Pip:
         res = requests.get("https://bootstrap.pypa.io/pip/pip.pyz", timeout=10)
         try:
             res.raise_for_status()
-        except requests.HTTPError:
-            raise UnableToDownloadPip("an http error")
+        except requests.HTTPError as e:
+            raise UnableToDownloadPip(
+                f"HTTP Error {res.status_code}: {res.reason}"
+            ) from e
 
         with tempfile.TemporaryFile("wb", suffix="-pip.pyz", delete=False) as f:
             f.write(res.content)

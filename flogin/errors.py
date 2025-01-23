@@ -55,15 +55,14 @@ class PipException(Exception):
 
 
 class UnableToDownloadPip(PipException):
-    r"""This is an exception which is used to indicate that an error occured while attempting to download pip.
+    r"""This is an exception which is used to indicate that an error occurred while attempting to download pip.
 
     See the exception that this exception was raised from for more info.
 
     .. versionadded:: 2.0.0
     """
 
-    def __init__(self, reason: str) -> None:
-        super().__init__(f"I am unable to download pip due to {reason}.")
+    ...
 
 
 class PipExecutionError(PipException):
@@ -78,5 +77,5 @@ class PipExecutionError(PipException):
     """
 
     def __init__(self, traceback: str) -> None:
-        super().__init__(f"An error occured while attempting to use pip: {traceback}")
+        super().__init__(f"An error occurred while attempting to use pip: {traceback}")
         self.traceback = traceback
