@@ -20,12 +20,15 @@ from flogin.errors import PipExecutionError, UnableToDownloadPip
 def temp_dir(tmp_path):
     lib_dir = tmp_path / "lib"
     lib_dir.mkdir()
-    return lib_dir
+    yield lib_dir
+    lib_dir.rmdir()
 
 
 @pytest.fixture
 def pip(temp_dir):
-    return Pip(temp_dir)
+    pip_instance = Pip(temp_dir)
+    yield pip_instance
+    pip_instance.delete_pip()
 
 
 def test_libs_dir_property(temp_dir):
@@ -35,9 +38,16 @@ def test_libs_dir_property(temp_dir):
     pip = Pip(str(temp_dir))
     assert pip.libs_dir == temp_dir
 
-    Path("lib").mkdir(exist_ok=True)
+    lib_dir = Path("lib")
+    lib_dir_exists = lib_dir.exists()
+    if not lib_dir_exists:
+        lib_dir.mkdir()
+
     pip = Pip()
     assert pip.libs_dir == Path("lib")
+
+    if not lib_dir_exists:
+        lib_dir.rmdir()
 
 
 def test_libs_dir_invalid_path():
@@ -54,9 +64,6 @@ def test_download_pip_success(mock_get, pip):
     pip.download_pip()
     assert pip._pip_fp is not None
     assert pip._pip_fp.exists()
-
-    # Cleanup
-    pip.delete_pip()
 
 
 @patch("requests.get")
@@ -105,8 +112,6 @@ def test_run_success(mock_run, pip):
     output = pip.run("install", "package")
     assert output == "success output"
 
-    pip.delete_pip()
-
 
 def test_run_without_download(pip):
     with pytest.raises(RuntimeError, match="Pip has not been installed"):
@@ -128,9 +133,6 @@ def test_run_pip_error(mock_run, pip):
 
     with pytest.raises(PipExecutionError):
         pip.run("install", "package")
-
-    # Cleanup
-    pip.delete_pip()
 
 
 @patch("subprocess.run")
@@ -156,9 +158,6 @@ def test_install_packages(mock_run, pip):
     assert "package2" in cmd_args
     assert pip.libs_dir.as_posix() in cmd_args
 
-    # Cleanup
-    pip.delete_pip()
-
 
 @patch("subprocess.run")
 def test_ensure_installed(mock_run, pip):
@@ -183,8 +182,23 @@ def test_ensure_installed(mock_run, pip):
         result = pip.ensure_installed("existing_package")
         assert result is False
 
-    # Cleanup
-    pip.delete_pip()
+
+@patch("subprocess.run")
+def test_ensure_installed_different_module(mock_run, pip):
+    mock_process = MagicMock()
+    mock_process.stdout = b"installed successfully"
+    mock_run.return_value = mock_process
+
+    with patch("requests.get") as mock_get:
+        mock_response = MagicMock()
+        mock_response.content = b"mock pip content"
+        mock_get.return_value = mock_response
+        pip.download_pip()
+
+    # Test package with different module name
+    with patch("builtins.__import__", side_effect=ImportError):
+        result = pip.ensure_installed("python-dateutil", module="dateutil")
+        assert result is True
 
 
 @patch("subprocess.run")
@@ -202,6 +216,3 @@ def test_freeze(mock_run, pip):
 
     result = pip.freeze()
     assert result == ["package1==1.0.0", "package2==2.0.0"]
-
-    # Cleanup
-    pip.delete_pip()
