@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         id: install-deps
         run: |
-          pip install .[tests]
+          pip install .[tests,pip]
           pip install pyright
       
       - name: Run pyright
@@ -85,7 +85,7 @@ jobs:
       - name: Install dependencies
         id: install-deps
         run: |
-          pip install .[tests]
+          pip install .[tests,pip]
           pip install bandit
 
       - name: Run Bandit

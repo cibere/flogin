@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         id: install-deps
         run: |
-          pip install .[tests]
+          pip install .
           pip install black
 
       - name: Run black
@@ -56,7 +56,7 @@ jobs:
       - name: Install dependencies
         id: install-deps
         run: |
-          pip install .[tests]
+          pip install .
           pip install ruff
       
       - name: Run Ruff Formatter
