@@ -114,7 +114,7 @@ class Pip:
                 f"HTTP Error {res.status_code}: {res.reason}"
             ) from e
 
-        with tempfile.TemporaryFile("wb", suffix="-pip.pyz", delete=False) as f:
+        with tempfile.NamedTemporaryFile("wb", suffix="-pip.pyz", delete=False) as f:
             f.write(res.content)
             self._pip_fp = Path(f.name)
 
