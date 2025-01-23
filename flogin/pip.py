@@ -113,8 +113,12 @@ class Pip:
             raise UnableToDownloadPip(e) from e
 
         with tempfile.NamedTemporaryFile("wb", suffix="-pip.pyz", delete=False) as f:
-            f.write(res.content)
-            self._pip_fp = Path(f.name)
+            try:
+                f.write(res.content)
+                self._pip_fp = Path(f.name)
+            except:
+                Path(f.name).unlink(missing_ok=True)
+                raise
 
     def delete_pip(self) -> None:
         r"""Deletes the temp version of pip installed on the system.
