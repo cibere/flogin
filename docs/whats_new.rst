@@ -25,6 +25,7 @@ New Features
 - Add the ability to use :meth:`flogin.plugin.Plugin.search` as a classmethod
 - Allow :meth:`flogin.jsonrpc.results.Result.callback` to return :class:`bool` and ``None`` ontop of :class:`flogin.jsonrpc.responses.ExecuteResponse`
 - Add the ``name`` argument in the :func:`flogin.utils.print` function.
+- Add :class:`flogin.pip.Pip`
 
 Bug Fixes
 ~~~~~~~~~
