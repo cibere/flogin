@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Iterable
 
 TS = TypeVarTuple("TS")
-LOG = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 __all__ = ("Glyph", "ProgressBar", "Result", "ResultPreview")
 
@@ -234,9 +234,7 @@ class Result(Base, Generic[PluginT]):
         error: :class:`Exception`
             The error that occured
         """
-        LOG.exception(
-            f"Ignoring exception in result callback ({self!r})", exc_info=error
-        )
+        log.exception("Ignoring exception in result callback (%r)", exc_info=error)
         return ErrorResponse.internal_error(error)
 
     async def callback(self) -> ExecuteResponse | bool | None:
@@ -310,8 +308,9 @@ class Result(Base, Generic[PluginT]):
 
         @copy_doc(on_context_menu_error)
         async def on_context_menu_error(self, error: Exception) -> Any:
-            LOG.exception(
-                f"Ignoring exception in result's context menu callback ({self!r})",
+            log.exception(
+                "Ignoring exception in result's context menu callback (%r)",
+                self,
                 exc_info=error,
             )
             return ErrorResponse.internal_error(error)

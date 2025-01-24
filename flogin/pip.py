@@ -133,7 +133,7 @@ class Pip:
 
         if self._pip_fp:
             self._pip_fp.unlink(missing_ok=True)
-            log.info(f"Pip deleted from {self._pip_fp}")
+            log.info("Pip deleted from %s", self._pip_fp)
 
     def __enter__(self) -> Self:
         self.download_pip()
@@ -179,20 +179,18 @@ class Pip:
 
         pip = self._pip_fp.as_posix()
         cmd = [sys.executable, pip, *args]
-        log.debug(f"Sending command: {cmd!r}")
+        log.debug("Sending command: %r", cmd)
 
         try:
             proc = subprocess.run(cmd, capture_output=True, check=True)
         except subprocess.CalledProcessError as e:
-            log.debug(
-                f"Pip command failed. stdout: {e.output.decode()!r}, stderr: {e.stderr.decode()!r}"
-            )
+            log.debug("Pip command failed. stdout: %r, stderr: %r", e.output, e.stderr)
             raise PipExecutionError(e)
 
         output = proc.stdout.decode()
-        log.debug(f"Pip stdout: {output!r}")
+        log.debug("Pip stdout: %r", output)
         if proc.stderr:
-            log.debug(f"Pip stderr: {proc.stderr.decode()!r}")
+            log.debug("Pip stderr: %r", proc.stderr)
 
         return output
 

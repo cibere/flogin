@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, overload
 if TYPE_CHECKING:
     from ._types import RawSettings
 
-LOG = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 __all__ = ("Settings",)
 
@@ -81,16 +81,16 @@ class Settings:
 
     def _update(self, data: RawSettings) -> None:
         if self._no_update:
-            LOG.debug(f"Received a settings update, ignoring. {data=}")
+            log.debug("Received a settings update, ignoring. data=%r", data)
         else:
-            LOG.debug(f"Updating settings. Before: {self._data}, after: {data}")
+            log.debug("Updating settings. Before: %s, after: %s", self._data, data)
             self._data = data
 
     def _get_updates(self) -> RawSettings:
         try:
             return self._changes
         finally:
-            LOG.debug(f"Resetting setting changes: {self._changes}")
+            log.debug("Resetting setting changes: %s", self._changes)
             self._changes = {}
 
     def __repr__(self) -> str:

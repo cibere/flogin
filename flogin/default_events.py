@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from .plugin import Plugin
 
 
-LOG = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 __all__ = ("on_error",)
 
@@ -22,7 +22,7 @@ async def on_error(
     event_method: str, error: Exception, *args: Any, **kwargs: Any
 ) -> ErrorResponse:
     """gets called when an error occurs in an event"""
-    LOG.exception(f"Ignoring exception in event {event_method!r}", exc_info=error)
+    log.exception("Ignoring exception in event %r", event_method, exc_info=error)
     return ErrorResponse.internal_error(error)
 
 
@@ -35,7 +35,7 @@ def get_default_events(plugin: Plugin[Any]) -> dict[str, Callable[..., Awaitable
         plugin._results.clear()
 
         if plugin._settings_are_populated is False:
-            LOG.info("Settings have not been populated yet, creating a new instance")
+            log.info("Settings have not been populated yet, creating a new instance")
             plugin._settings_are_populated = True
             plugin.settings = Settings(
                 raw_settings, no_update=plugin.options.get("settings_no_update", False)

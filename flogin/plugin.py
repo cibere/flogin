@@ -60,7 +60,7 @@ TS = TypeVarTuple("TS")
 EventCallbackT = TypeVar(
     "EventCallbackT", bound=Callable[..., Coroutine[Any, Any, Any]]
 )
-LOG = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 __all__ = ("Plugin",)
 
@@ -169,7 +169,7 @@ class Plugin(Generic[SettingsT]):
         with open(fp) as f:
             data = json.load(f)
         self._settings_are_populated = True
-        LOG.debug(f"Settings filled from file: {data!r}")
+        log.debug("Settings filled from file: %r", data)
         return Settings(data, no_update=self.options.get("settings_no_update", False))  # type: ignore[reportReturnType]
 
     async def _run_event(
@@ -215,7 +215,7 @@ class Plugin(Generic[SettingsT]):
         }
         method = replacements.get(method, method)
 
-        LOG.debug("Dispatching event %s", method)
+        log.debug("Dispatching event %s", method)
 
         event_callback = self._events.get(method)
         if event_callback:
@@ -246,7 +246,7 @@ class Plugin(Generic[SettingsT]):
         return results
 
     async def _initialize_wrapper(self, arg: dict[str, Any]) -> ExecuteResponse:
-        LOG.info(f"Initialize: {json.dumps(arg)}")
+        log.debug("Initialize: %r", arg)
         self._metadata = PluginMetadata(arg["currentPluginMetadata"], self.api)
         self.dispatch("initialization")
         return ExecuteResponse(hide=False)
@@ -254,7 +254,7 @@ class Plugin(Generic[SettingsT]):
     async def process_context_menus(
         self, data: list[Any]
     ) -> QueryResponse | ErrorResponse:
-        LOG.debug(f"Context Menu Handler: {data=}")
+        log.debug("Context Menu Handler: data=%r", data)
 
         if not data:
             results = []
@@ -367,9 +367,7 @@ class Plugin(Generic[SettingsT]):
         try:
             asyncio.run(self.start())
         except Exception as e:
-            LOG.exception(
-                f"A fatal error has occured which crashed flogin: {e}", exc_info=e
-            )
+            log.exception("A fatal error has occured which crashed flogin", exc_info=e)
 
     def register_search_handler(self, handler: SearchHandler[Any]) -> None:
         r"""Register a new search handler
@@ -383,7 +381,7 @@ class Plugin(Generic[SettingsT]):
         """
 
         self._search_handlers.append(handler)
-        LOG.info(f"Registered search handler: {handler}")
+        log.debug("Registered search handler: %r", handler)
 
     def register_search_handlers(self, *handlers: SearchHandler[Any]) -> None:
         r"""Register new search handlers
