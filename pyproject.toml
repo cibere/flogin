@@ -85,7 +85,7 @@ select = [
 ignore = [
     "F403", # https://docs.astral.sh/ruff/rules/undefined-local-with-import-star/#undefined-local-with-import-star-f403
     "SIM105", # https://docs.astral.sh/ruff/rules/suppressible-exception/
-    "E501", # https://docs.astral.sh/ruff/rules/#error-e_1
+    "E501", # https://docs.astral.sh/ruff/rules/line-too-long/
     "ANN401", # https://docs.astral.sh/ruff/rules/any-type/
     "RET503", # https://docs.astral.sh/ruff/rules/implicit-return/
     "RET502", # https://docs.astral.sh/ruff/rules/implicit-return-value/
