@@ -26,6 +26,9 @@ New Features
 - Allow :meth:`flogin.jsonrpc.results.Result.callback` to return :class:`bool` and ``None`` ontop of :class:`flogin.jsonrpc.responses.ExecuteResponse`
 - Add the ``name`` argument in the :func:`flogin.utils.print` function.
 - Add :class:`flogin.pip.Pip`
+- Add :class:`flogin.errors.PipException`
+- Add :class:`flogin.errors.UnableToDownloadPip`
+- Add :class:`flogin.errors.PipExecutionError`
 
 Bug Fixes
 ~~~~~~~~~
