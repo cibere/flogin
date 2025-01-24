@@ -15,7 +15,7 @@ from .errors import (
 from .requests import Request
 from .responses import BaseResponse, ErrorResponse
 
-LOG = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from asyncio.streams import StreamReader, StreamWriter
@@ -60,32 +60,32 @@ class JsonRPCClient:
 
     async def handle_cancellation(self, id: int) -> None:
         if self.ignore_cancellations:
-            return LOG.debug(f"Ignoring cancellation request of {id!r}")
+            return log.debug("Ignoring cancellation request of %r", id)
 
         if id in self.tasks:
             task = self.tasks.pop(id)
             success = task.cancel()
             if success:
-                LOG.info(f"Successfully cancelled task with id {id!r}")
+                log.debug("Successfully cancelled task with id %r", id)
             else:
-                LOG.exception(f"Failed to cancel task with id of {id!r}, task={task!r}")
+                log.exception("Failed to cancel task with id of %r, task=%r", id, task)
         else:
-            LOG.exception(
-                f"Failed to cancel task with id of {id!r}, could not find task."
+            log.exception(
+                "Failed to cancel task with id of %r, could not find task.", id
             )
 
     async def handle_result(self, result: dict) -> None:
         rid = result["id"]
 
-        LOG.debug(f"Result: {rid}, {result!r}")
+        log.debug("Result: %r, %r", rid, result)
         if rid in self.requests:
             try:
                 self.requests.pop(rid).set_result(result)
             except asyncio.InvalidStateError:
                 pass
         else:
-            LOG.exception(
-                f"Result from unknown request given. ID: {rid!r}, result={result!r}"
+            log.error(
+                "Result from unknown request given. id=%r, result=%r", rid, result
             )
 
     async def handle_error(self, id: int, error: ErrorResponse) -> None:
@@ -94,7 +94,7 @@ class JsonRPCClient:
                 _get_jsonrpc_error_from_json(error.to_dict())
             )
         else:
-            LOG.error(f"Error response received for unknown request, {id=}")
+            log.error("Error response received for unknown request, id=%r", id)
 
     async def handle_notification(self, method: str, params: dict[str, Any]) -> None:
         if method == "$/cancelRequest":
@@ -102,8 +102,9 @@ class JsonRPCClient:
         else:
             err = MethodNotFound(f"Notification Method {method!r} Not Found")
 
-            LOG.exception(
-                f"Unknown notification method received: {method}",
+            log.exception(
+                "Unknown notification method received: %r",
+                method,
                 exc_info=err,
             )
 
@@ -121,8 +122,9 @@ class JsonRPCClient:
             task = self.plugin.dispatch(method, *params)
             if not task:
                 err = MethodNotFound(f"Request method {method!r} was not found")
-                LOG.exception(
-                    f"Unknown request method received: {method}",
+                log.exception(
+                    "Unknown request method received: %r",
+                    method,
                     exc_info=err,
                 )
                 return await self.write(err.to_response().to_message(id=request["id"]))
@@ -133,33 +135,33 @@ class JsonRPCClient:
         if isinstance(result, BaseResponse):
             return await self.write(result.to_message(id=request["id"]))
         err = InternalError("Internal Error: Invalid Response Object", repr(result))
-        LOG.exception(
-            f"Invalid Response Object: {result!r}",
+        log.exception(
+            "Invalid Response Object: %r",
+            result,
             exc_info=err,
         )
         return await self.write(err.to_response().to_message(id=request["id"]))
 
     async def process_input(self, line: str) -> None:
-        LOG.debug(f"Processing {line!r}")
         message = json.loads(line)
 
         if "id" not in message:
-            LOG.debug(f"Received notification: {message!r}")
+            log.debug("Received notification: %r", message)
             await self.handle_notification(message["method"], message["params"])
         elif "method" in message:
-            LOG.debug(f"Received request: {message!r}")
+            log.debug("Received request: %r", message)
             await self.handle_request(message)
         elif "result" in message:
-            LOG.debug(f"Received result: {message!r}")
+            log.debug("Received result: %r", message)
             await self.handle_result(message)
         elif "error" in message:
-            LOG.exception(f"Received error: {message!r}")
+            log.exception("Received error: %r", message)
             await self.handle_error(
                 message["id"], ErrorResponse.from_dict(message["error"])
             )
         else:
             err = InternalError("Unknown message type received", line)
-            LOG.exception(
+            log.exception(
                 "Unknown message type received",
                 exc_info=err,
             )
@@ -173,7 +175,7 @@ class JsonRPCClient:
 
         while 1:
             async for line in reader:
-                stream_log.info(f"Received line: {line!r} of type {type(line)!r}")
+                stream_log.debug("Received line: %r", line)
                 line = line.decode("utf-8")
                 if line == "":
                     continue
@@ -183,7 +185,7 @@ class JsonRPCClient:
                 task.add_done_callback(tasks.discard)
 
     async def write(self, msg: bytes, drain: bool = True) -> None:
-        LOG.debug(f"Sending: {msg!r}")
+        log.debug("Sending: %r", msg)
         self.writer.write(msg)
         if drain:
             await self.writer.drain()

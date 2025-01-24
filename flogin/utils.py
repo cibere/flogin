@@ -30,8 +30,6 @@ Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
 AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
 T = TypeVar("T")
 
-LOG = logging.getLogger(__name__)
-
 
 class _cached_property(Generic[T]):
     def __init__(self, function: Callable[..., T]) -> None:
