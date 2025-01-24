@@ -40,7 +40,7 @@ from flogin import Plugin, Query
 plugin = Plugin()
 
 
-@p.search()
+@plugin.search()
 async def s(query: Query):
     return f"{msgspec!r}"
 
