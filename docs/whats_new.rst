@@ -35,6 +35,7 @@ Bug Fixes
 
 - Fix bugs with how errors were handled inproperly
 - Fix bug with :attr:`flogin.query.Query.keyword` showing an empty string instead of ``*`` when a star keyword is used.
+- Fix bug with log formatting being eager, resulting in unneccessary formatting when logs are disabled.
 
 v1.1.0
 ------
