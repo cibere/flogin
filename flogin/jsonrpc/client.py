@@ -84,7 +84,7 @@ class JsonRPCClient:
             except asyncio.InvalidStateError:
                 pass
         else:
-            log.exception(
+            log.error(
                 "Result from unknown request given. id=%r, result=%r", rid, result
             )
 
