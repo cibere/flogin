@@ -33,7 +33,7 @@ with Pip(libs_dir) as pip:
 # Reimport flogin as a way to seperate what is setup and what is the plugin.
 # This line right here is a good place to split your runner file and your plugin's files
 
-import msgspec
+import msgspec # type: ignore # typecheckers don't think this exists in this environment because msgspec is not one of flogin's dependencies
 
 from flogin import Plugin, Query
 
