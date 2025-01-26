@@ -105,26 +105,29 @@ class Plugin(Generic[SettingsT]):
             setattr(handler.callback, "owner", self)
             self.register_search_handler(handler)
 
-    def check_for_log_override_files(self) -> None:
+    def check_for_log_override_files(self) -> bool | None:
+        """None=No-Changes, True=In-Prod, False=In-Debug"""
+
         if self.options.get("disable_log_override_files"):
             return
 
         from .utils import _logging_formatter_status
 
-        dir = Path(self.metadata.directory)
+        dir = Path(os.getcwd())
 
         for _ in dir.glob("*.flogin.debug"):
             if _logging_formatter_status is None:
                 setup_logging()
                 log.info("Debug file found, logs are now enabled.")
-            return
+            return False
 
         for _ in dir.glob("*.flogin.prod"):
             if _logging_formatter_status is not None:
                 log.info("Prod file found. Logs are being disabled")
                 logger, handler = _logging_formatter_status
+                handler.close()
                 logger.removeHandler(handler)
-            return
+            return True
 
     @property
     def last_query(self) -> Query | None:
@@ -388,7 +391,9 @@ class Plugin(Generic[SettingsT]):
             Whether to setup the default log handler or not, defaults to `True`.
         """
 
-        if setup_default_log_handler:
+        log_status = self.check_for_log_override_files()
+
+        if log_status is None and setup_default_log_handler:
             setup_logging()
 
         try:
