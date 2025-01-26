@@ -89,7 +89,11 @@ ignore = [
     "ANN401", # https://docs.astral.sh/ruff/rules/any-type/
     "RET503", # https://docs.astral.sh/ruff/rules/implicit-return/
     "RET502", # https://docs.astral.sh/ruff/rules/implicit-return-value/
+    "PGH003", # https://docs.astral.sh/ruff/rules/blanket-type-ignore
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"flogin/_types/**.py" = ["TC001", "TC002", "TC003"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -102,3 +106,14 @@ skips = [
     "B603", # https://bandit.readthedocs.io/en/latest/plugins/b603_subprocess_without_shell_equals_true.html
     "B404", # https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html#b404-import-subprocess
 ]
+
+[tool.pyright]
+include = [
+    #"tests",
+    "flogin",
+    #"examples",
+]
+pythonPlatform = "Windows"
+typeCheckingMode = "strict"
+reportPrivateUsage = false
+reportMissingTypeStubs = false
