@@ -22,6 +22,19 @@ There are two main ways to query version information about the library. For guar
     A string representation of the version. e.g. ``'1.0.0rc1'``. This is based
     off of :pep:`440`.
 
+Types
+-----
+
+.. py:type:: Jsonable
+    
+    This is a type used to represent anything json seriable.
+
+    It is literally defined as:
+
+    .. code-block:: py3
+
+        Jsonable = dict[str, "Jsonable"] | str | int | list["Jsonable"] | None | bool
+
 Plugins
 -------
 
