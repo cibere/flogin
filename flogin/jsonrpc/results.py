@@ -34,11 +34,10 @@ if TYPE_CHECKING:
         RawResult,
     )
 
-
 TS = TypeVarTuple("TS")
 log = logging.getLogger(__name__)
 
-__all__ = ("Glyph", "ProgressBar", "Result", "ResultPreview")
+__all__ = ("Glyph", "ProgressBar", "Result", "ResultConstructorKwargs", "ResultPreview")
 
 
 class Glyph(Base["RawGlyph"]):
@@ -135,20 +134,45 @@ class ResultPreview(Base["RawPreview"]):
         self.is_media = is_media
 
 
-class ResultConstructorArgs(TypedDict):
-    title: NotRequired[str | None]
-    sub: NotRequired[str | None]
-    icon: NotRequired[str | None]
-    title_highlight_data: NotRequired[Iterable[int] | None]
-    title_tooltip: NotRequired[str | None]
-    sub_tooltip: NotRequired[str | None]
-    copy_text: NotRequired[str | None]
-    score: NotRequired[int | None]
-    rounded_icon: NotRequired[bool | None]
-    glyph: NotRequired[Glyph | None]
-    auto_complete_text: NotRequired[str | None]
-    preview: NotRequired[ResultPreview | None]
-    progress_bar: NotRequired[ProgressBar | None]
+class ResultConstructorKwargs(TypedDict, total=False):
+    r"""This represents the possible kwargs that can be passed to :class:`Result`.
+
+    This can be useful when overriding :class:`Result` to create a basic implementation of something for your project, but still want the ability to pass kwargs with proper typing.
+
+    .. NOTE::
+        See :class:`Result` for more information about each key and value.
+
+    Example
+    --------
+    This is an example of how you might use this to create a url result
+
+    .. code-block:: py3
+
+        from typing import Unpack
+        from flogin import Result, ResultConstructorKwargs
+
+        class MyRes(Result):
+            def __init__(self, url: str, **kwargs: Unpack[ResultConstructorKwargs]) -> None:
+                self.url = url
+                super().__init__(**kwargs)
+
+            async def callback(self):
+                await self.plugin.api.open_url(self.url)
+    """
+
+    title: NotRequired[str]
+    sub: NotRequired[str]
+    icon: NotRequired[str]
+    title_highlight_data: NotRequired[list[int]]
+    title_tooltip: NotRequired[str]
+    sub_tooltip: NotRequired[str]
+    copy_text: NotRequired[str]
+    score: NotRequired[int]
+    rounded_icon: NotRequired[bool]
+    glyph: NotRequired[Glyph]
+    auto_complete_text: NotRequired[str]
+    preview: NotRequired[ResultPreview]
+    progress_bar: NotRequired[ProgressBar]
 
 
 class Result(Base["RawResult"], Generic[PluginT]):
@@ -417,7 +441,7 @@ class Result(Base["RawResult"], Generic[PluginT]):
     def create_with_partial(
         cls: type[Result],
         partial_callback: Callable[[], Coroutine[Any, Any, Any]],
-        **kwargs: Unpack[ResultConstructorArgs],
+        **kwargs: Unpack[ResultConstructorKwargs],
     ) -> Result:
         r"""A quick and easy way to create a result with a callback without subclassing.
 
