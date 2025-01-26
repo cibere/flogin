@@ -69,6 +69,7 @@ If you're having trouble with something, these resources might help.
    install_plugin
    settings
    complex_plugins
+   log-override-files
    faq
 
 .. toctree::
