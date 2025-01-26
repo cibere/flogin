@@ -79,6 +79,8 @@ class Plugin(Generic[SettingsT]):
         Whether or not to let flow update flogin's version of the settings. This can be useful when using a custom settings menu. Defaults to ``False``
     ignore_cancellation_requests: Optional[:class:`bool`]
         Whether or not to ignore cancellation requests sent from flow. Defaults to ``False``
+    disable_log_override_files: Optional[:class:`bool`]
+        Whether or not to disable the log override files. Defaults to ``False``. See :doc:`log-override-files` for more information on this.
     """
 
     __class_events__: ClassVar[list[str]] = []
@@ -102,6 +104,32 @@ class Plugin(Generic[SettingsT]):
         for handler in self.__class_search_handlers__:
             setattr(handler.callback, "owner", self)
             self.register_search_handler(handler)
+
+        self.check_for_log_override_files()
+
+    def check_for_log_override_files(self) -> bool | None:
+        """None=No-Changes, True=In-Prod, False=In-Debug"""
+
+        if self.options.get("disable_log_override_files"):
+            return
+
+        from .utils import _logging_formatter_status
+
+        dir = Path(os.getcwd())
+
+        for _ in dir.glob("*.flogin.debug"):
+            if _logging_formatter_status is None:
+                setup_logging()
+                log.info("Debug file found, logs are now enabled.")
+            return False
+
+        for _ in dir.glob("*.flogin.prod"):
+            if _logging_formatter_status is not None:
+                log.info("Prod file found. Logs are being disabled")
+                logger, handler = _logging_formatter_status
+                handler.close()
+                logger.removeHandler(handler)
+            return True
 
     @property
     def last_query(self) -> Query | None:
@@ -364,7 +392,9 @@ class Plugin(Generic[SettingsT]):
             Whether to setup the default log handler or not, defaults to `True`.
         """
 
-        if setup_default_log_handler:
+        log_status = self.check_for_log_override_files()
+
+        if log_status is None and setup_default_log_handler:
             setup_logging()
 
         try:

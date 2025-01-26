@@ -78,6 +78,8 @@ class _MissingSentinel:
 
 MISSING: Any = _MissingSentinel()
 
+_logging_formatter_status: tuple[logging.Logger, logging.Handler] | None = None
+
 
 def setup_logging(
     *,
@@ -109,6 +111,9 @@ def setup_logging(
     handler.setFormatter(formatter)
     logger.setLevel(level)
     logger.addHandler(handler)
+
+    global _logging_formatter_status
+    _logging_formatter_status = logger, handler
 
 
 async def coro_or_gen(coro: Awaitable[T] | AsyncIterable[T]) -> list[T] | T:
