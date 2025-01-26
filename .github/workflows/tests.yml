@@ -84,6 +84,7 @@ jobs:
           pip install -r requirements.txt
           python update_dirs.py
           python update_badges.py
+          python remove_nested_gitignores.py
 
       - name: Commit New Artifacts
         run: |
