@@ -60,7 +60,7 @@ packages = [
 asyncio_default_fixture_loop_scope = "module"
 
 [tool.ruff]
-exclude = ["docs", "tests", "examples", "venv*"]
+exclude = ["docs", "examples", "venv*"]
 
 [tool.ruff.lint]
 select = [
@@ -89,6 +89,9 @@ ignore = [
     "RET503", # https://docs.astral.sh/ruff/rules/implicit-return/
     "RET502", # https://docs.astral.sh/ruff/rules/implicit-return-value/
     "PGH003", # https://docs.astral.sh/ruff/rules/blanket-type-ignore
+]
+exclude = [
+    "tests/**"
 ]
 
 [tool.ruff.lint.per-file-ignores]
