@@ -2,7 +2,7 @@
 
 Log Override Files
 ==================
-Flogin provides the ability to forcibly disable/enable logs for your plugin based on if certain files are present in the plugin's directory. This check is done during the :ref:`initialization event <on_initialization>`.
+Flogin provides the ability to forcibly disable/enable logs for your plugin based on if certain files are present in the plugin's directory. This check is done in your :class:`~flogin.plugin.Plugin` constructor and in its :meth:`~flogin.plugin.Plugin.run` method.
 
 .. NOTE::
     The ``disable_log_override_files`` option can be passed to :class:`~flogin.plugin.Plugin` to disable this behavior.
