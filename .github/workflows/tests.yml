@@ -51,6 +51,11 @@ jobs:
 
     name: Publish Coverage Badge
     steps: 
+      - name: Checkout Coverage Branch
+        uses: actions/checkout@v4
+        with:
+          ref: coverage-badge
+
       - name: Download Badge
         uses: actions/download-artifact@v4
         with:
@@ -60,19 +65,9 @@ jobs:
         run: |
           find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
       
-      - name: Stash Badge
-        run: |
-          git add .
-          git stash
-      
-      - name: Switch Branches
-        run: |
-          git fetch
-          git switch coverage-badge
-      
       - name: Commit Badge
         continue-on-error: true
         run: |
-          git stash pop 0
+          git add .
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit --author="cibere <71997063+cibere@users.noreply.github.com>" -m "Update Coverage Badge"
           git push
