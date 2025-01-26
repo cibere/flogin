@@ -6,7 +6,7 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  check:
+  run-tests:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -33,3 +33,28 @@ jobs:
         if: ${{ always() && steps.install-deps.outcome == 'success' }}
         run: |
           python -m pytest
+      
+      - name: Generate Coverage Badge
+        run: |
+          pip install coverage-badge
+          coverage-badge -o .github\coverage.svg
+  
+  coverage-badge:
+    runs-on: ubuntu-latest
+    needs: run-tests
+
+    name: Make Coverage Badge
+    steps: 
+      - name: Install coverage-badge
+        run: |
+          pip install coverage-badge
+      
+      - name: Make Badge
+        run: |
+          coverage-badge -o .github\coverage.svg
+      
+      - name: Commit Badge
+        continue-on-error: true
+        run: |
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit --author="cibere <71997063+cibere@users.noreply.github.com>" -m "Update Coverage Badge"
+          git push
