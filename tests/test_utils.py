@@ -26,6 +26,7 @@ def test_cached_property(rand_func: Callable[[], int]) -> None:
 
     test = Test()
     assert test.prop == test.prop
+    assert isinstance(Test.prop, utils.cached_property)
 
 
 def test_copy_doc() -> None:
@@ -98,6 +99,11 @@ class TestCoroOrGen:
         res = await utils.coro_or_gen(coro_or_gen())
         assert res == ["foo", "bar"]
 
+    @pytest.mark.asyncio
+    async def test_invalid_obj(self) -> None:
+        with pytest.raises(TypeError, match="Not a coro or gen:"):
+            await utils.coro_or_gen(None)  # type: ignore
+
 
 class TestVersionInfo:
     @pytest.fixture(
@@ -122,6 +128,14 @@ class TestVersionInfo:
         assert ver.minor == minor
         assert ver.micro == micro
         assert ver.releaselevel == level
+
+    def test_validation(self) -> None:
+        with pytest.raises(ValueError, match="Invalid major version,"):
+            utils.VersionInfo._from_str("a.0.0")
+        with pytest.raises(ValueError, match="Invalid minor version,"):
+            utils.VersionInfo._from_str("1.a.0")
+        with pytest.raises(ValueError, match="Invalid micro version,"):
+            utils.VersionInfo._from_str("1.0.a")
 
 
 class TestInstanceOrClassmethod:
@@ -185,16 +199,16 @@ class TestInstanceOrClassmethod:
 
 
 class TestPrint:
-    @pytest_asyncio.fixture(scope="function", loop_scope="class")
+    @pytest_asyncio.fixture(scope="function", loop_scope="function")
     async def handler_future(self) -> AsyncIterator[asyncio.Future[logging.LogRecord]]:
         future = asyncio.Future()
 
         class CustomHandler(logging.Handler):
             def emit(self, record: logging.LogRecord):
-                print(f"{future=}")
+                print(future)
                 future.set_result(record)
 
-        logger = logging.getLogger("test-name")
+        logger = logging.getLogger()
         handler = CustomHandler()
 
         logger.addHandler(handler)
@@ -203,27 +217,34 @@ class TestPrint:
 
     @pytest.fixture(
         params=[
-            (("foo",), utils.MISSING),
-            (("foo", "bar", "car"), "|"),
-            (("foo", "bar", "car"), utils.MISSING),
+            (("foo",), utils.MISSING, "test-name"),
+            (("foo", "bar", "car"), "|", "test-name"),
+            (("foo", "bar", "car"), utils.MISSING, "test-name"),
+            (("foo",), utils.MISSING, (utils.MISSING, __file__)),
         ]
     )
     def print_test_case(
         self, request: pytest.FixtureRequest
-    ) -> tuple[tuple[str, ...], str]:
+    ) -> tuple[tuple[str, ...], str, str | tuple[str, str]]:
         return request.param
 
     @pytest.mark.asyncio
     async def test_print(
         self,
-        print_test_case: tuple[tuple[str, ...], str],
+        print_test_case: tuple[tuple[str, ...], str, str | tuple[str, str]],
         handler_future: asyncio.Future[logging.LogRecord],
     ) -> None:
-        args, sep = print_test_case
-        utils.print(*args, sep=sep, name="test-name")
+        args, sep, name_info = print_test_case
+        if isinstance(name_info, str):
+            given_name = test_name = name_info
+        else:
+            given_name, test_name = name_info
+
+        utils.print(*args, sep=sep, name=given_name)
         async with asyncio.timeout(2):
             msg = await handler_future
             assert msg.msg == (" " if sep is utils.MISSING else sep).join(args)
+            assert msg.name == test_name
 
 
 class TestDecorator:
@@ -267,3 +288,10 @@ class TestFuncWithSelf:
     def test_no_owner(self, func_with_self_instance: utils.func_with_self) -> None:
         with pytest.raises(RuntimeError, match="Owner has not been set"):
             func_with_self_instance()
+
+
+def test_missing():
+    assert isinstance(utils.MISSING, utils._MissingSentinel)
+    assert repr(utils.MISSING) == "..."
+    assert not utils.MISSING
+    assert utils.MISSING != "str"
