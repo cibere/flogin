@@ -79,6 +79,8 @@ class Plugin(Generic[SettingsT]):
         Whether or not to let flow update flogin's version of the settings. This can be useful when using a custom settings menu. Defaults to ``False``
     ignore_cancellation_requests: Optional[:class:`bool`]
         Whether or not to ignore cancellation requests sent from flow. Defaults to ``False``
+    disable_log_override_files: Optional[:class:`bool`]
+        Whether or not to disable the log override files. Defaults to ``False``. See :doc:`log-override-files` for more information on this.
     """
 
     __class_events__: ClassVar[list[str]] = []
@@ -102,6 +104,27 @@ class Plugin(Generic[SettingsT]):
         for handler in self.__class_search_handlers__:
             setattr(handler.callback, "owner", self)
             self.register_search_handler(handler)
+
+    def check_for_log_override_files(self) -> None:
+        if self.options.get("disable_log_override_files"):
+            return
+
+        from .utils import _logging_formatter_status
+
+        dir = Path(self.metadata.directory)
+
+        for _ in dir.glob("*.flogin.debug"):
+            if _logging_formatter_status is None:
+                setup_logging()
+                log.info("Debug file found, logs are now enabled.")
+            return
+
+        for _ in dir.glob("*.flogin.prod"):
+            if _logging_formatter_status is not None:
+                log.info("Prod file found. Logs are being disabled")
+                logger, handler = _logging_formatter_status
+                logger.removeHandler(handler)
+            return
 
     @property
     def last_query(self) -> Query | None:
@@ -247,6 +270,7 @@ class Plugin(Generic[SettingsT]):
         log.debug("Initialize: %r", arg)
         self._metadata = PluginMetadata(arg["currentPluginMetadata"], self.api)
         self.dispatch("initialization")
+        self.check_for_log_override_files()
         return ExecuteResponse(hide=False)
 
     async def process_context_menus(
