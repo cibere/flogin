@@ -62,6 +62,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: coverage-report
+
+      - name: Set up CPython 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
       
       - name: Delete Old Reports
         run: |
@@ -71,7 +76,12 @@ jobs:
 
       - name: Download Artifacts
         uses: actions/download-artifact@v4
-      
+
+      - name: Remove gitignores
+        run: |
+          cd .scripts
+          python remove_nonroot_gitignores.py
+
       - name: Commit New Artifacts
         run: |
           git add .
@@ -80,7 +90,7 @@ jobs:
       - name: Show Tree
         run: |
           find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
-      
+
       - name: Commit Artifacts
         continue-on-error: true
         run: |
