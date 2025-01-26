@@ -4,6 +4,8 @@ import asyncio
 import logging
 import logging.handlers
 import random
+from collections.abc import AsyncIterator, Awaitable, Callable
+from typing import Self
 
 import pytest
 import pytest_asyncio
@@ -12,11 +14,11 @@ from flogin import utils
 
 
 @pytest.fixture
-def rand_func():
+def rand_func() -> Callable[[], int]:
     return lambda: random.randint(0, 100)  # nosec
 
 
-def test_cached_property(rand_func):
+def test_cached_property(rand_func: Callable[[], int]) -> None:
     class Test:
         @utils.cached_property
         def prop(self):
@@ -26,7 +28,7 @@ def test_cached_property(rand_func):
     assert test.prop == test.prop
 
 
-def test_copy_doc():
+def test_copy_doc() -> None:
     def orig():
         """this is a test"""
 
@@ -77,7 +79,9 @@ class TestSetupLogging:
 
 class TestCoroOrGen:
     @pytest.fixture(scope="class", params=["coro", "gen"])
-    def coro_or_gen(self, request: pytest.FixtureRequest):
+    def coro_or_gen(
+        self, request: pytest.FixtureRequest
+    ) -> Callable[[], AsyncIterator[str] | Awaitable[str]]:
         async def testinp1():
             return ["foo", "bar"]
 
@@ -88,7 +92,9 @@ class TestCoroOrGen:
         return {"coro": testinp1, "gen": testinp2}[request.param]
 
     @pytest.mark.asyncio
-    async def test_coro_or_gen(self, coro_or_gen):
+    async def test_coro_or_gen(
+        self, coro_or_gen: Callable[[], AsyncIterator[str] | Awaitable[str]]
+    ) -> None:
         res = await utils.coro_or_gen(coro_or_gen())
         assert res == ["foo", "bar"]
 
@@ -103,10 +109,14 @@ class TestVersionInfo:
             (utils.VersionInfo._from_str("1.0.2c"), 1, 0, 2, "candidate"),
         ],
     )
-    def versioninfo_test_info(self, request: pytest.FixtureRequest):
+    def versioninfo_test_info(
+        self, request: pytest.FixtureRequest
+    ) -> tuple[utils.VersionInfo, int, int, int, str]:
         return request.param
 
-    def test_final_release(self, versioninfo_test_info):
+    def test_final_release(
+        self, versioninfo_test_info: tuple[utils.VersionInfo, int, int, int, str]
+    ) -> None:
         ver, major, minor, micro, level = versioninfo_test_info
         assert ver.major == major
         assert ver.minor == minor
@@ -115,7 +125,7 @@ class TestVersionInfo:
 
 
 class TestInstanceOrClassmethod:
-    def test_no_params(self):
+    def test_no_params(self) -> None:
         class TestClass:
             @classmethod
             def __classmethod(cls):
@@ -128,7 +138,7 @@ class TestInstanceOrClassmethod:
         assert TestClass.instance() == "foo"
         assert TestClass().instance() == "foo"
 
-    def test_different_params(self):
+    def test_different_params(self) -> None:
         class TestClass:
             @classmethod
             def __classmethod(cls, prefix: str):
@@ -148,7 +158,7 @@ class TestInstanceOrClassmethod:
         assert TestClass.instance(prefix="car") == "car-foo"
         assert TestClass().instance(suffix="car") == "foo-car"
 
-    def test_same_params(self):
+    def test_same_params(self) -> None:
         class TestClass:
             @classmethod
             def __classmethod(cls, rand: int):
@@ -161,7 +171,7 @@ class TestInstanceOrClassmethod:
         assert TestClass.instance(rand=5) == "5-foo"
         assert TestClass().instance(rand=5) == "5-foo"
 
-    def test_docstring(self):
+    def test_docstring(self) -> None:
         class TestClass:
             @classmethod
             def __classmethod(cls):
@@ -176,7 +186,7 @@ class TestInstanceOrClassmethod:
 
 class TestPrint:
     @pytest_asyncio.fixture(scope="function", loop_scope="class")
-    async def handler_future(self):
+    async def handler_future(self) -> AsyncIterator[asyncio.Future[logging.LogRecord]]:
         future = asyncio.Future()
 
         class CustomHandler(logging.Handler):
@@ -198,7 +208,9 @@ class TestPrint:
             (("foo", "bar", "car"), utils.MISSING),
         ]
     )
-    def print_test_case(self, request: pytest.FixtureRequest):
+    def print_test_case(
+        self, request: pytest.FixtureRequest
+    ) -> tuple[tuple[str, ...], str]:
         return request.param
 
     @pytest.mark.asyncio
@@ -206,7 +218,7 @@ class TestPrint:
         self,
         print_test_case: tuple[tuple[str, ...], str],
         handler_future: asyncio.Future[logging.LogRecord],
-    ):
+    ) -> None:
         args, sep = print_test_case
         utils.print(*args, sep=sep, name="test-name")
         async with asyncio.timeout(2):
@@ -216,18 +228,20 @@ class TestPrint:
 
 class TestDecorator:
     @pytest.fixture
-    def blank_foo_func(self):
+    def blank_foo_func(self) -> Callable[[], str]:
         return lambda: "foo"
 
-    def _test(self, before, deco, is_factory: bool):
+    def _test(
+        self, before: Callable[[], str], deco: Callable[[], str], is_factory: bool
+    ) -> None:
         assert getattr(deco, "__decorator_factory_status__") == is_factory
         assert deco() == "foo"
         assert deco == before
 
-    def test_with_no_call(self, blank_foo_func):
+    def test_with_no_call(self, blank_foo_func: Callable[[], str]) -> None:
         self._test(blank_foo_func, utils.decorator(blank_foo_func), False)
 
-    def test_factory(self, blank_foo_func):
+    def test_factory(self, blank_foo_func: Callable[[], str]) -> None:
         self._test(
             blank_foo_func, utils.decorator(is_factory=True)(blank_foo_func), True
         )
@@ -235,19 +249,21 @@ class TestDecorator:
 
 class TestFuncWithSelf:
     @pytest.fixture
-    def func_with_self_instance(self):
+    def func_with_self_instance(self) -> utils.func_with_self:
         return utils.func_with_self(TestFuncWithSelf.basic_method)
 
-    def basic_method(self):
+    def basic_method(self) -> tuple[str, Self]:
         """some docstring"""
         return "foo", self
 
-    def test_func_with_self(self, func_with_self_instance: utils.func_with_self):
+    def test_func_with_self(
+        self, func_with_self_instance: utils.func_with_self
+    ) -> None:
         func_with_self_instance.owner = self
 
         assert func_with_self_instance.__doc__ == TestFuncWithSelf.basic_method.__doc__
         assert func_with_self_instance() == ("foo", self)
 
-    def test_no_owner(self, func_with_self_instance: utils.func_with_self):
+    def test_no_owner(self, func_with_self_instance: utils.func_with_self) -> None:
         with pytest.raises(RuntimeError, match="Owner has not been set"):
             func_with_self_instance()
