@@ -105,6 +105,8 @@ class Plugin(Generic[SettingsT]):
             setattr(handler.callback, "owner", self)
             self.register_search_handler(handler)
 
+        self.check_for_log_override_files()
+
     def check_for_log_override_files(self) -> bool | None:
         """None=No-Changes, True=In-Prod, False=In-Debug"""
 
@@ -273,7 +275,6 @@ class Plugin(Generic[SettingsT]):
         log.debug("Initialize: %r", arg)
         self._metadata = PluginMetadata(arg["currentPluginMetadata"], self.api)
         self.dispatch("initialization")
-        self.check_for_log_override_files()
         return ExecuteResponse(hide=False)
 
     async def process_context_menus(
