@@ -19,9 +19,6 @@ class Settings:
 
     If a setting is not found, ``None`` is returned instead.
 
-    .. versionchanged:: 2.0.0
-        Expand the value typehint to anything json seriable
-
     .. container:: operations
 
         .. describe:: x['setting name']
