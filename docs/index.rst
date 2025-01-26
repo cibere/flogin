@@ -2,17 +2,22 @@ Welcome to flogin's documentation!
 =================================================
 
 .. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/tests.yml?label=tests
-    :target: https://github.com/cibere/flogin/actions/workflows/tests.yml
-    :alt: Tests Workflow Status
+   :target: https://github.com/cibere/flogin/actions/workflows/tests.yml
+   :alt: Tests Workflow Status
 .. image:: https://flogin-coverage.cibere.dev/badges/3.13.svg
-    :target: https://flogin-coverage.cibere.dev
-    :alt: Coverage Report
+   :target: https://flogin-coverage.cibere.dev
+   :alt: Coverage Report
 .. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/build.yml?label=build
-    :target: https://github.com/cibere/flogin/actions/workflows/build.yml
-    :alt: Build Workflow Status
+   :target: https://github.com/cibere/flogin/actions/workflows/build.yml
+   :alt: Build Workflow Status
 .. image:: https://img.shields.io/github/actions/workflow/status/cibere/flogin/lint.yml?label=lint
-    :target: https://github.com/cibere/flogin/actions/workflows/lint.yml
-    :alt: Lint Workflow Status
+   :target: https://github.com/cibere/flogin/actions/workflows/lint.yml
+   :alt: Lint Workflow Status
+
+.. raw:: html
+   
+   <br>
+
 .. image:: https://img.shields.io/pypi/v/flogin.svg
    :target: https://pypi.python.org/pypi/flogin
    :alt: PyPI version info
