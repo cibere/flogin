@@ -26,10 +26,19 @@ from .utils import MISSING
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
 AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
-T = TypeVar("T", default=Any)
-RT = TypeVar("RT", default=Any)
-CT = TypeVar("CT", default=Any)
-P = ParamSpec("P", default=...)
+
+if TYPE_CHECKING:
+    from typing_extensions import ParamSpec, TypeVar  # noqa: TC004
+
+    T = TypeVar("T", default=Any)
+    RT = TypeVar("RT", default=Any)
+    CT = TypeVar("CT", default=Any)
+    P = ParamSpec("P", default=...)
+else:
+    T = TypeVar("T")
+    RT = TypeVar("RT")
+    CT = TypeVar("CT")
+    P = ParamSpec("P")
 
 
 __all__ = (
