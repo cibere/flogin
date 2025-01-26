@@ -1,1 +1,1 @@
-Jsonable = dict[str, "Jsonable"] | str | int | list["Jsonable"] | None | bool
+Jsonable = str | int | float | None | bool | list["Jsonable"] | dict[str, "Jsonable"]

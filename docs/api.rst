@@ -26,14 +26,14 @@ Types
 -----
 
 .. py:type:: Jsonable
-    
-    This is a type used to represent anything json seriable.
+
+    This is a type used to represent anything json serializable.
 
     It is literally defined as:
 
     .. code-block:: py3
 
-        Jsonable = dict[str, "Jsonable"] | str | int | list["Jsonable"] | None | bool
+        str | int | float | None | bool | list["Jsonable"] | dict[str, "Jsonable"]
 
 Plugins
 -------
