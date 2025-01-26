@@ -37,33 +37,24 @@ jobs:
       - name: Generate Coverage Badge
         run: |
           pip install coverage-badge
-          coverage-badge -o .github\coverage.svg
+          coverage-badge -o coverage.svg
 
-      - name: Upload report
+      - name: Upload Badge
         uses: actions/upload-artifact@v4
         with:
-          name: html_report_${{ matrix.python-version }}
-          path: htmlcov
-          include-hidden-files: true
+          name: coverage-badge-${{ matrix.python-version }}.svg
+          path: coverage.svg
   
   coverage-badge:
     runs-on: ubuntu-latest
     needs: run-tests
 
-    name: Make Coverage Badge
+    name: Publish Coverage Badge
     steps: 
-      - name: Install coverage-badge
-        run: |
-          pip install coverage-badge
-      
-      - name: Download Report
+      - name: Download Badge
         uses: actions/download-artifact@v4
         with:
-          name: html_report_3.13
-      
-      - name: Make Badge
-        run: |
-          coverage-badge -o coverage-badge.svg
+          name: coverage-badge-3.13.svg
       
       - name: Stash Badge
         run: |
