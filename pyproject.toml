@@ -108,7 +108,7 @@ skips = [
 
 [tool.pyright]
 include = [
-    #"tests",
+    "tests",
     "flogin",
     "examples",
 ]

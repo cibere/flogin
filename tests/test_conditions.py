@@ -1,3 +1,5 @@
+# pyright: basic
+
 import re
 
 import pytest

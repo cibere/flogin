@@ -1,3 +1,5 @@
+# pyright: basic
+
 import pytest
 
 from flogin import Plugin, Query, Result, SearchHandler
