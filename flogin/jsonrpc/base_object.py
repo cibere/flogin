@@ -12,15 +12,16 @@ class Base(Generic[T]):
 
     def to_dict(self) -> T:
         names = self.__jsonrpc_option_names__ or {}
-        foo: T = {}  # type: ignore
+        foo = {}
         for name in self.__slots__:
             item: Any = getattr(self, name)
             if isinstance(item, Base):
                 item = item.to_dict()
             elif item and isinstance(item, list) and isinstance(item[0], Base):
                 item = [child.to_dict() for child in cast("list[Base[Any]]", item)]
-            foo[names.get(name, name)] = item  # type: ignore
-        return foo
+            foo[names.get(name, name)] = item
+
+        return cast("T", foo)
 
     @classmethod
     def from_dict(cls: type[Self], data: T) -> Self:
