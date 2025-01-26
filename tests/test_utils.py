@@ -6,7 +6,7 @@ from flogin import utils
 
 @pytest.fixture
 def rand_func():
-    return lambda: random.randint(0, 100)
+    return lambda: random.randint(0, 100)  # nosec
 
 
 def test_cached_property(rand_func):
