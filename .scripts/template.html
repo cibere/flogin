@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Flogin Coverage Reports</title>
+    </head>
+    <body>
+        <h3>Flogin Coverage Reports</h3>
+        <ul>
+            {% for version in versions %}
+                <li>
+                    <a href="/{{ version }}">{{ version }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
