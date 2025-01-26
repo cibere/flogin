@@ -1,27 +1,29 @@
 import json
-from typing import Any, ClassVar, Self
+from typing import Any, ClassVar, Generic, Self, TypeVar, cast
+
+T = TypeVar("T")
 
 __all__ = ("Base",)
 
 
-class Base:
+class Base(Generic[T]):
     __slots__ = ()
     __jsonrpc_option_names__: ClassVar[dict[str, str]] = {}
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> T:
         names = self.__jsonrpc_option_names__ or {}
-        foo = {}
+        foo: T = {}  # type: ignore
         for name in self.__slots__:
-            item = getattr(self, name)
+            item: Any = getattr(self, name)
             if isinstance(item, Base):
                 item = item.to_dict()
             elif item and isinstance(item, list) and isinstance(item[0], Base):
-                item = [item.to_dict() for item in item]
-            foo[names.get(name, name)] = item
+                item = [child.to_dict() for child in cast("list[Base[T]]", item)]
+            foo[names.get(name, name)] = item  # type: ignore
         return foo
 
     @classmethod
-    def from_dict(cls: type[Self], data: dict[str, Any]) -> Self:
+    def from_dict(cls: type[Self], data: T) -> Self:
         raise RuntimeError("This should be overriden")
 
     def __repr__(self) -> str:
@@ -29,6 +31,6 @@ class Base:
         return f"<{self.__class__.__name__} {' '.join(args)}>"
 
 
-class ToMessageBase(Base):
+class ToMessageBase(Base[T], Generic[T]):
     def to_message(self, id: int) -> bytes:
         return (json.dumps(self.to_dict()) + "\r\n").encode()

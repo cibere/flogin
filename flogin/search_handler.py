@@ -4,7 +4,11 @@ import logging
 import re
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
 
-from ._types import PluginT, SearchHandlerCallbackReturns, SearchHandlerCondition
+from ._types.search_handlers import (
+    PluginT,
+    SearchHandlerCallbackReturns,
+    SearchHandlerCondition,
+)
 from .conditions import KeywordCondition, PlainTextCondition, RegexCondition
 from .jsonrpc import ErrorResponse
 from .utils import MISSING, copy_doc, decorator
@@ -77,7 +81,7 @@ class SearchHandler(Generic[PluginT]):
     def __init__(
         self,
         *,
-        pattern: re.Pattern | str = MISSING,
+        pattern: re.Pattern[str] | str = MISSING,
     ) -> None: ...
 
     @overload
@@ -106,7 +110,7 @@ class SearchHandler(Generic[PluginT]):
         condition: SearchHandlerCondition | None = None,
         *,
         text: str = MISSING,
-        pattern: re.Pattern | str = MISSING,
+        pattern: re.Pattern[str] | str = MISSING,
         keyword: str = MISSING,
         allowed_keywords: Iterable[str] = MISSING,
         disallowed_keywords: Iterable[str] = MISSING,
@@ -131,7 +135,7 @@ class SearchHandler(Generic[PluginT]):
     def __init_subclass__(
         cls: type[SearchHandler],
         *,
-        pattern: re.Pattern | str = MISSING,
+        pattern: re.Pattern[str] | str = MISSING,
     ) -> None: ...
 
     @overload
@@ -159,7 +163,7 @@ class SearchHandler(Generic[PluginT]):
         cls: type[SearchHandler],
         *,
         text: str = MISSING,
-        pattern: re.Pattern | str = MISSING,
+        pattern: re.Pattern[str] | str = MISSING,
         keyword: str = MISSING,
         allowed_keywords: Iterable[str] = MISSING,
         disallowed_keywords: Iterable[str] = MISSING,
@@ -179,7 +183,7 @@ class SearchHandler(Generic[PluginT]):
         cls: type[SearchHandler],
         *,
         text: str = MISSING,
-        pattern: re.Pattern | str = MISSING,
+        pattern: re.Pattern[str] | str = MISSING,
         keyword: str = MISSING,
         allowed_keywords: Iterable[str] = MISSING,
         disallowed_keywords: Iterable[str] = MISSING,

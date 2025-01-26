@@ -3,22 +3,34 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from collections.abc import AsyncGenerator, Awaitable, Callable, Coroutine
+from collections.abc import (
+    AsyncGenerator,
+    AsyncIterator,
+    Awaitable,
+    Callable,
+    Coroutine,
+    Hashable,
+)
 from functools import _make_key as make_cached_key
 from typing import (
     TYPE_CHECKING,
     Any,
     Generic,
+    ParamSpec,
     Self,
     TypeVar,
     overload,
 )
 
-from .utils import MISSING, coro_or_gen
+from .utils import MISSING
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
 AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
-T = TypeVar("T")
+T = TypeVar("T", default=Any)
+RT = TypeVar("RT", default=Any)
+CT = TypeVar("CT", default=Any)
+P = ParamSpec("P", default=...)
+
 
 __all__ = (
     "cached_callable",
@@ -43,7 +55,7 @@ def clear_cache(key: str | None = MISSING) -> None:
     """
 
     if key is MISSING:
-        items = []
+        items: list[BaseCachedObject] = []
         for section in __cached_objects__.values():
             items.extend(section)
     else:
@@ -53,40 +65,40 @@ def clear_cache(key: str | None = MISSING) -> None:
         cached_obj.clear_cache()
 
 
-class BaseCachedObject:
-    def __init__(self, obj: Callable, name: str | None = None) -> None:
+class BaseCachedObject(Generic[RT, CT, P]):
+    def __init__(self, obj: Callable[P, RT], name: str | None = None) -> None:
         self.obj = obj
         self.name = name or obj.__name__
-        self.cache = {}
+        self.cache: dict[Hashable, CT] = {}
         __cached_objects__[name].append(self)
 
-    def __call__(self, *args, **kwargs) -> None:
+    def __call__(self, *args: P.args, **kwargs: P.kwargs) -> RT:
         key = make_cached_key(args, kwargs, False)
-        return self.call(key, args, kwargs)
+        return self.call(key, *args, **kwargs)
 
-    def call(self, key, args, kwargs) -> Any:
+    def call(self, key: Hashable, *args: P.args, **kwargs: P.kwargs) -> RT:
         raise NotImplementedError
 
-    def clear_cache(self):
+    def clear_cache(self) -> None:
         self.cache.clear()
 
 
-class CachedCoro(BaseCachedObject):
-    async def call(self, key, args, kwargs):
+class CachedCoro(BaseCachedObject[Awaitable[T], T, P], Generic[T, P]):
+    async def call(self, key: Hashable, *args: P.args, **kwargs: P.kwargs):
         try:
             return self.cache[key]
         except KeyError:
-            self.cache[key] = await coro_or_gen(self.obj(*args, **kwargs))
+            self.cache[key] = await self.obj(*args, **kwargs)
             return self.cache[key]
 
 
-class CachedGen(BaseCachedObject):
-    async def call(self, key, args, kwargs):
+class CachedGen(BaseCachedObject[AsyncIterator[T], list[T], P], Generic[T, P]):
+    async def call(self, key: Hashable, *args: P.args, **kwargs: P.kwargs):
         try:
             for item in self.cache[key]:
                 yield item
         except KeyError:
-            self.cache[key] = await coro_or_gen(self.obj(*args, **kwargs))
+            self.cache[key] = [val async for val in self.obj(*args, **kwargs)]
             for item in self.cache[key]:
                 yield item
 
@@ -116,8 +128,8 @@ class CachedProperty(BaseCachedObject, Generic[T]):
         del self.value
 
 
-class CachedCallable(BaseCachedObject):
-    def call(self, key, args, kwargs):
+class CachedCallable(BaseCachedObject[T, T, P], Generic[T, P]):
+    def call(self, key: Hashable, *args: P.args, **kwargs: P.kwargs):
         try:
             return self.cache[key]
         except KeyError:
@@ -126,10 +138,10 @@ class CachedCallable(BaseCachedObject):
 
 
 def _cached_deco(cls: type[BaseCachedObject], doc: str | None = None):
-    def deco(obj: str | Callable | None = None):
+    def deco(obj: str | Callable[..., Any] | None = None):
         if isinstance(obj, str) or obj is None:
 
-            def inner(obj2: Callable):
+            def inner(obj2: Callable[..., Any]):
                 return cls(obj2, obj)
 
             return inner
@@ -139,21 +151,20 @@ def _cached_deco(cls: type[BaseCachedObject], doc: str | None = None):
     return deco
 
 
-T = TypeVar("T")
 CoroT = TypeVar("CoroT", bound=Callable[..., Awaitable[Any]])
 GenT = TypeVar("GenT", bound=Callable[..., AsyncGenerator[Any, Any]])
 CallableT = TypeVar("CallableT", bound=Callable[..., Any])
 
 
 @overload
-def cached_coro(obj: str | None = None) -> Callable[[T], T]: ...
+def cached_coro(obj: str | None = None) -> Callable[[CoroT], CoroT]: ...
 
 
 @overload
 def cached_coro(obj: CoroT) -> CoroT: ...
 
 
-def cached_coro(obj: str | Callable | None = None) -> Any:
+def cached_coro(obj: str | None | CoroT = None) -> Callable[[CoroT], CoroT] | CoroT:
     r"""A decorator to cache a coroutine's contents based on the passed arguments. This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
 
     .. NOTE::
@@ -179,14 +190,14 @@ def cached_coro(obj: str | Callable | None = None) -> Any:
 
 
 @overload
-def cached_gen(obj: str | None = None) -> Callable[[T], T]: ...
+def cached_gen(obj: str | None = None) -> Callable[[GenT], GenT]: ...
 
 
 @overload
 def cached_gen(obj: GenT) -> GenT: ...
 
 
-def cached_gen(obj: str | Callable | None = None) -> Any:
+def cached_gen(obj: str | GenT | None = None) -> Callable[[GenT], GenT] | GenT:
     r"""A decorator to cache the contents of an async generator based on the passed arguments. This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
 
     .. NOTE::
@@ -249,14 +260,16 @@ def cached_property(
 
 
 @overload
-def cached_callable(obj: str | None = None) -> Callable[[T], T]: ...
+def cached_callable(obj: str | None = None) -> Callable[[CallableT], CallableT]: ...
 
 
 @overload
 def cached_callable(obj: CallableT) -> CallableT: ...
 
 
-def cached_callable(obj: str | Callable | None = None) -> Any:
+def cached_callable(
+    obj: str | CallableT | None = None,
+) -> CallableT | Callable[[CallableT], CallableT]:
     r"""A decorator to cache a callable's output based on the passed arguments. This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
 
     .. NOTE::

@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING, Any, Generic, TypedDict, TypeVar
 from .utils import MISSING
 
 if TYPE_CHECKING:
-    from ._types import PluginT
+    from ._types.search_handlers import PluginT
     from .jsonrpc.results import Result
 
-T = TypeVar("T")
+T = TypeVar("T", default=Any)
 
 __all__ = ("Query",)
 

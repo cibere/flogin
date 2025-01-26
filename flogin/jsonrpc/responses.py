@@ -1,14 +1,28 @@
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from ..utils import MISSING
 from .base_object import ToMessageBase
 from .enums import ErrorCode
 
 if TYPE_CHECKING:
+    from .._types.jsonrpc.responses import (
+        ErrorPayload,
+    )
+    from .._types.jsonrpc.responses import (
+        RawErrorResponse as ErrorResponsePayload,
+    )
+    from .._types.jsonrpc.responses import (
+        RawExecuteResponse as ExecuteResponsePayload,
+    )
+    from .._types.jsonrpc.responses import (
+        RawQueryResponse as QueryResponsePayload,
+    )
     from .results import Result
+
+T = TypeVar("T")
 
 __all__ = (
     "ErrorResponse",
@@ -17,7 +31,7 @@ __all__ = (
 )
 
 
-class BaseResponse(ToMessageBase):
+class BaseResponse(ToMessageBase[T], Generic[T]):
     r"""This represents a response to flow.
 
     .. WARNING::
@@ -31,13 +45,13 @@ class BaseResponse(ToMessageBase):
                     "jsonrpc": "2.0",
                     "id": id,
                 }
-                | self.to_dict()
+                | cast("dict[Any, Any]", self.to_dict())
             )
             + "\r\n"
         ).encode()
 
 
-class ErrorResponse(BaseResponse):
+class ErrorResponse(BaseResponse["ErrorResponsePayload"]):
     r"""This represents an error sent to or from flow.
 
     Attributes
@@ -57,14 +71,18 @@ class ErrorResponse(BaseResponse):
         self.message = message
         self.data = data
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> ErrorResponsePayload:
         data = self.data
         if isinstance(data, Exception):
             data = f"{data}"
         return {"error": {"code": self.code, "message": self.message, "data": data}}
 
     @classmethod
-    def from_dict(cls: type[ErrorResponse], data: dict[str, Any]) -> ErrorResponse:
+    def from_dict(
+        cls: type[ErrorResponse], data: ErrorPayload | ErrorResponsePayload
+    ) -> ErrorResponse:
+        if "error" in data:
+            data = data["error"]
         return cls(code=data["code"], message=data["message"], data=data.get("data"))
 
     @classmethod
@@ -74,7 +92,7 @@ class ErrorResponse(BaseResponse):
         )
 
 
-class QueryResponse(BaseResponse):
+class QueryResponse(BaseResponse["QueryResponsePayload"]):
     r"""This response represents the response from search handler's callbacks and context menus. See the :ref:`search handler section <search_handlers>` for more information about using search handlers.
 
     Attributes
@@ -88,11 +106,6 @@ class QueryResponse(BaseResponse):
     """
 
     __slots__ = "debug_message", "results", "settings_changes"
-    __jsonrpc_option_names__: ClassVar[dict[str, str]] = {
-        "settings_changes": "SettingsChange",
-        "debug_message": "debugMessage",
-        "results": "result",
-    }
 
     def __init__(
         self,
@@ -104,11 +117,17 @@ class QueryResponse(BaseResponse):
         self.settings_changes = settings_changes or {}
         self.debug_message = debug_message or ""
 
-    def to_dict(self) -> dict:
-        return {"result": super().to_dict()}
+    def to_dict(self) -> QueryResponsePayload:
+        return {
+            "result": {
+                "settingsChange": self.settings_changes,
+                "debugMessage": self.debug_message or "",
+                "result": [res.to_dict() for res in self.results],
+            }
+        }
 
 
-class ExecuteResponse(BaseResponse):
+class ExecuteResponse(BaseResponse["ExecuteResponsePayload"]):
     r"""This response is a generic response for jsonrpc requests, most notably result callbacks.
 
     Attributes
@@ -122,5 +141,5 @@ class ExecuteResponse(BaseResponse):
     def __init__(self, hide: bool = True) -> None:
         self.hide = hide
 
-    def to_dict(self) -> dict:
-        return {"result": super().to_dict()}
+    def to_dict(self) -> ExecuteResponsePayload:
+        return {"result": {"hide": self.hide}}

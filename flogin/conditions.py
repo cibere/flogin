@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     import re
     from collections.abc import Iterable
 
-    from ._types import SearchHandlerCondition
+    from ._types.search_handlers import SearchHandlerCondition
     from .query import Query
 
 __all__ = (
@@ -56,10 +56,10 @@ class RegexCondition:
 
     __slots__ = ("pattern",)
 
-    def __init__(self, pattern: re.Pattern) -> None:
+    def __init__(self, pattern: re.Pattern[str]) -> None:
         self.pattern = pattern
 
-    def __call__(self, query: Query[re.Match]) -> bool:
+    def __call__(self, query: Query[re.Match[str]]) -> bool:
         match = self.pattern.match(query.text)
         if match:
             query.condition_data = match

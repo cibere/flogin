@@ -4,7 +4,7 @@ import asyncio
 import json
 import logging
 import os
-from collections.abc import AsyncIterable, Awaitable, Callable, Coroutine, Iterable
+from collections.abc import Awaitable, Callable, Coroutine, Iterable
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
@@ -14,6 +14,7 @@ from typing import (
     Literal,
     TypeVar,
     TypeVarTuple,
+    cast,
     overload,
 )
 
@@ -41,15 +42,17 @@ from .utils import (
 
 if TYPE_CHECKING:
     import re
+    from asyncio.streams import StreamReader, StreamWriter
 
     from typing_extensions import TypeVar  # noqa: TC004
 
-    from ._types import (
+    from ._types.search_handlers import (
+        ConvertableToResult,
         SearchHandlerCallback,
+        SearchHandlerCallbackReturns,
         SearchHandlerCallbackWithSelf,
         SearchHandlerCondition,
     )
-    from .jsonrpc.responses import BaseResponse
     from .query import Query
 
     SettingsT = TypeVar("SettingsT", default=Settings, bound=Settings)
@@ -198,7 +201,7 @@ class Plugin(Generic[SettingsT]):
         args: Iterable[Any] = MISSING,
         kwargs: dict[str, Any] = MISSING,
         error_handler: Callable[[Exception], Coroutine[Any, Any, Any]] | str = MISSING,
-    ) -> asyncio.Task:
+    ) -> asyncio.Task[Any]:
         wrapped = self._run_event(
             coro, event_name, args or [], kwargs or {}, error_handler
         )
@@ -206,7 +209,7 @@ class Plugin(Generic[SettingsT]):
 
     def dispatch(
         self, event: str, *args: Any, **kwargs: Any
-    ) -> None | asyncio.Task[None | BaseResponse]:
+    ) -> None | asyncio.Task[Any]:
         method = f"on_{event}"
 
         # Special Event Cases
@@ -222,9 +225,9 @@ class Plugin(Generic[SettingsT]):
             return self._schedule_event(event_callback, method, args, kwargs)
 
     async def _coro_or_gen_to_results(
-        self, coro: Awaitable | AsyncIterable
+        self, coro: SearchHandlerCallbackReturns
     ) -> list[Result] | ErrorResponse:
-        results = []
+        results: list[Result] = []
         raw_results = await coro_or_gen(coro)
 
         if raw_results is None:
@@ -232,17 +235,12 @@ class Plugin(Generic[SettingsT]):
 
         if isinstance(raw_results, ErrorResponse):
             return raw_results
-        if isinstance(raw_results, dict):
-            res = Result.from_dict(raw_results)
+        if not isinstance(raw_results, list):
+            raw_results = [raw_results]
+        for raw_res in cast("list[ConvertableToResult]", raw_results):
+            res = Result.from_anything(raw_res)
             self._results[res.slug] = res
             results.append(res)
-        else:
-            if not isinstance(raw_results, list):
-                raw_results = [raw_results]
-            for raw_res in raw_results:
-                res = Result.from_anything(raw_res)
-                self._results[res.slug] = res
-                results.append(res)
         return results
 
     async def _initialize_wrapper(self, arg: dict[str, Any]) -> ExecuteResponse:
@@ -255,6 +253,8 @@ class Plugin(Generic[SettingsT]):
         self, data: list[Any]
     ) -> QueryResponse | ErrorResponse:
         log.debug("Context Menu Handler: data=%r", data)
+
+        results: list[Result]
 
         if not data:
             results = []
@@ -282,7 +282,7 @@ class Plugin(Generic[SettingsT]):
     async def process_search_handlers(
         self, query: Query
     ) -> QueryResponse | ErrorResponse:
-        results = []
+        results: list[Result] = []
         for handler in self._search_handlers:
             handler.plugin = self
             if handler.condition(query):
@@ -309,9 +309,7 @@ class Plugin(Generic[SettingsT]):
             return ExecuteResponse(hide=value)
         if value is None:
             return ExecuteResponse()
-        if isinstance(value, ExecuteResponse):
-            return value
-        raise ValueError(f"Expected ExecuteResponse, bool, or NoneType. Got {value!r}")
+        return value
 
     def process_action(self, method: str) -> asyncio.Task[ExecuteResponse] | None:
         slug = method.removeprefix("flogin.action.")
@@ -349,7 +347,12 @@ class Plugin(Generic[SettingsT]):
 
         import aioconsole
 
-        reader, writer = await aioconsole.get_standard_streams()
+        get_standard_streams: Awaitable[tuple[StreamReader, StreamWriter]] = (
+            aioconsole.get_standard_streams()  # type: ignore
+        )
+
+        reader, writer = await get_standard_streams
+
         await self.jsonrpc.start_listening(reader, writer)
 
     def run(self, *, setup_default_log_handler: bool = True) -> None:
@@ -422,8 +425,8 @@ class Plugin(Generic[SettingsT]):
         cls.__class_events__.append(callback.__name__)
         return callback
 
-    @decorator
     @add_classmethod_alt(__event_classmethod_deco)
+    @decorator
     def event(self, callback: EventCallbackT) -> EventCallbackT:
         """A decorator that registers an event to listen for. This decorator can be used with a plugin instance or as a classmethod.
 
@@ -520,7 +523,7 @@ class Plugin(Generic[SettingsT]):
         condition: SearchHandlerCondition | None = None,
         *,
         text: str = MISSING,
-        pattern: re.Pattern | str = MISSING,
+        pattern: re.Pattern[str] | str = MISSING,
         keyword: str = MISSING,
         allowed_keywords: Iterable[str] = MISSING,
         disallowed_keywords: Iterable[str] = MISSING,
@@ -543,7 +546,7 @@ class Plugin(Generic[SettingsT]):
         condition: SearchHandlerCondition | None = None,
         *,
         text: str = MISSING,
-        pattern: re.Pattern | str = MISSING,
+        pattern: re.Pattern[str] | str = MISSING,
         keyword: str = MISSING,
         allowed_keywords: Iterable[str] = MISSING,
         disallowed_keywords: Iterable[str] = MISSING,

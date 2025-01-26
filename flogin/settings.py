@@ -4,7 +4,7 @@ import logging
 from typing import TYPE_CHECKING, Any, overload
 
 if TYPE_CHECKING:
-    from ._types import RawSettings
+    from ._types.settings import RawSettings
 
 log = logging.getLogger(__name__)
 

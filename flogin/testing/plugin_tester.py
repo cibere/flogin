@@ -6,7 +6,7 @@ import sys
 import uuid
 from typing import TYPE_CHECKING, Any, Generic
 
-from .._types import PluginT, RawSettings
+from .._types.search_handlers import PluginT
 from ..flow.plugin_metadata import PluginMetadata
 from ..query import Query
 from ..settings import Settings
@@ -16,6 +16,7 @@ from .filler import FillerObject
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from .._types.settings import RawSettings
     from ..jsonrpc.responses import QueryResponse
     from ..jsonrpc.results import Result
 
@@ -155,10 +156,7 @@ class PluginTester(Generic[PluginT]):
 
         coro = self.plugin.process_search_handlers(query)
 
-        if coro is None:
-            raise RuntimeError("Query event handler not found")
-
-        return await coro  # type: ignore[returnTypeError]
+        return await coro  # type: ignore
 
     async def test_context_menu(
         self, result: Result, *, bypass_registration: bool = False

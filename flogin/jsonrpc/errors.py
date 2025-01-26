@@ -1,9 +1,12 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .enums import ErrorCode
 from .responses import ErrorResponse
+
+if TYPE_CHECKING:
+    from .._types.jsonrpc.responses import ErrorPayload
 
 __all__ = (
     "FlowError",
@@ -153,9 +156,9 @@ class FlowError(JsonRPCException):
     code = ErrorCode.server_error_start.value
 
 
-def get_exception_from_json(data: dict[str, Any]) -> JsonRPCException:
+def get_exception_from_json(data: ErrorPayload) -> JsonRPCException:
     code = data["code"]
-    kwargs = {"message": data["message"], "data": data.get("data")}
+    kwargs: dict[str, Any] = {"message": data["message"], "data": data.get("data")}
 
     for cls in (
         ParserError,
@@ -167,7 +170,7 @@ def get_exception_from_json(data: dict[str, Any]) -> JsonRPCException:
         if code == cls.code:
             return cls(**kwargs)
 
-    if ErrorCode.server_error_start <= code <= ErrorCode.server_error_end:
+    if ErrorCode.server_error_start.value <= code <= ErrorCode.server_error_end.value:
         error = FlowError(**kwargs)
     else:
         error = JsonRPCException(**kwargs)
