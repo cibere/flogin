@@ -110,7 +110,7 @@ skips = [
 include = [
     #"tests",
     "flogin",
-    #"examples",
+    "examples",
 ]
 pythonPlatform = "Windows"
 typeCheckingMode = "strict"
