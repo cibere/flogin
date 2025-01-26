@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, overload
-
-if TYPE_CHECKING:
-    from ._types.settings import RawSettings
+from typing import TYPE_CHECKING, TypeVar, overload
 
 log = logging.getLogger(__name__)
+
+if TYPE_CHECKING:
+    from ._types.json import Jsonable
+    from ._types.settings import RawSettings
+
+T = TypeVar("T")
 
 __all__ = ("Settings",)
 
@@ -15,6 +18,9 @@ class Settings:
     r"""This class represents the settings that you user has chosen.
 
     If a setting is not found, ``None`` is returned instead.
+
+    .. versionchanged:: 2.0.0
+        Expand the value typehint to anything json seriable
 
     .. container:: operations
 
@@ -48,23 +54,23 @@ class Settings:
         self._no_update = no_update
 
     @overload
-    def __getitem__(self, key: str, /) -> Any: ...
+    def __getitem__(self, key: str, /) -> Jsonable: ...
 
     @overload
-    def __getitem__(self, key: tuple[str, Any], /) -> Any: ...
+    def __getitem__(self, key: tuple[str, T], /) -> Jsonable | T: ...
 
-    def __getitem__(self, key: tuple[str, Any] | str) -> Any:
+    def __getitem__(self, key: tuple[str, T] | str) -> Jsonable | T:
         if isinstance(key, str):
             default = None
         else:
             key, default = key
         return self._data.get(key, default)
 
-    def __setitem__(self, key: str, value: Any) -> None:
+    def __setitem__(self, key: str, value: Jsonable) -> None:
         self._data[key] = value
         self._changes[key] = value
 
-    def __getattribute__(self, name: str) -> Any:
+    def __getattribute__(self, name: str) -> Jsonable:
         if name.startswith("_"):
             try:
                 return super().__getattribute__(name)
@@ -74,7 +80,7 @@ class Settings:
                 ) from None
         return self.__getitem__(name)
 
-    def __setattr__(self, name: str, value: Any) -> None:
+    def __setattr__(self, name: str, value: Jsonable) -> None:
         if name.startswith("_"):
             return super().__setattr__(name, value)
         self.__setitem__(name, value)
