@@ -88,6 +88,10 @@ Results
 .. autoclass:: flogin.jsonrpc.results.Glyph
     :members:
 
+.. attributetable:: flogin.jsonrpc.results.ResultConstructorKwargs
+
+.. autotypeddict:: flogin.jsonrpc.results.ResultConstructorKwargs
+
 Responses
 ~~~~~~~~~
 
