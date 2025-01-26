@@ -57,6 +57,7 @@ extensions = [
     "sphinx_toolbox.more_autodoc.typevars",  # https://sphinx-toolbox.readthedocs.io/en/latest/extensions/more_autodoc/typevars.html
     "sphinxcontrib_trio",  # https://sphinxcontrib-trio.readthedocs.io/en/latest/
     "sphinx_copybutton",  # https://github.com/executablebooks/sphinx-copybutton#readme
+    "sphinx_toolbox.more_autodoc.autotypeddict", # https://sphinx-toolbox.readthedocs.io/en/v2.16.1/extensions/more_autodoc/autotypeddict.html
     "nitpick_file_ignorer",
     "attributetable",
 ]
