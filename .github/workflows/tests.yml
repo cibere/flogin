@@ -71,16 +71,19 @@ jobs:
       - name: Delete Old Reports
         run: |
           rm -r -v -f coverage*
+          rm -r -v -f badges
           git add .
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit --author="cibere <71997063+cibere@users.noreply.github.com>" -m "Delete old reports" --allow-empty
 
       - name: Download Artifacts
         uses: actions/download-artifact@v4
 
-      - name: Remove gitignores
+      - name: Run Scripts
         run: |
           cd .scripts
-          python remove_nonroot_gitignores.py
+          pip install -r requirements.txt
+          python update_dirs.py
+          python update_badges.py
 
       - name: Commit New Artifacts
         run: |
