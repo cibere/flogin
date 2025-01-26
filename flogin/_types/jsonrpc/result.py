@@ -12,7 +12,7 @@ class RawRPCAction(TypedDict):
 
 class RawPreview(TypedDict):
     previewImagePath: str
-    isMedia: NotRequired[str | None]
+    isMedia: NotRequired[bool | None]
     description: NotRequired[str | None]
 
 
