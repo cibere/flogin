@@ -1,6 +1,13 @@
 # pyright: basic
 
-import pytest, random, logging, logging.handlers, asyncio, pytest_asyncio
+import asyncio
+import logging
+import logging.handlers
+import random
+
+import pytest
+import pytest_asyncio
+
 from flogin import utils
 
 
