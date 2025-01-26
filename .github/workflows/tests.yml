@@ -56,6 +56,10 @@ jobs:
         with:
           name: coverage-badge-3.13.svg
       
+      - name: Show Tree
+        run: |
+          find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
+      
       - name: Stash Badge
         run: |
           git add .
