@@ -44,30 +44,35 @@ jobs:
         with:
           name: coverage-badge-${{ matrix.python-version }}.svg
           path: coverage.svg
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage_report_${{ matrix.python-version }}
+          path: htmlcov
+          include-hidden-files: true
   
-  coverage-badge:
+  publish-coverage-report:
     runs-on: ubuntu-latest
     needs: run-tests
 
-    name: Publish Coverage Badge
+    name: Publish Coverage Report
     steps: 
       - name: Checkout Coverage Branch
         uses: actions/checkout@v4
         with:
-          ref: coverage-badge
+          ref: coverage-report
 
-      - name: Download Badge
+      - name: Download Artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: coverage-badge-3.13.svg
       
       - name: Show Tree
         run: |
           find . | sed -e "s/[^-][^\/]*\// |/g" -e "s/|\([^ ]\)/|-\1/"
       
-      - name: Commit Badge
+      - name: Commit Artifacts
         continue-on-error: true
         run: |
           git add .
-          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit --author="cibere <71997063+cibere@users.noreply.github.com>" -m "Update Coverage Badge"
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit --author="cibere <71997063+cibere@users.noreply.github.com>" -m "Auto Update Coverage Report"
           git push
