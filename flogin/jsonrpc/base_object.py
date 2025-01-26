@@ -18,7 +18,7 @@ class Base(Generic[T]):
             if isinstance(item, Base):
                 item = item.to_dict()
             elif item and isinstance(item, list) and isinstance(item[0], Base):
-                item = [child.to_dict() for child in cast("list[Base[T]]", item)]
+                item = [child.to_dict() for child in cast("list[Base[Any]]", item)]
             foo[names.get(name, name)] = item  # type: ignore
         return foo
 
