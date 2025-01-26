@@ -53,7 +53,6 @@ extensions = [
     "sphinx.ext.viewcode",  # https://www.sphinx-doc.org/en/master/usage/extensions/viewcode.html
     "sphinx.ext.autodoc",  # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html
     "sphinx.ext.napoleon",  # https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html
-    "sphinx_autodoc_typehints",  # https://github.com/tox-dev/sphinx-autodoc-typehints
     "sphinx.ext.intersphinx",  # https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html
     "sphinx_toolbox.more_autodoc.typevars",  # https://sphinx-toolbox.readthedocs.io/en/latest/extensions/more_autodoc/typevars.html
     "sphinxcontrib_trio",  # https://sphinxcontrib-trio.readthedocs.io/en/latest/
