@@ -6,7 +6,7 @@ from flogin import Settings
 
 
 @pytest.fixture
-def settings():
+def settings() -> Settings:
     return Settings({"foo": 0})
 
 
@@ -42,3 +42,14 @@ def test_get_updates(settings: Settings):
 def test_get_nonexistant_key(settings: Settings):
     val = settings.a_random_key
     assert val is None
+
+
+def test_get_default(settings: Settings):
+    sent = object()
+    val = settings["I do not exist", sent]
+    assert val is sent
+
+
+def test_attribute_error(settings: Settings):
+    with pytest.raises(AttributeError):
+        settings._i_do_not_exist
