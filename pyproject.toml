@@ -43,6 +43,7 @@ docs = [
 tests = [
     "pytest==8.3.4",
     "pytest-asyncio==0.25.2",
+    "pytest-cov==6.0.0",
 ]
 pip = [
     "requests==2.32.3"
@@ -58,6 +59,19 @@ packages = [
 
 [tool.pytest.ini_options]
 asyncio_default_fixture_loop_scope = "module"
+addopts = "--cov=flogin --cov-report term-missing --cov-report html"
+
+[tool.coverage.report]
+exclude_also = [
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
 
 [tool.ruff]
 exclude = ["docs", "examples", "venv*"]
