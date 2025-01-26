@@ -1,0 +1,16 @@
+__pycache__/*
+venv/*
+lib/*
+*.logs
+*.log
+*.pyc
+dist/*
+*.egg-info
+docs/_build
+
+plugin.json
+test.py
+main.py
+flogin.log.1
+*.lock
+.coverage
