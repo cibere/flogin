@@ -6,35 +6,6 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  black:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ${{ fromJson(vars.PYTHON_VERSIONS) }}
-
-    name: Black on ${{ matrix.python-version }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up CPython ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install dependencies
-        id: install-deps
-        run: |
-          pip install .
-          pip install black
-
-      - name: Run black
-        if: ${{ always() && steps.install-deps.outcome == 'success' }}
-        run: |
-          black --check flogin examples tests
-
   ruff:
     runs-on: ubuntu-latest
     strategy:

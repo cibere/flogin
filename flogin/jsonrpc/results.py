@@ -12,9 +12,14 @@ from typing import (
     TypedDict,
     TypeVarTuple,
     Unpack,
+    cast,
 )
 
-from .._types import PluginT, SearchHandlerCallbackReturns
+from .._types.search_handlers import (
+    ConvertableToResult,
+    PluginT,
+    SearchHandlerCallbackReturns,
+)
 from ..utils import MISSING, cached_property, copy_doc
 from .base_object import Base
 from .responses import ErrorResponse, ExecuteResponse
@@ -22,13 +27,21 @@ from .responses import ErrorResponse, ExecuteResponse
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Iterable
 
+    from .._types.jsonrpc.result import (  # noqa: F401
+        RawGlyph,
+        RawPreview,
+        RawProgressBar,
+        RawResult,
+    )
+
+
 TS = TypeVarTuple("TS")
 log = logging.getLogger(__name__)
 
 __all__ = ("Glyph", "ProgressBar", "Result", "ResultPreview")
 
 
-class Glyph(Base):
+class Glyph(Base["RawGlyph"]):
     r"""This represents a glyph object with flow launcher, which is an alternative to :class:`~flogin.jsonrpc.results.Result` icons.
 
     Attributes
@@ -50,7 +63,7 @@ class Glyph(Base):
         self.font_family = font_family
 
     @classmethod
-    def from_dict(cls: type[Self], data: dict[str, Any]) -> Self:
+    def from_dict(cls: type[Self], data: RawGlyph) -> Self:
         r"""Converts a dictionary into a :class:`Glyph` object.
 
         Parameters
@@ -59,10 +72,10 @@ class Glyph(Base):
             The dictionary
         """
 
-        return cls(text=data["Glyth"], font_family=data["FontFamily"])
+        return cls(text=data["glyph"], font_family=data["fontFamily"])
 
 
-class ProgressBar(Base):
+class ProgressBar(Base["RawProgressBar"]):
     r"""This represents the progress bar than can be shown on a result.
 
     .. NOTE::
@@ -87,7 +100,7 @@ class ProgressBar(Base):
         self.color = color or "#26a0da"
 
 
-class ResultPreview(Base):
+class ResultPreview(Base["RawPreview"]):
     r"""Represents a result's preview.
 
     .. NOTE::
@@ -138,7 +151,7 @@ class ResultConstructorArgs(TypedDict):
     progress_bar: NotRequired[ProgressBar | None]
 
 
-class Result(Base, Generic[PluginT]):
+class Result(Base["RawResult"], Generic[PluginT]):
     r"""This represents a result that would be returned as a result for a query or context menu.
 
     For simple useage: create instances of this class as-is.
@@ -315,7 +328,7 @@ class Result(Base, Generic[PluginT]):
             )
             return ErrorResponse.internal_error(error)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self) -> RawResult:
         r"""This converts the result into a json serializable dictionary
 
         Returns
@@ -323,7 +336,14 @@ class Result(Base, Generic[PluginT]):
         dict[:class:`str`, Any]
         """
 
-        x: dict[str, Any] = {}
+        x: RawResult = {
+            "jsonRPCAction": {
+                "method": f"flogin.action.{self.slug}",
+            },
+            "contextData": [
+                self.slug,
+            ],
+        }
 
         if self.title is not None:
             x["title"] = self.title
@@ -339,10 +359,6 @@ class Result(Base, Generic[PluginT]):
             x["subtitleTooltip"] = self.sub_tooltip
         if self.copy_text is not None:
             x["copyText"] = self.copy_text
-        if self.callback is not None:
-            x["jsonRPCAction"] = {"method": f"flogin.action.{self.slug}"}
-        if self.context_menu is not None:
-            x["ContextData"] = [self.slug]
         if self.score is not None:
             x["score"] = self.score
         if self.preview is not None:
@@ -350,15 +366,15 @@ class Result(Base, Generic[PluginT]):
         if self.auto_complete_text is not None:
             x["autoCompleteText"] = self.auto_complete_text
         if self.progress_bar is not None:
-            x.update(self.progress_bar.to_dict())
+            x.update(self.progress_bar.to_dict())  # type: ignore
         if self.rounded_icon is not None:
-            x["RoundedIcon"] = self.rounded_icon
+            x["roundedIcon"] = self.rounded_icon
         if self.glyph is not None:
-            x["Glyph"] = self.glyph.to_dict()
+            x["glyph"] = self.glyph.to_dict()
         return x
 
     @classmethod
-    def from_dict(cls: type[Self], data: dict[str, Any]) -> Self:
+    def from_dict(cls: type[Self], data: RawResult) -> Self:
         r"""Creates a Result from a dictionary
 
         .. NOTE::
@@ -380,7 +396,7 @@ class Result(Base, Generic[PluginT]):
         """
 
         return cls(
-            title=data["title"],
+            title=data.get("title"),
             sub=data.get("subTitle"),
             icon=data.get("icoPath"),
             title_highlight_data=data.get("titleHighlightData"),
@@ -390,11 +406,11 @@ class Result(Base, Generic[PluginT]):
         )
 
     @classmethod
-    def from_anything(cls: type[Result], item: Any) -> Result:
+    def from_anything(cls: type[Result], item: ConvertableToResult[Any]) -> Result[Any]:
         if isinstance(item, dict):
-            return cls.from_dict(item)
+            return cls.from_dict(cast("RawResult", item))
         if isinstance(item, Result):
-            return item
+            return item  # type: ignore
         return cls(str(item))
 
     @classmethod

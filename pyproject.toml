@@ -36,7 +36,6 @@ Documentation = "https://flogin.readthedocs.io/en/latest/"
 docs = [
     "sphinx>=7.0.0,<9.0.0",
     "furo==2024.8.6", # theme // https://pradyunsg.me/furo/customisation/announcement/
-    "sphinx-autodoc-typehints>=1.25.0,<4.0.0",  # https://github.com/tox-dev/sphinx-autodoc-typehints
     "sphinx-toolbox>=3.5,<4.0",  # https://sphinx-toolbox.readthedocs.io/en/latest/extensions/index.html
     "sphinxcontrib-trio==1.1.2",
     "sphinx-copybutton==0.5.2",
@@ -61,7 +60,7 @@ packages = [
 asyncio_default_fixture_loop_scope = "module"
 
 [tool.ruff]
-exclude = ["venv", "docs", "tests", "examples"]
+exclude = ["docs", "tests", "examples", "venv*"]
 
 [tool.ruff.lint]
 select = [
@@ -89,7 +88,11 @@ ignore = [
     "ANN401", # https://docs.astral.sh/ruff/rules/any-type/
     "RET503", # https://docs.astral.sh/ruff/rules/implicit-return/
     "RET502", # https://docs.astral.sh/ruff/rules/implicit-return-value/
+    "PGH003", # https://docs.astral.sh/ruff/rules/blanket-type-ignore
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"flogin/_types/**.py" = ["TC001", "TC002", "TC003"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -102,3 +105,14 @@ skips = [
     "B603", # https://bandit.readthedocs.io/en/latest/plugins/b603_subprocess_without_shell_equals_true.html
     "B404", # https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html#b404-import-subprocess
 ]
+
+[tool.pyright]
+include = [
+    "tests",
+    "flogin",
+    "examples",
+]
+pythonPlatform = "Windows"
+typeCheckingMode = "strict"
+reportPrivateUsage = false
+reportMissingTypeStubs = false

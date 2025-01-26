@@ -11,7 +11,7 @@ from . import version_info
 
 
 def show_version() -> None:
-    entries = []
+    entries: list[str] = []
 
     entries.append(
         f"- Python v{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}-{sys.version_info.releaselevel}"
@@ -381,7 +381,9 @@ def init_command(parser: argparse.ArgumentParser, args: argparse.Namespace) -> N
         create_plugin_directory(parser, args)
 
 
-def add_init_args(subparser: argparse._SubParsersAction) -> None:
+def add_init_args(
+    subparser: "argparse._SubParsersAction[argparse.ArgumentParser]",
+) -> None:
     parser = subparser.add_parser(
         "init",
         help="quickly sets up the environment for the development of a new plugin",
@@ -420,7 +422,9 @@ def add_new_handler_command(
     )
 
 
-def add_handler_command_args(subparser: argparse._SubParsersAction) -> None:
+def add_handler_command_args(
+    subparser: "argparse._SubParsersAction[argparse.ArgumentParser]",
+) -> None:
     parser = subparser.add_parser(
         "new-handler",
         help="quickly set up a new handler using flogin's handler template.",

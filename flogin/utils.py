@@ -210,7 +210,7 @@ class InstanceOrClassmethod(Generic[OwnerT, P, ReturnT, PC, ReturnCT]):
 
         self.__doc__ = self.__instance_func__.__doc__
 
-    def __call__(self, func: Callable) -> Self:
+    def __call__(self, func: Callable[..., Any]) -> Self:
         self.__doc__ = func.__doc__
         return self
 

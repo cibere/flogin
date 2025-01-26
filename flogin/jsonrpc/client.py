@@ -20,6 +20,12 @@ log = logging.getLogger(__name__)
 if TYPE_CHECKING:
     from asyncio.streams import StreamReader, StreamWriter
 
+    from .._types.jsonrpc.request import (
+        Request as RequestPayload,
+    )
+    from .._types.jsonrpc.request import (
+        RequestResult as RequestResultPayload,
+    )
     from ..plugin import Plugin
 
 __all__ = ("JsonRPCClient",)
@@ -30,7 +36,7 @@ class JsonRPCClient:
     writer: StreamWriter
 
     def __init__(self, plugin: Plugin[Any]) -> None:
-        self.tasks: dict[int, asyncio.Task] = {}
+        self.tasks: dict[int, asyncio.Task[BaseResponse[Any]]] = {}
         self.requests: dict[int, asyncio.Future[Any | ErrorResponse]] = {}
         self._current_request_id = 1
         self.plugin = plugin
@@ -74,7 +80,7 @@ class JsonRPCClient:
                 "Failed to cancel task with id of %r, could not find task.", id
             )
 
-    async def handle_result(self, result: dict) -> None:
+    async def handle_result(self, result: RequestResultPayload[Any]) -> None:
         rid = result["id"]
 
         log.debug("Result: %r, %r", rid, result)
@@ -91,7 +97,7 @@ class JsonRPCClient:
     async def handle_error(self, id: int, error: ErrorResponse) -> None:
         if id in self.requests:
             self.requests.pop(id).set_exception(
-                _get_jsonrpc_error_from_json(error.to_dict())
+                _get_jsonrpc_error_from_json(error.to_dict()["error"])
             )
         else:
             log.error("Error response received for unknown request, id=%r", id)
@@ -108,9 +114,9 @@ class JsonRPCClient:
                 exc_info=err,
             )
 
-    async def handle_request(self, request: dict[str, Any]) -> None:
+    async def handle_request(self, request: RequestPayload) -> None:
         method: str = request["method"]
-        params: list[Any] = request["params"]
+        params: list[Any] = request.get("params", [])
         task = None
 
         self.request_id = request["id"]
@@ -171,7 +177,7 @@ class JsonRPCClient:
         self.writer = writer
 
         stream_log = logging.getLogger("flogin.stream_reader")
-        tasks = set()
+        tasks: set[asyncio.Task[None]] = set()
 
         while 1:
             async for line in reader:
