@@ -84,20 +84,41 @@ def setup_logging(
     *,
     formatter: logging.Formatter | None = None,
     handler: logging.Handler | None = None,
-) -> None:
+    logger: logging.Logger | None = None,
+) -> tuple[logging.Logger, logging.Handler]:
     r"""Sets up flogin's default logger.
+
+    .. versionchanged:: 2.0.0
+        :func:`setup_logging` now returns tuple[:class:`logging.Logger`, :class:`logging.Handler`]
 
     Parameters
     ----------
     formatter: Optional[:class:`logging.Formatter`]
         The formatter to use, incase you don't want to use the default file formatter.
+    handler: Optional[:class:`logging.Handler`]
+        The handler object that should be added to the logger. Defaults to :class:`logging.handlers.RotatingFileHandler` with the following arguments:
+
+        .. code-block:: py3
+
+            filename="flogin.log", maxBytes=1000000, encoding="UTF-8", backupCount=1
+
+        .. versionadded:: 2.0.0
+    logger: Optional[:class:`logging.Logger`]
+        The logger object that the handler/formatter should be added to.
+
+        .. versionadded:: 2.0.0
+
+    Returns
+    -------
+    tuple[:class:`logging.Logger`, :class:`logging.Handler`]
+        The logger and handler used to setup the logs.
     """
 
     level = logging.DEBUG
 
     if handler is None:
         handler = logging.handlers.RotatingFileHandler(
-            "flogin.log", maxBytes=1000000, encoding="UTF-8", backupCount=1
+            filename="flogin.log", maxBytes=1000000, encoding="UTF-8", backupCount=1
         )
 
     if formatter is None:
@@ -106,13 +127,16 @@ def setup_logging(
             "[{asctime}] [{levelname:<8}] {name}: {message}", dt_fmt, style="{"
         )
 
-    logger = logging.getLogger()
+    if logger is None:
+        logger = logging.getLogger()
+
     handler.setFormatter(formatter)
     logger.setLevel(level)
     logger.addHandler(handler)
 
     global _logging_formatter_status
     _logging_formatter_status = logger, handler
+    return _logging_formatter_status
 
 
 async def coro_or_gen(coro: Awaitable[T] | AsyncIterable[T]) -> list[T] | T:

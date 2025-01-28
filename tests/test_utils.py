@@ -77,6 +77,18 @@ class TestSetupLogging:
         handler.close()
         logger.removeHandler(handler)
 
+    def test_custom_logger(self):
+        before_logger = logging.getLogger("some-custom-name")
+        utils.setup_logging(logger=before_logger)
+        assert utils._logging_formatter_status is not None
+        logger, handler = utils._logging_formatter_status
+
+        assert isinstance(handler, logging.handlers.RotatingFileHandler)
+        assert logger is before_logger
+
+        handler.close()
+        logger.removeHandler(handler)
+
 
 class TestCoroOrGen:
     @pytest.fixture(scope="class", params=["coro", "gen"])
