@@ -54,7 +54,8 @@ packages = [
     "flogin",
     "flogin.flow",
     "flogin.jsonrpc",
-    "flogin.testing"
+    "flogin.testing",
+    "flogin._types",
 ]
 
 [tool.pytest.ini_options]
