@@ -75,7 +75,7 @@ exclude_also = [
 ]
 
 [tool.ruff]
-exclude = ["docs", "examples", "venv*"]
+exclude = ["examples", "venv*"]
 
 [tool.ruff.lint]
 select = [
@@ -113,6 +113,13 @@ ignore = [
     "ANN001", # https://docs.astral.sh/ruff/rules/missing-type-function-argument
     "ANN202", # https://docs.astral.sh/ruff/rules/missing-return-type-private-function
     "ANN206", # https://docs.astral.sh/ruff/rules/missing-return-type-class-method
+]
+"docs/**" = [
+    "ANN201", # https://docs.astral.sh/ruff/rules/missing-return-type-undocumented-public-function
+    "ANN001", # https://docs.astral.sh/ruff/rules/missing-type-function-argument
+    "ANN202", # https://docs.astral.sh/ruff/rules/missing-return-type-private-function
+    "ANN206", # https://docs.astral.sh/ruff/rules/missing-return-type-class-method
+    "RUF012", # https://docs.astral.sh/ruff/rules/mutable-class-default
 ]
 
 [tool.ruff.format]

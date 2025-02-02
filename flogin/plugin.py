@@ -455,8 +455,8 @@ class Plugin(Generic[SettingsT]):
         cls.__class_events__.append(callback.__name__)
         return callback
 
-    @add_classmethod_alt(__event_classmethod_deco)
     @decorator
+    @add_classmethod_alt(__event_classmethod_deco)
     def event(self, callback: EventCallbackT) -> EventCallbackT:
         """A decorator that registers an event to listen for. This decorator can be used with a plugin instance or as a classmethod.
 
@@ -569,7 +569,7 @@ class Plugin(Generic[SettingsT]):
             disallowed_keywords=disallowed_keywords,
         )
 
-    @decorator(is_factory=True)
+    @decorator
     @add_classmethod_alt(__search_classmethod_deco)
     def search(
         self,

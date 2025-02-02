@@ -259,25 +259,15 @@ class TestPrint:
             assert msg.name == test_name
 
 
-class TestDecorator:
-    @pytest.fixture
-    def blank_foo_func(self) -> Callable[[], str]:
-        return lambda: "foo"
+def test_decorator():
+    def func(inp):
+        return inp
 
-    def _test(
-        self, before: Callable[[], str], deco: Callable[[], str], is_factory: bool
-    ) -> None:
-        assert getattr(deco, "__decorator_factory_status__") == is_factory
-        assert deco() == "foo"
-        assert deco == before
+    deco = utils.decorator(func)
 
-    def test_with_no_call(self, blank_foo_func: Callable[[], str]) -> None:
-        self._test(blank_foo_func, utils.decorator(blank_foo_func), False)
-
-    def test_factory(self, blank_foo_func: Callable[[], str]) -> None:
-        self._test(
-            blank_foo_func, utils.decorator(is_factory=True)(blank_foo_func), True
-        )
+    assert getattr(deco, "__is_decorator__", False) is True
+    assert deco == func
+    assert deco(5) == 5
 
 
 class TestFuncWithSelf:

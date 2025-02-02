@@ -1,3 +1,4 @@
+# pyright: basic
 """
 From discord.py
 https://github.com/Rapptz/discord.py/blob/master/docs/extensions/nitpick_file_ignorer.py

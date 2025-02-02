@@ -1,3 +1,4 @@
+# pyright: basic
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -22,14 +23,14 @@ try:
         read = f.read()
         version = re.search(
             r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', read, re.MULTILINE
-        ).group(
+        ).group(  # type: ignore
             1
-        )  # type: ignore
+        )
         author = re.search(
             r'^__author__\s*=\s*[\'"]([^\'"]*)[\'"]', read, re.MULTILINE
-        ).group(
+        ).group(  # type: ignore
             1
-        )  # type: ignore
+        )
 except Exception:
     pass
 
@@ -57,9 +58,11 @@ extensions = [
     "sphinx_toolbox.more_autodoc.typevars",  # https://sphinx-toolbox.readthedocs.io/en/latest/extensions/more_autodoc/typevars.html
     "sphinxcontrib_trio",  # https://sphinxcontrib-trio.readthedocs.io/en/latest/
     "sphinx_copybutton",  # https://github.com/executablebooks/sphinx-copybutton#readme
-    "sphinx_toolbox.more_autodoc.autotypeddict", # https://sphinx-toolbox.readthedocs.io/en/v2.16.1/extensions/more_autodoc/autotypeddict.html
+    "sphinx_toolbox.more_autodoc.autotypeddict",  # https://sphinx-toolbox.readthedocs.io/en/v2.16.1/extensions/more_autodoc/autotypeddict.html
     "nitpick_file_ignorer",
     "attributetable",
+    "generics",
+    "details",
 ]
 
 rst_prolog = """

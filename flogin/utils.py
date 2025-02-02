@@ -301,22 +301,9 @@ def print(*values: object, sep: str = MISSING, name: str = MISSING) -> None:
     logging.getLogger(name).info(sep.join(str(val) for val in values))
 
 
-@overload
-def decorator(*, is_factory: bool) -> Callable[[T], T]: ...
-
-
-@overload
-def decorator(deco: T) -> T: ...
-
-
-def decorator(deco: T = MISSING, *, is_factory: bool = False) -> T | Callable[[T], T]:
-    def inner(func: T) -> T:
-        setattr(func, "__decorator_factory_status__", is_factory)
-        return func
-
-    if deco is not MISSING:
-        return inner(deco)
-    return inner
+def decorator(deco: T) -> T:
+    setattr(deco, "__is_decorator__", True)
+    return deco
 
 
 class func_with_self(Generic[P, ReturnT, OwnerT]):

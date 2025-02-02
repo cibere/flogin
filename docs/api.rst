@@ -35,6 +35,7 @@ Types
 
         str | int | float | None | bool | list["Jsonable"] | dict[str, "Jsonable"]
 
+
 Plugins
 -------
 
@@ -42,6 +43,42 @@ Plugins
 
 .. autoclass:: flogin.plugin.Plugin
     :members:
+    :exclude-members: event, search
+
+    .. py:type:: SettingsT
+    
+        This represents a generic type parameter that can be set to a custom subclass of :class:`~flogin.settings.Settings` for typechecking purposes with :attr:`Plugin.settings`.
+
+        .. WARNING::
+            This is strictly for type checking purposes.
+
+        .. details:: Settings Subclass Example
+            
+            .. code-block:: py3
+                :linenos:
+
+                from flogin import Settings
+
+                class MySettings(Settings):
+                    some_settings_attr: str | None
+        
+        .. details:: Useage Example
+
+            .. code-block:: py3
+                :linenos:
+                
+                class MyPlugin(Plugin[MySettings]):
+                    ...
+                
+                # Later on
+                reveal_type(plugin.settings) # MySettings
+                reveal_type(plugin.settings.some_settings_attr) # str | None
+
+    .. automethod:: Plugin.event()
+        :decorator:
+        
+    .. automethod:: Plugin.search
+        :decorator:
 
 Models
 -------
@@ -51,7 +88,7 @@ Settings
 
 .. attributetable:: flogin.settings.Settings
 
-.. autoclass:: flogin.settings.Settings
+.. autoclass:: flogin.settings.Settings()
     :members:
 
 Query
@@ -59,7 +96,7 @@ Query
 
 .. attributetable:: flogin.query.Query
 
-.. autoclass:: flogin.query.Query
+.. autoclass:: flogin.query.Query()
     :members:
 
 JSON RPC
@@ -97,17 +134,17 @@ Responses
 
 .. attributetable:: flogin.jsonrpc.responses.ErrorResponse
 
-.. autoclass:: flogin.jsonrpc.responses.ErrorResponse
+.. autoclass:: flogin.jsonrpc.responses.ErrorResponse()
     :members:
 
 .. attributetable:: flogin.jsonrpc.responses.QueryResponse
 
-.. autoclass:: flogin.jsonrpc.responses.QueryResponse
+.. autoclass:: flogin.jsonrpc.responses.QueryResponse()
     :members:
 
 .. attributetable:: flogin.jsonrpc.responses.ExecuteResponse
 
-.. autoclass:: flogin.jsonrpc.responses.ExecuteResponse
+.. autoclass:: flogin.jsonrpc.responses.ExecuteResponse()
     :members:
 
 .. _search_handlers_api_reference:
@@ -119,6 +156,10 @@ Search Handlers
 
 .. autoclass:: flogin.search_handler.SearchHandler
     :members:
+    :exclude-members: error
+
+    .. automethod:: SearchHandler.error()
+        :decorator:
 
 .. _builtin_search_conditions:
 
@@ -158,107 +199,107 @@ API
 
 .. attributetable:: flogin.flow.api.FlowLauncherAPI
 
-.. autoclass:: flogin.flow.api.FlowLauncherAPI
+.. autoclass:: flogin.flow.api.FlowLauncherAPI()
     :members:
 
 .. attributetable:: flogin.flow.fuzzy_search.FuzzySearchResult
 
-.. autoclass:: flogin.flow.fuzzy_search.FuzzySearchResult
+.. autoclass:: flogin.flow.fuzzy_search.FuzzySearchResult()
     :members:
 
 .. attributetable:: flogin.flow.plugin_metadata.PluginMetadata
 
-.. autoclass:: flogin.flow.plugin_metadata.PluginMetadata
+.. autoclass:: flogin.flow.plugin_metadata.PluginMetadata()
     :members:
 
 Settings
 ~~~~~~~~~
 .. attributetable:: flogin.flow.settings.FlowSettings
 
-.. autoclass:: flogin.flow.settings.FlowSettings
+.. autoclass:: flogin.flow.settings.FlowSettings()
     :members:
     :private-members:
 
 
 .. attributetable:: flogin.flow.settings.CustomQueryShortcut
 
-.. autoclass:: flogin.flow.settings.CustomQueryShortcut
+.. autoclass:: flogin.flow.settings.CustomQueryShortcut()
     :members:
 
 
 .. attributetable:: flogin.flow.settings.CustomFileManager
 
-.. autoclass:: flogin.flow.settings.CustomFileManager
+.. autoclass:: flogin.flow.settings.CustomFileManager()
     :members:
     :private-members:
 
 
 .. attributetable:: flogin.flow.settings.CustomBrowser
 
-.. autoclass:: flogin.flow.settings.CustomBrowser
+.. autoclass:: flogin.flow.settings.CustomBrowser()
     :members:
     :private-members:
 
 
 .. attributetable:: flogin.flow.settings.CustomPluginHotkey
 
-.. autoclass:: flogin.flow.settings.CustomPluginHotkey
+.. autoclass:: flogin.flow.settings.CustomPluginHotkey()
     :members:
     :private-members:
 
 
 .. attributetable:: flogin.flow.settings.HttpProxy
 
-.. autoclass:: flogin.flow.settings.HttpProxy
+.. autoclass:: flogin.flow.settings.HttpProxy()
     :members:
     :private-members:
 
 
 .. attributetable:: flogin.flow.settings.PartialPlugin
 
-.. autoclass:: flogin.flow.settings.PartialPlugin
+.. autoclass:: flogin.flow.settings.PartialPlugin()
     :members:
     :private-members:
 
 
 .. attributetable:: flogin.flow.settings.PluginsSettings
 
-.. autoclass:: flogin.flow.settings.PluginsSettings
+.. autoclass:: flogin.flow.settings.PluginsSettings()
     :members:
     :private-members:
 
 
 .. attributetable:: flogin.flow.settings.LastQueryMode
 
-.. autoclass:: flogin.flow.settings.LastQueryMode
+.. autoclass:: flogin.flow.settings.LastQueryMode()
     :members:
     :private-members:
 
 
 .. attributetable:: flogin.flow.settings.SearchWindowScreens
 
-.. autoclass:: flogin.flow.settings.SearchWindowScreens
+.. autoclass:: flogin.flow.settings.SearchWindowScreens()
     :members:
     :private-members:
 
 
 .. attributetable:: flogin.flow.settings.SearchWindowAligns
 
-.. autoclass:: flogin.flow.settings.SearchWindowAligns
+.. autoclass:: flogin.flow.settings.SearchWindowAligns()
     :members:
     :private-members:
 
 
 .. attributetable:: flogin.flow.settings.AnimationSpeeds
 
-.. autoclass:: flogin.flow.settings.AnimationSpeeds
+.. autoclass:: flogin.flow.settings.AnimationSpeeds()
     :members:
     :private-members:
 
 
 .. attributetable:: flogin.flow.settings.SearchPrecisionScore
 
-.. autoclass:: flogin.flow.settings.SearchPrecisionScore
+.. autoclass:: flogin.flow.settings.SearchPrecisionScore()
     :members:
     :private-members:
 
@@ -269,22 +310,25 @@ Plugin Errors
 ~~~~~~~~~~~~~
 
 
-.. attributetable:: flogin.errors.PluginException
+.. attributetable:: flogin.errors.PluginException()
 
-.. autoclass:: flogin.errors.PluginException
+.. autoexception:: flogin.errors.PluginException()
     :members:
+    :show-inheritance:
 
 
-.. attributetable:: flogin.errors.PluginNotInitialized
+.. attributetable:: flogin.errors.PluginNotInitialized()
 
-.. autoclass:: flogin.errors.PluginNotInitialized
+.. autoexception:: flogin.errors.PluginNotInitialized()
     :members:
+    :show-inheritance:
 
 
-.. attributetable:: flogin.errors.EnvNotSet
+.. attributetable:: flogin.errors.EnvNotSet()
 
-.. autoclass:: flogin.errors.EnvNotSet
+.. autoexception:: flogin.errors.EnvNotSet()
     :members:
+    :show-inheritance:
 
 JSON-RPC Errors
 ~~~~~~~~~~~~~~~
@@ -292,56 +336,66 @@ JSON-RPC Errors
 
 .. attributetable:: flogin.jsonrpc.errors.JsonRPCException
 
-.. autoclass:: flogin.jsonrpc.errors.JsonRPCException
+.. autoexception:: flogin.jsonrpc.errors.JsonRPCException
     :members:
+    :show-inheritance:
 
 .. attributetable:: flogin.jsonrpc.errors.ParserError
 
-.. autoclass:: flogin.jsonrpc.errors.ParserError
+.. autoexception:: flogin.jsonrpc.errors.ParserError
     :members:
+    :show-inheritance:
     
 .. attributetable:: flogin.jsonrpc.errors.InvalidRequest
 
-.. autoclass:: flogin.jsonrpc.errors.InvalidRequest
+.. autoexception:: flogin.jsonrpc.errors.InvalidRequest
     :members:
+    :show-inheritance:
 
 .. attributetable:: flogin.jsonrpc.errors.MethodNotFound
 
-.. autoclass:: flogin.jsonrpc.errors.MethodNotFound
+.. autoexception:: flogin.jsonrpc.errors.MethodNotFound
     :members:
+    :show-inheritance:
 
 .. attributetable:: flogin.jsonrpc.errors.InvalidParams
 
-.. autoclass:: flogin.jsonrpc.errors.InvalidParams
+.. autoexception:: flogin.jsonrpc.errors.InvalidParams
     :members:
+    :show-inheritance:
 
 .. attributetable:: flogin.jsonrpc.errors.InternalError
 
-.. autoclass:: flogin.jsonrpc.errors.InternalError
+.. autoexception:: flogin.jsonrpc.errors.InternalError
     :members:
+    :show-inheritance:
 
 .. attributetable:: flogin.jsonrpc.errors.FlowError
 
-.. autoclass:: flogin.jsonrpc.errors.FlowError
+.. autoexception:: flogin.jsonrpc.errors.FlowError
     :members:
+    :show-inheritance:
 
 Pip Errors
 ~~~~~~~~~~~
 
-.. attributetable:: flogin.errors.PipException
+.. attributetable:: flogin.errors.PipException()
 
-.. autoclass:: flogin.errors.PipException
+.. autoexception:: flogin.errors.PipException()
     :members:
+    :show-inheritance:
 
-.. attributetable:: flogin.errors.UnableToDownloadPip
+.. attributetable:: flogin.errors.UnableToDownloadPip()
 
-.. autoclass:: flogin.errors.UnableToDownloadPip
+.. autoexception:: flogin.errors.UnableToDownloadPip()
     :members:
+    :show-inheritance:
 
-.. attributetable:: flogin.errors.PipExecutionError
+.. attributetable:: flogin.errors.PipExecutionError()
 
-.. autoclass:: flogin.errors.PipExecutionError
+.. autoexception:: flogin.errors.PipExecutionError()
     :members:
+    :show-inheritance:
 
     
 .. _testing_module_api_reference:
@@ -381,12 +435,16 @@ Pip
 Caching
 -------
 
-.. autodecorator:: flogin.caching.cached_property()
-
-.. autodecorator:: flogin.caching.cached_coro()
-
-.. autodecorator:: flogin.caching.cached_gen()
-
-.. autodecorator:: flogin.caching.cached_callable()
-
+.. autofunction:: flogin.caching.cached_property
+    :decorator:
+    
+.. autofunction:: flogin.caching.cached_coro
+    :decorator:
+    
+.. autofunction:: flogin.caching.cached_gen
+    :decorator:
+    
+.. autofunction:: flogin.caching.cached_callable
+    :decorator:
+    
 .. autofunction:: flogin.caching.clear_cache

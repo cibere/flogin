@@ -22,7 +22,7 @@ from typing import (
     overload,
 )
 
-from .utils import MISSING
+from .utils import MISSING, decorator
 
 Coro = TypeVar("Coro", bound=Callable[..., Coroutine[Any, Any, Any]])
 AGenT = TypeVar("AGenT", bound=Callable[..., AsyncGenerator[Any, Any]])
@@ -147,7 +147,7 @@ class CachedCallable(BaseCachedObject[T, T, P], Generic[T, P]):
 
 
 def _cached_deco(cls: type[BaseCachedObject], doc: str | None = None):
-    def deco(obj: str | Callable[..., Any] | None = None):
+    def inner(obj: str | Callable[..., Any] | None = None):
         if isinstance(obj, str) or obj is None:
 
             def inner(obj2: Callable[..., Any]):
@@ -156,8 +156,8 @@ def _cached_deco(cls: type[BaseCachedObject], doc: str | None = None):
             return inner
         return cls(obj)
 
-    deco.__doc__ = doc
-    return deco
+    inner.__doc__ = doc
+    return decorator(inner)
 
 
 CoroT = TypeVar("CoroT", bound=Callable[..., Awaitable[Any]])
@@ -173,6 +173,7 @@ def cached_coro(obj: str | None = None) -> Callable[[CoroT], CoroT]: ...
 def cached_coro(obj: CoroT) -> CoroT: ...
 
 
+@decorator
 def cached_coro(obj: str | None | CoroT = None) -> Callable[[CoroT], CoroT] | CoroT:
     r"""A decorator to cache a coroutine's contents based on the passed arguments. This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
 
@@ -206,6 +207,7 @@ def cached_gen(obj: str | None = None) -> Callable[[GenT], GenT]: ...
 def cached_gen(obj: GenT) -> GenT: ...
 
 
+@decorator
 def cached_gen(obj: str | GenT | None = None) -> Callable[[GenT], GenT] | GenT:
     r"""A decorator to cache the contents of an async generator based on the passed arguments. This decorator can also be called with the optional positional argument acting as a ``name`` argument. This is useful when using :func:`~flogin.caching.clear_cache` as it lets you choose which items you want to clear the cache of.
 
@@ -241,6 +243,7 @@ def cached_property(
 def cached_property(obj: Callable[[Any], T]) -> CachedProperty[T]: ...
 
 
+@decorator
 def cached_property(
     obj: str | Callable[[Any], T] | None = None,
 ) -> Callable[[Callable[[Any], T]], CachedProperty[T]] | CachedProperty[T]:
@@ -276,6 +279,7 @@ def cached_callable(obj: str | None = None) -> Callable[[CallableT], CallableT]:
 def cached_callable(obj: CallableT) -> CallableT: ...
 
 
+@decorator
 def cached_callable(
     obj: str | CallableT | None = None,
 ) -> CallableT | Callable[[CallableT], CallableT]:

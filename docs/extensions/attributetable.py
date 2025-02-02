@@ -1,3 +1,4 @@
+# pyright: basic
 """
 Credits for the original code go to discord.py by Rapptz
 https://raw.githubusercontent.com/Rapptz/discord.py/refs/heads/master/docs/_static/style.css
@@ -8,14 +9,18 @@ from __future__ import annotations
 import importlib
 import inspect
 import re
-from typing import Dict, List, NamedTuple, Optional, Sequence, Tuple
+from typing import TYPE_CHECKING, NamedTuple
 
 from docutils import nodes
 from sphinx import addnodes
-from sphinx.application import Sphinx
-from sphinx.environment import BuildEnvironment
 from sphinx.util.docutils import SphinxDirective
-from sphinx.util.typing import OptionSpec
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from sphinx.application import Sphinx
+    from sphinx.environment import BuildEnvironment
+    from sphinx.util.typing import OptionSpec
 
 
 class attributetable(nodes.General, nodes.Element):
@@ -61,9 +66,6 @@ def visit_attributetablebadge_node(self, node: attributetablebadge) -> None:
         "title": node["badge-type"],
         "data-name": node.attributes["data_element_name"],
     }
-    is_fac = node.attributes.get("data_is_factory")
-    if is_fac is not None:
-        attributes["data-isfactory"] = is_fac
     self.body.append(self.starttag(node, "span", **attributes))
 
 
@@ -101,7 +103,7 @@ class PyAttributeTable(SphinxDirective):
     final_argument_whitespace = False
     option_spec: OptionSpec = {}  # type: ignore
 
-    def parse_name(self, content: str) -> Tuple[str, str]:
+    def parse_name(self, content: str) -> tuple[str, str]:
         match = _name_parser_regex.match(content)
         if match is None:
             raise RuntimeError(
@@ -121,7 +123,7 @@ class PyAttributeTable(SphinxDirective):
 
         return modulename, name
 
-    def run(self) -> List[attributetableplaceholder]:
+    def run(self) -> list[attributetableplaceholder]:
         """If you're curious on the HTML this is meant to generate:
 
         <div class="py-attribute-table">
@@ -158,7 +160,7 @@ class PyAttributeTable(SphinxDirective):
         return [node]
 
 
-def build_lookup_table(env: BuildEnvironment) -> Dict[str, List[str]]:
+def build_lookup_table(env: BuildEnvironment) -> dict[str, list[str]]:
     # Given an environment, load up a lookup table of
     # full-class-name: objects
     result = {}
@@ -187,7 +189,7 @@ def build_lookup_table(env: BuildEnvironment) -> Dict[str, List[str]]:
 class TableElement(NamedTuple):
     fullname: str
     label: str
-    badge: Optional[attributetablebadge]
+    badge: attributetablebadge | None
 
 
 def process_attributetable(app: Sphinx, doctree: nodes.Node, fromdocname: str) -> None:
@@ -218,12 +220,12 @@ def process_attributetable(app: Sphinx, doctree: nodes.Node, fromdocname: str) -
 
 
 def get_class_results(
-    lookup: Dict[str, List[str]], modulename: str, name: str, fullname: str
-) -> Dict[str, List[TableElement]]:
+    lookup: dict[str, list[str]], modulename: str, name: str, fullname: str
+) -> dict[str, list[TableElement]]:
     module = importlib.import_module(modulename)
     cls = getattr(module, name)
 
-    groups: Dict[str, List[TableElement]] = {
+    groups: dict[str, list[TableElement]] = {
         ("Attributes"): [],
         ("Methods"): [],
     }
@@ -245,43 +247,38 @@ def get_class_results(
             if value is not None:
                 break
 
-        if value is not None:
-            doc = value.__doc__ or ""
-            if inspect.iscoroutinefunction(value) or doc.startswith("|coro|"):
+        if value is None:
+            continue
+
+        doc = value.__doc__ or ""
+        if inspect.iscoroutinefunction(value) or doc.startswith("|coro|"):
+            key = "Methods"
+            badge = attributetablebadge("async", "async", data_element_name=attrlookup)
+            badge["badge-type"] = "coroutine"
+        elif isinstance(value, classmethod):
+            key = "Methods"
+            label = f"{name}.{attr}"
+            badge = attributetablebadge("cls", "cls", data_element_name=attrlookup)
+            badge["badge-type"] = "classmethod"
+        elif getattr(value, "__is_decorator__", False) is True:
+            key = "Methods"
+            badge = attributetablebadge(
+                "@",
+                "@",
+                data_element_name=attrlookup,
+            )
+            badge["badge-type"] = "decorator"
+        elif inspect.isfunction(value):
+            if inspect.isasyncgenfunction(value):
                 key = "Methods"
                 badge = attributetablebadge(
-                    "async", "async", data_element_name=attrlookup
+                    "async for", "async for", data_element_name=attrlookup
                 )
-                badge["badge-type"] = "coroutine"
-            elif isinstance(value, classmethod):
+                badge["badge-type"] = "async iterable"
+            else:
                 key = "Methods"
-                label = f"{name}.{attr}"
-                badge = attributetablebadge("cls", "cls", data_element_name=attrlookup)
-                badge["badge-type"] = "classmethod"
-            elif (
-                deco_status := getattr(value, "__decorator_factory_status__", None)
-            ) is not None:
-                key = "Methods"
-                badge = attributetablebadge(
-                    "@",
-                    "@",
-                    data_element_name=attrlookup,
-                    data_is_factory=deco_status,
-                )
-                badge["badge-type"] = "decorator"
-            elif inspect.isfunction(value):
-                if inspect.isasyncgenfunction(value):
-                    key = "Methods"
-                    badge = attributetablebadge(
-                        "async for", "async for", data_element_name=attrlookup
-                    )
-                    badge["badge-type"] = "async iterable"
-                else:
-                    key = "Methods"
-                    badge = attributetablebadge(
-                        "def", "def", data_element_name=attrlookup
-                    )
-                    badge["badge-type"] = "method"
+                badge = attributetablebadge("def", "def", data_element_name=attrlookup)
+                badge["badge-type"] = "method"
 
         groups[key].append(TableElement(fullname=attrlookup, label=label, badge=badge))
 
