@@ -6,12 +6,12 @@ import sys
 import tempfile
 from pathlib import Path
 
+from .utils import MISSING
+
 try:
     import requests
 except ImportError:
-    raise ImportError(
-        "Pip's Extra Dependencies are not installed. You can install them with flogin[pip]"
-    ) from None
+    requests = MISSING
 
 from .errors import PipExecutionError, UnableToDownloadPip
 
@@ -71,6 +71,11 @@ class Pip:
     _libs_dir: Path
 
     def __init__(self, libs_dir: Path | str | None = None) -> None:
+        if requests is MISSING:
+            raise ImportError(
+                "Pip's Extra Dependencies are not installed. You can install them with flogin[pip]"
+            )
+
         self._pip_fp: Path | None = None
         self.libs_dir = libs_dir or Path("lib")
 
@@ -109,8 +114,8 @@ class Pip:
         try:
             res = requests.get("https://bootstrap.pypa.io/pip/pip.pyz", timeout=10)
             res.raise_for_status()
-        except (requests.HTTPError, requests.Timeout, requests.ConnectionError) as e:
-            raise UnableToDownloadPip(e) from e
+        except requests.RequestException as error:
+            raise UnableToDownloadPip(error) from error
 
         with tempfile.NamedTemporaryFile("wb", suffix="-pip.pyz", delete=False) as f:
             try:

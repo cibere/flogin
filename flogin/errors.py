@@ -73,9 +73,7 @@ class UnableToDownloadPip(PipException):
         The error that was raised by the :doc:`req:index` module.
     """
 
-    def __init__(
-        self, err: requests.HTTPError | requests.Timeout | requests.ConnectionError
-    ) -> None:
+    def __init__(self, err: requests.RequestException) -> None:
         super().__init__(err)
         self.error = err
 
