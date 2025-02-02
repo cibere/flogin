@@ -18,3 +18,4 @@ def process_signature(app, what, name, obj, options, signature, return_annotatio
 
 def setup(app):
     app.connect("autodoc-process-signature", process_signature)
+    return {"parallel_read_safe": True}
