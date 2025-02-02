@@ -134,7 +134,10 @@ class CachedProperty(BaseCachedObject, Generic[T]):
             return self.value
 
     def clear_cache(self):
-        del self.value
+        try:
+            del self.value
+        except AttributeError:
+            pass
 
 
 class CachedCallable(BaseCachedObject[T, T, P], Generic[T, P]):
