@@ -72,6 +72,7 @@ exclude_also = [
     "if TYPE_CHECKING:",
     "class .*\\bProtocol\\):",
     "@(abc\\.)?abstractmethod",
+    "# cov: skip"
 ]
 
 [tool.ruff]
