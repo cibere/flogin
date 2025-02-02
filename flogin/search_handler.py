@@ -37,8 +37,6 @@ class SearchHandler(Generic[PluginT]):
 
     There is a provided decorator to easily create search handlers: :func:`~flogin.plugin.Plugin.search`
 
-    This class implements a generic for the :attr:`~flogin.search_handler.SearchHandler.plugin` attribute, which will be used for typechecking purposes.
-
     The keywords in the constructor can also be passed into the subclassed init, like so: ::
 
         class MyHandler(SearchHandler, text="text"):

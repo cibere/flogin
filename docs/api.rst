@@ -35,7 +35,6 @@ Types
 
         str | int | float | None | bool | list["Jsonable"] | dict[str, "Jsonable"]
 
-
 Plugins
 -------
 
@@ -44,35 +43,6 @@ Plugins
 .. autoclass:: flogin.plugin.Plugin
     :members:
     :exclude-members: event, search
-
-    .. py:type:: SettingsT
-    
-        This represents a generic type parameter that can be set to a custom subclass of :class:`~flogin.settings.Settings` for typechecking purposes with :attr:`Plugin.settings`.
-
-        .. WARNING::
-            This is strictly for type checking purposes.
-
-        .. details:: Settings Subclass Example
-            
-            .. code-block:: py3
-                :linenos:
-
-                from flogin import Settings
-
-                class MySettings(Settings):
-                    some_settings_attr: str | None
-        
-        .. details:: Useage Example
-
-            .. code-block:: py3
-                :linenos:
-                
-                class MyPlugin(Plugin[MySettings]):
-                    ...
-                
-                # Later on
-                reveal_type(plugin.settings) # MySettings
-                reveal_type(plugin.settings.some_settings_attr) # str | None
 
     .. automethod:: Plugin.event()
         :decorator:
@@ -437,14 +407,14 @@ Caching
 
 .. autofunction:: flogin.caching.cached_property
     :decorator:
-    
+
 .. autofunction:: flogin.caching.cached_coro
     :decorator:
-    
+
 .. autofunction:: flogin.caching.cached_gen
     :decorator:
-    
+
 .. autofunction:: flogin.caching.cached_callable
     :decorator:
-    
+
 .. autofunction:: flogin.caching.clear_cache

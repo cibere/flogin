@@ -31,8 +31,6 @@ class PluginTester(Generic[PluginT]):
 
     See the :doc:`testing` guide for more information on writing tests.
 
-    This class implements a generic for the :attr:`~flogin.testing.plugin_tester.PluginTester.plugin` attribute, which will be used for typechecking purposes.
-
     Parameters
     ----------
     plugin: :class:`~flogin.plugin.Plugin`

@@ -131,14 +131,3 @@ intersphinx_mapping = {
 nitpick_ignore_files = [
     "whats_new",
 ]
-
-# Typehints are wonky for some reason, and errors/warnings get raised. This workaround just ignores the errors
-# https://github.com/sphinx-doc/sphinx/issues/10785
-nitpick_ignore = [
-    ("py:class", "flogin.query.T"),
-    ("py:class", "SearchHandlerCallbackReturns"),
-    (
-        "py:class",
-        "pathlib._local.Path",
-    ),  # this gets resolved just fine, but an error still gets thrown for some reason
-]

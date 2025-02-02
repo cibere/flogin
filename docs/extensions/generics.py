@@ -2,20 +2,30 @@
 # temp fix for
 # https://github.com/sphinx-doc/sphinx/issues/10568
 
-generics: dict[str, tuple[str]] = {"flogin.plugin.Plugin": ("SettingsT",)}
+from typing import TypeVar
+
+
+def get_generic_params(obj: type):
+    typevars: list[TypeVar] = getattr(obj, "__parameters__", [])
+    return [var.__name__ for var in typevars]
 
 
 def process_signature(app, what, name, obj, options, signature, return_annotation):
     if what == "class":
-        params = generics.get(name)
+        params = get_generic_params(obj)
         if params:
+            print(f"Adding generics for {name!r}: {params!r}")
             signature = ", ".join([f"[{param}]" for param in params]) + (
                 signature or ""
             )
-        print(f"{name=}")
     return signature, return_annotation
 
 
 def setup(app):
     app.connect("autodoc-process-signature", process_signature)
-    return {"parallel_read_safe": True}
+
+    return {
+        "version": "0.1",
+        "parallel_read_safe": True,
+        "parallel_write_safe": True,
+    }

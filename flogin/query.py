@@ -10,10 +10,10 @@ if TYPE_CHECKING:
     from ._types.search_handlers import PluginT
     from .jsonrpc.results import Result
 
-    T = TypeVar("T", default=Any)
+    ConditionDataT = TypeVar("ConditionDataT", default=Any)
 
 else:
-    T = TypeVar("T")
+    ConditionDataT = TypeVar("ConditionDataT")
 
 __all__ = ("Query",)
 
@@ -25,10 +25,8 @@ class RawQuery(TypedDict):
     actionKeyword: str
 
 
-class Query(Generic[T]):
+class Query(Generic[ConditionDataT]):
     r"""This class represents the query data sent from flow launcher
-
-    This class implements a generic for the :attr:`~flogin.query.Query.condition_data` attribute, which will be used for typechecking purposes.
 
     .. container:: operations
 
@@ -53,17 +51,17 @@ class Query(Generic[T]):
     """
 
     def __init__(self, data: RawQuery, plugin: PluginT) -> None:
-        self.__search_condition_data: T | None = None
+        self.__search_condition_data: ConditionDataT | None = None
         self._data = data
         self.plugin = plugin
 
     @property
-    def condition_data(self) -> T | None:
-        """Any | None: If used in a :class:`~flogin.search_handler.SearchHandler`, this attribute will return any extra data that the condition gave."""
+    def condition_data(self) -> ConditionDataT | None:
+        """:class:`Any` | ``None``: If used in a :class:`~flogin.search_handler.SearchHandler`, this attribute will return any extra data that the condition gave."""
         return self.__search_condition_data
 
     @condition_data.setter
-    def condition_data(self, value: T) -> None:
+    def condition_data(self, value: ConditionDataT) -> None:
         self.__search_condition_data = value
 
     @property
@@ -114,7 +112,7 @@ class Query(Generic[T]):
 
         Returns
         -------
-        None
+        ``None``
         """
 
         return await self.plugin.api.update_results(self.raw_text, results)
@@ -146,7 +144,7 @@ class Query(Generic[T]):
 
         Returns
         --------
-        None
+        ``None``
         """
 
         if keyword is MISSING:
