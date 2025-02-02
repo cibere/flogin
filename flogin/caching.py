@@ -199,7 +199,7 @@ def cached_coro(obj: str | None | CoroT = None) -> Callable[[CoroT], CoroT] | Co
         async def handler(query):
             ...
     """
-    ...
+    ...  # cov: skip
 
 
 @overload
@@ -233,7 +233,7 @@ def cached_gen(obj: str | GenT | None = None) -> Callable[[GenT], GenT] | GenT:
         async def handler(query):
             ...
     """
-    ...
+    ...  # cov: skip
 
 
 @overload
@@ -305,7 +305,7 @@ def cached_callable(
         def foo(bar):
             ...
     """
-    ...
+    ...  # cov: skip
 
 
 if not TYPE_CHECKING:
