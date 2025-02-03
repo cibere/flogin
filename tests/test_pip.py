@@ -7,6 +7,7 @@ https://www.coderabbit.ai/
 
 from __future__ import annotations
 
+import re
 import subprocess
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -16,6 +17,7 @@ import requests
 
 from flogin import Pip
 from flogin.errors import PipExecutionError, UnableToDownloadPip
+from flogin.utils import MISSING
 
 
 @pytest.fixture
@@ -73,6 +75,20 @@ def test_download_pip_http_error(mock_get, pip):
     mock_get.side_effect = requests.HTTPError()
 
     with pytest.raises(UnableToDownloadPip):
+        pip.download_pip()
+
+
+@patch("requests.get")
+def test_download_pip_temp_file_error(mock_get, pip: Pip):
+    class MockResponse(MagicMock):
+        @property
+        def content(self) -> str:
+            raise RuntimeError("foo")
+
+    mock_response = MockResponse()
+    mock_get.return_value = mock_response
+
+    with pytest.raises(RuntimeError, match="foo"):
         pip.download_pip()
 
 
@@ -218,3 +234,17 @@ def test_freeze(mock_run, pip):
 
     result = pip.freeze()
     assert result == ["package1==1.0.0", "package2==2.0.0"]
+
+
+def test_missing_dep():
+    from flogin import pip
+
+    pip.requests = MISSING
+
+    with pytest.raises(
+        ImportError,
+        match=re.escape(
+            "Pip's Extra Dependencies are not installed. You can install them with flogin[pip]"
+        ),
+    ):
+        pip.Pip()
