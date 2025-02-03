@@ -17,7 +17,7 @@ def _create_query(
             "rawQuery": f"{keyword} {text}",
             "search": text,
             "actionKeyword": keyword,
-            "isReQuery": False,
+            "isReQuery": is_requery,
         },
         plugin,
     )
