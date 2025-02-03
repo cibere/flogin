@@ -161,12 +161,7 @@ class KeywordCondition:
             return query.keyword not in self.disallowed_keywords
         if self.allowed_keywords is not None and self.disallowed_keywords is None:
             return query.keyword in self.allowed_keywords
-        if self.allowed_keywords is None and self.disallowed_keywords is None:
-            raise RuntimeError(
-                "'allowed_keywords' and 'disallowed_keywords' are both set to None. How did this happen?"
-            )
-        if self.allowed_keywords is not None and self.disallowed_keywords is not None:
-            raise RuntimeError(
-                "'allowed_keywords' and 'disallowed_keywords' are provided. How did this happen?"
-            )
-        raise RuntimeError("How did we get here")
+
+        raise RuntimeError(
+            "'allowed_keywords' and 'disallowed_keywords' have been modified to be invalid"
+        )
