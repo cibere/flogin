@@ -1,8 +1,9 @@
 # pyright: basic
 
+from typing import TYPE_CHECKING, Any
+
 import pytest
 
-from flogin._types.jsonrpc.responses import ErrorPayload
 from flogin.jsonrpc.errors import (
     ErrorCode,
     FlowError,
@@ -14,6 +15,11 @@ from flogin.jsonrpc.errors import (
     ParserError,
     get_exception_from_json,
 )
+
+if TYPE_CHECKING:
+    from flogin._types.jsonrpc.responses import ErrorPayload
+else:
+    ErrorPayload = dict[str, Any]
 
 
 def test_base_exception():
