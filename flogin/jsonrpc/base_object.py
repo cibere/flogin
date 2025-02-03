@@ -25,7 +25,7 @@ class Base(Generic[T]):
 
     @classmethod
     def from_dict(cls: type[Self], data: T) -> Self:
-        raise RuntimeError("This should be overriden")
+        raise NotImplementedError
 
     def __repr__(self) -> str:
         args = [f"{item}={getattr(self, item)!r}" for item in self.__slots__]
