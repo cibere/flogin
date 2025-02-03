@@ -170,7 +170,7 @@ def get_exception_from_json(data: ErrorPayload) -> JsonRPCException:
         if code == cls.code:
             return cls(**kwargs)
 
-    if ErrorCode.server_error_start.value <= code <= ErrorCode.server_error_end.value:
+    if ErrorCode.server_error_end.value <= code <= ErrorCode.server_error_start.value:
         error = FlowError(**kwargs)
     else:
         error = JsonRPCException(**kwargs)
