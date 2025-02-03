@@ -42,8 +42,8 @@ def test_props(metadata: PluginMetadata) -> None:
     assert metadata.directory == "c:/plugin"
     assert metadata.keywords == ["foo", "bar"]
     assert metadata.main_keyword == "chore"
-    assert metadata.executable == Path("c:/plugin/exe.py")
-    assert metadata.icon == Path("c:/plugin/ico.png")
+    assert metadata.executable == Path("c:/plugin/exe.py").absolute()
+    assert metadata.icon == Path("c:/plugin/ico.png").absolute()
 
 
 @pytest.mark.asyncio
