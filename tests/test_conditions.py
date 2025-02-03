@@ -177,3 +177,29 @@ class TestAnyCondition:
         )
         assert cond(yes_query) is True
         assert yes_query.condition_data == (condition, 25)
+
+
+class TestKeywordCondition:
+    def test_invalid_params(self) -> None:
+        with pytest.raises(
+            TypeError,
+            match="Either the 'allowed_keywords' arg or the 'disallowed_keywords' arg must be given",
+        ):
+            KeywordCondition()
+
+        with pytest.raises(
+            TypeError,
+            match="'allowed_keywords' and 'disallowed_keywords' can not be passed together. Use `MultiCondition` if you would like to achieve it.",
+        ):
+            KeywordCondition(allowed_keywords=[], disallowed_keywords=[])
+
+    def test_modification_error(self, query: Query) -> None:
+        cond = KeywordCondition(allowed_keywords=[])
+        cond.allowed_keywords = None
+        cond.disallowed_keywords = None
+
+        with pytest.raises(
+            RuntimeError,
+            match="'allowed_keywords' and 'disallowed_keywords' have been modified to be invalid",
+        ):
+            cond(query)
