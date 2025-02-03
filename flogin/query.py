@@ -130,19 +130,17 @@ class Query(Generic[ConditionDataT]):
 
         This method provides quick acess to :func:`flogin.flow.api.FlowLauncherAPI.change_query`
 
-        .. versionchanged:: 2.0.0
-            ``text`` is now optional
-
         Parameters
         ----------
-        text: :class:`str` | ``None``
+        text: Optional[:class:`str` | ``None``]
             The text that will be used with the query.
 
-            .. versionchanged:: ``text`` can now be ``None``
-        keyword: :class:`str`
-            The keyword that will be used with the query. Defaults to the pre-existing value of :attr:`Query.keyword`. Set this to ``None`` or `"*"` for no keyword to be used.
-        requery: :class:`bool`
-            Whether or not to re-send a query request in the event that the new query is the same as the current query
+            .. versionchanged:: 2.0.0
+                ``text`` can now be ``None``, and is now optional
+        keyword: Optional[:class:`str` | ``None``]
+            The keyword that will be used with the query. Defaults to the pre-existing value of :attr:`Query.keyword`. Set this to ``None`` or ``*`` for no keyword to be used.
+        requery: Optional[:class:`bool`]
+            Whether or not to re-send a query request in the event that the new query is the same as the current query. Defaults to ``False``
 
         Raises
         -------
