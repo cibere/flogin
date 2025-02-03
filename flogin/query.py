@@ -118,13 +118,20 @@ class Query(Generic[ConditionDataT]):
         return await self.plugin.api.update_results(self.raw_text, results)
 
     async def update(
-        self, *, text: str | None, keyword: str | None = MISSING, requery: bool = False
+        self,
+        *,
+        text: str | None = MISSING,
+        keyword: str | None = MISSING,
+        requery: bool = False,
     ) -> None:
         r"""|coro|
 
         Applies updates to the query with flow, and to this object.
 
         This method provides quick acess to :func:`flogin.flow.api.FlowLauncherAPI.change_query`
+
+        .. versionchanged:: 2.0.0
+            ``text`` is now optional
 
         Parameters
         ----------
@@ -147,24 +154,14 @@ class Query(Generic[ConditionDataT]):
         ``None``
         """
 
-        if keyword is MISSING:
-            keyword = self.keyword
-        elif keyword is None:
-            keyword = "*"
+        if keyword is not MISSING:
+            self._data["actionKeyword"] = "*" if keyword is None else keyword
 
-        if text is None:
-            raw_text = "" if keyword == "*" else keyword
-            self._data["actionKeyword"] = raw_text
-        else:
-            if keyword == "*":
-                raw_text = text
-                self._data["actionKeyword"] = "*"
-            else:
-                raw_text = f"{keyword} {text}"
-                self._data["actionKeyword"] = keyword
+        if text is not MISSING:
+            self._data["search"] = text or ""
 
-        self._data["rawQuery"] = raw_text
-        self._data["search"] = text or ""
-        self._data["isReQuery"] = requery
+        self._data["rawQuery"] = (
+            f"{'' if self.keyword == '*' else self.keyword} {self.text}".strip()
+        )
 
-        return await self.plugin.api.change_query(raw_text, requery=requery)
+        return await self.plugin.api.change_query(self.raw_text, requery=requery)
