@@ -53,3 +53,10 @@ def test_get_default(settings: Settings):
 def test_attribute_error(settings: Settings):
     with pytest.raises(AttributeError):
         settings._i_do_not_exist
+
+
+def test_no_update():
+    settings = Settings({"foo": 5}, no_update=True)
+    assert settings.foo == 5
+    settings._update({"foo": 10})
+    assert settings.foo == 5
