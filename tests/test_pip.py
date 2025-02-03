@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 import subprocess
 from pathlib import Path
+from subprocess import CalledProcessError
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -139,7 +140,7 @@ def test_run_without_download(pip):
 @patch("subprocess.run")
 def test_run_pip_error(mock_run, pip):
     mock_run.side_effect = subprocess.CalledProcessError(
-        1, [], output=b"", stderr=b"error"
+        1, [], output=b"output", stderr=b"error"
     )
 
     # Mock pip download
@@ -149,8 +150,14 @@ def test_run_pip_error(mock_run, pip):
         mock_get.return_value = mock_response
         pip.download_pip()
 
-    with pytest.raises(PipExecutionError):
+    with pytest.raises(PipExecutionError) as exc_info:
         pip.run("install", "package")
+
+    assert exc_info.type == PipExecutionError
+    assert isinstance(exc_info.value.error, CalledProcessError)
+    assert exc_info.value.returncode == 1
+    assert exc_info.value.output == "output"
+    assert exc_info.value.stderr == "error"
 
 
 @patch("subprocess.run")
