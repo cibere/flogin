@@ -10,7 +10,7 @@ from .utils import MISSING
 
 try:
     import requests
-except ImportError:
+except ImportError:  # cov: skip
     requests = MISSING
 
 from .errors import PipExecutionError, UnableToDownloadPip
@@ -117,13 +117,17 @@ class Pip:
         except requests.RequestException as error:
             raise UnableToDownloadPip(error) from error
 
+        error = None
         with tempfile.NamedTemporaryFile("wb", suffix="-pip.pyz", delete=False) as f:
             try:
                 f.write(res.content)
                 self._pip_fp = Path(f.name)
-            except:
-                Path(f.name).unlink(missing_ok=True)
-                raise
+            except BaseException as e:
+                error = e
+
+        if error:
+            Path(f.name).unlink(missing_ok=True)
+            raise error
 
     def delete_pip(self) -> None:
         r"""Deletes the temp version of pip installed on the system.
