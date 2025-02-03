@@ -99,10 +99,12 @@ class TestUpdateMethod:
             # text cases
             (None, MISSING, False, "{original.keyword}"),
             ("bar", MISSING, False, "{original.keyword} bar"),
+            ("", MISSING, False, "{original.keyword}"),
             # keyword cases
             (MISSING, None, False, "{original.text}"),
             (MISSING, "Bar", False, "Bar {original.text}"),
             (MISSING, "*", False, "{original.text}"),
+            (MISSING, "", False, "{original.text}"),
             # requery case
             (MISSING, MISSING, True, "{original.raw_text}"),
             (MISSING, MISSING, False, "{original.raw_text}"),
