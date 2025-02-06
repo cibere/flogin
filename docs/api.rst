@@ -103,6 +103,12 @@ Search Handlers
 .. autoclass:: flogin.search_handler.SearchHandler
     :members:
 
+.. attributetable:: flogin.search_group.SearchGroup
+
+.. autoclass:: flogin.search_group.SearchGroup
+    :members:
+    :exclude-members: callback, condition
+
 .. _builtin_search_conditions:
 
 Builtin Search Conditions
