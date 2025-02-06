@@ -298,9 +298,14 @@ def decorator(deco: T = MISSING, *, is_factory: bool = False) -> T | Callable[[T
 
 
 class func_with_self(Generic[P, ReturnT, OwnerT]):
-    def __init__(self, func: Callable[Concatenate[OwnerT, P], ReturnT]) -> None:
+    def __init__(
+        self,
+        func: Callable[Concatenate[OwnerT, P], ReturnT],
+        *,
+        owner: OwnerT = MISSING,
+    ) -> None:
         self.func = func
-        self.owner: OwnerT | None = None
+        self.owner: OwnerT | None = owner if owner is not MISSING else None
 
         update_wrapper(wrapped=func, wrapper=self)
 
