@@ -1,41 +1,84 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Generic, Self, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, Self
 
 from ._types import (
     PluginT,
     SearchHandlerCallback,
     SearchHandlerCallbackReturns,
-    SearchHandlerCallbackWithSelf,
 )
 from .jsonrpc.results import Result
 from .search_handler import SearchHandler
 from .utils import (
     MISSING,
-    add_classmethod_alt,
     decorator,
-    func_with_self,
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from .query import Query
-
-SearchHandlerCallbackT = TypeVar("SearchHandlerCallbackT", bound=SearchHandlerCallback)
-SearchHandlerCallbackWithSelfT = TypeVar(
-    "SearchHandlerCallbackWithSelfT", bound=SearchHandlerCallbackWithSelf
-)
 
 __all__ = ("SearchGroup",)
 
 
 class SearchGroup(SearchHandler[PluginT], Generic[PluginT]):
+    r"""A subclass of :class:`~flogin.search_handler.SearchHandler` to let you easily create a nested command structure.
+
+    The keywords in the constructor can also be passed into the subclassed init, like so: ::
+
+        class MyGroup(SearchGroup, prefix="text"):
+            ...
+
+        # is equal to
+
+        class MyGroup(SearchGroup):
+            def __init__(self):
+                super().__init__(prefix="text")
+
+    .. versionadded:: 2.0.0
+
+    Example
+    -------
+    Adding a subcommand named ``cmd``
+
+    .. code-block:: py3
+        :linenos:
+
+        from flogin import SearchGroup
+
+        group = SearchGroup("foo")
+
+        @group.sub("cmd")
+        async def cmd(query):
+            return "Hi from cmd"
+
+        # cmd can be invoked with "foo cmd"
+
+    Adding nested subgroups
+
+    .. code-block:: py3
+        :linenos:
+
+        from flogin import SearchGroup
+
+        group = SearchGroup("foo")
+        sub = group.sub("sub")
+
+        @sub.sub("cmd2")
+        async def cmd2(query):
+            return "Hi from cmd2 under cmd1"
+
+        # cmd2 can be invoked with "foo sub cmd2"
+
+    Attributes
+    ----------
+    prefix: :class:`str`
+        The prefix used to trigger the search group
+    sep: :class:`str`
+        The character that seperates the group's prefix and subhandler's prefixes during validation. Defaults to a space.
+    """
+
     prefix: str
     sep: str = " "
-    __class_subhandlers__: ClassVar[
-        dict[str, SearchHandlerCallbackWithSelf | SearchGroup]
-    ] = {}
 
     def __init__(self, prefix: str = MISSING, sep: str = MISSING) -> None:
         if prefix is not MISSING:
@@ -49,17 +92,9 @@ class SearchGroup(SearchHandler[PluginT], Generic[PluginT]):
             self.sep = sep
 
         self.parent: SearchGroup | None = None
-        self._subhandlers: dict[str, SearchHandlerCallback | SearchGroup] = {}
-
-        for key, func in self.__class_subhandlers__.items():
-            if isinstance(func, SearchGroup):
-                func.parent = self
-            else:
-                func = func_with_self(func, owner=self)
-            self._subhandlers[key] = func
+        self._subgroups: dict[str, SearchGroup] = {}
 
     def __init_subclass__(cls, prefix: str = MISSING, sep: str = MISSING) -> None:
-        cls.__class_subhandlers__ = {}
         cls.prefix = prefix
         cls.sep = " " if sep is MISSING else sep
 
@@ -70,8 +105,13 @@ class SearchGroup(SearchHandler[PluginT], Generic[PluginT]):
             return False
 
     @property
+    def subgroups(self) -> dict[str, SearchGroup]:
+        r"""dict[:class:`str`, :class:`~flogin.search_group.SearchGroup`]: A copied version of the subgroups that have been registered to this group."""
+        return self._subgroups.copy()
+
+    @property
     def signature(self) -> str:
-        r""":class:`str` the group's signature. This property will grab all of the group's parent's prefixes, and join them together using :attr:`SearchGroup.sep`"""
+        r""":class:`str` the group's signature. This property will grab all of the group's parent's prefixes, and join them together using the :attr:`~flogin.search_group.SearchGroup.sep` attribute"""
 
         parts = []
         parent = self
@@ -90,12 +130,12 @@ class SearchGroup(SearchHandler[PluginT], Generic[PluginT]):
         ----------
         key: :class:`str`
             The key to generate the result for
-        query: :class:`Query`
+        query: :class:`~flogin.query.Query`
             The query that this is being generated for
 
         Returns
         -------
-        :class:`Result`
+        :class:`~flogin.jsonrpc.results.Result`
             The generated result object
         """
 
@@ -116,8 +156,8 @@ class SearchGroup(SearchHandler[PluginT], Generic[PluginT]):
             auto_complete_text=new,
         )
 
-    async def _default_root_handler(self, query: Query) -> list[Result]:
-        return [self.create_result(key, query) for key in self._subhandlers]
+    async def root_handler(self, query: Query) -> list[Result]:
+        return [self.create_result(key, query) for key in self._subgroups]
 
     def callback(self, query: Query) -> SearchHandlerCallbackReturns:
         parts = query.text.split(self.sep)
@@ -126,9 +166,9 @@ class SearchGroup(SearchHandler[PluginT], Generic[PluginT]):
         )
 
         try:
-            handler = self._subhandlers[parts[1]]
+            handler = self._subgroups[parts[1]]
         except (KeyError, IndexError):
-            handler = self._subhandlers.get("", self._default_root_handler)
+            handler = self.root_handler
 
         if isinstance(handler, SearchGroup):
             handler.plugin = self.plugin
@@ -137,103 +177,43 @@ class SearchGroup(SearchHandler[PluginT], Generic[PluginT]):
         return handler(query)
 
     def __call__(self, callback: SearchHandlerCallback) -> Self:
-        self._subhandlers[""] = callback
+        setattr(self, "root_handler", callback)
         return self
 
-    @classmethod
-    def __subhandler_classmethod_deco(
-        cls, prefix: str
-    ) -> Callable[[SearchHandlerCallbackWithSelf], SearchHandlerCallbackWithSelf]:
-        def deco(
-            func: SearchHandlerCallbackWithSelfT,
-        ) -> SearchHandlerCallbackWithSelfT:
-            cls.__class_subhandlers__[prefix] = func
-            return func
-
-        return deco
-
     @decorator(is_factory=True)
-    @add_classmethod_alt(__subhandler_classmethod_deco)
-    def subhandler(
-        self, prefix: str
-    ) -> Callable[[SearchHandlerCallbackT], SearchHandlerCallbackT]:
-        r"""Adds a subhandler to the search group.
-
-        .. NOTE::
-            This can also be used as a classmethod
+    def sub(self, prefix: str) -> SearchGroup:
+        r"""Adds a subgroup to the search group.
 
         Parameters
         ----------
         prefix: :class:`str`
-            The prefix used to trigger the subhandler
+            The prefix used to trigger the subgroup
+
+        Raises
+        ------
+        :class:`ValueError`
+            This is raised when the given prefix is already associated with a subgroup.
 
         Example
         -------
-        .. details:: Using with an instance
+        .. code-block:: py3
+            :linenos:
 
-            .. code-block:: py3
-                :linenos:
+            group = SearchGroup(...)
 
-                group = SearchGroup(...)
-
-                @group.subhandler("prefix")
-                async def subhandler(query):
-                    ...
-
-        .. details:: Using as a classmethod
-
-            .. code-block:: py3
-                :linenos:
-
-                class MyHandler(SearchHandler):
-                    @SearchGroup.subhandler("prefix")
-                    async def subhandler(self, query):
-                        ...
+            @group.sub("prefix")
+            async def subgroup(query):
+                ...
         """
 
-        def deco(func: SearchHandlerCallbackT) -> SearchHandlerCallbackT:
-            self._subhandlers[prefix] = func
-            return func
-
-        return deco
-
-    def subgroup(self, prefix: str) -> SearchGroup:
-        r"""Creates a subgroup with the given prefix.
-
-        Parameters
-        ----------
-        prefix: :class:`str`
-            The prefix to attach to the new subgroup
-
-        Example
-        -------
-        .. details:: Using the default root callback
-
-            .. code-block:: py3
-                :linenos:
-
-                group = SearchGroup(...)
-                subgroup = group.subgroup("prefix")
-
-        .. details:: With a custom root callback
-
-            .. code-block:: py3
-                :linenos:
-
-                group = SearchGroup(...)
-
-                @group.subgroup("prefix")
-                async def custom_root_callback(query: Query):
-                    ...
-
-        Returns
-        -------
-        :class:`SearchGroup`
-        """
+        if prefix in self._subgroups:
+            raise ValueError(
+                f"A subgroup with the {prefix!r} prefix has already been registered"
+            )
 
         group = SearchGroup(prefix, self.sep)
         group.parent = self
-        self._subhandlers[prefix] = group
+        self._subgroups[prefix] = group
         return group
 
     def get_tree(self) -> dict[str, Any]:
@@ -243,6 +223,6 @@ class SearchGroup(SearchHandler[PluginT], Generic[PluginT]):
                 name: value.get_tree()
                 if isinstance(value, SearchGroup)
                 else repr(value)
-                for name, value in self._subhandlers.items()
+                for name, value in self._subgroups.items()
             },
         }
