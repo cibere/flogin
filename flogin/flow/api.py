@@ -474,11 +474,11 @@ class FlowLauncherAPI:
 
     async def back_to_query_results(self) -> None:
         r"""|coro|
-        
+
         This coroutine tells flow to exit the context menu and go back to the query results.
 
         .. versionadded:: 2.0.0
-        
+
         Raises
         -------
         :class:`~flogin.jsonrpc.errors.JsonRPCException`
@@ -488,5 +488,5 @@ class FlowLauncherAPI:
         --------
         ``None``
         """
-        
+
         await self.jsonrpc.request("BackToQueryResults")

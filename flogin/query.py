@@ -166,13 +166,13 @@ class Query(Generic[ConditionDataT]):
 
     async def back_to_query_results(self) -> None:
         r"""|coro|
-        
+
         This coroutine tells flow to exit the context menu and go back to the query results.
 
         This method provides quick access to :meth:`flogin.flow.api.FlowLauncherAPI.back_to_query_results`
 
         .. versionadded:: 2.0.0
-        
+
         Raises
         -------
         :class:`~flogin.jsonrpc.errors.JsonRPCException`
