@@ -440,25 +440,26 @@ class FlowLauncherAPI:
         await self.jsonrpc.request("OpenDirectory", [directory, file])
 
     async def update_results(self, raw_query: str, results: list[Result[Any]]) -> None:
-        r"""|coro|
-
-        Tells flow to change the results shown to the user
-
-        .. NOTE::
-            The ``raw_query`` parameter is required by flow launcher, and must be the same as the current raw query in flow launcher for the results to successfully update.
-
+        """
+        Update the displayed search results in Flow Launcher.
+        
+        This coroutine updates both the internal cache of plugin results and the results displayed in Flow Launcher by sending a JSON-RPC request. The update is applied only if the provided raw_query matches the current query in Flow Launcher.
+        
+        .. note::
+           The raw_query parameter is required by Flow Launcher and must exactly match the current query for the update to take effect.
+        
         Parameters
         ----------
-        raw_query: :class:`str`
-            Only change the results if the current raw query is the same as this
-        results: list[:class:`~flogin.jsonrpc.results.Result`]
-            The new results
-
+        raw_query : str
+            The current query string. The update will only occur if this matches the query held in Flow Launcher.
+        results : list[Result[Any]]
+            A list of Result objects representing the new results to display. Each result's slug is used as a unique identifier.
+        
         Raises
-        -------
-        :class:`~flogin.jsonrpc.errors.JsonRPCException`
-            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
-
+        ------
+        JsonRPCException
+            Raised when an error occurs with the JSON-RPC communication with Flow Launcher.
+        
         Returns
         -------
         None
@@ -473,20 +474,21 @@ class FlowLauncherAPI:
         )
 
     async def back_to_query_results(self) -> None:
-        r"""|coro|
-
-        This coroutine tells flow to exit the context menu and go back to the query results.
-
+        """
+        Asynchronously instructs the Flow Launcher to exit the context menu and return to the query results.
+        
+        This coroutine sends a JSON-RPC request using the action "BackToQueryResults". If an error occurs during the JSON-RPC communication, a JsonRPCException is raised.
+        
         .. versionadded:: 2.0.0
-
+        
         Raises
-        -------
-        :class:`~flogin.jsonrpc.errors.JsonRPCException`
-            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
-
+        ------
+        ~flogin.jsonrpc.errors.JsonRPCException
+            If a JSON-RPC error occurs while invoking the API method.
+        
         Returns
-        --------
-        ``None``
+        -------
+        None
         """
 
         await self.jsonrpc.request("BackToQueryResults")

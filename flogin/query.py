@@ -125,31 +125,29 @@ class Query(Generic[ConditionDataT]):
         requery: bool = False,
     ) -> None:
         r"""|coro|
-
-        Applies updates to the query with flow, and to this object.
-
-        This method provides quick access to :func:`flogin.flow.api.FlowLauncherAPI.change_query`
-
+        Update the query's text and keyword and propagate the changes to the flow launcher API.
+        
+        This asynchronous method updates the internal query data with the provided text and keyword values. It reconstructs the raw query string by concatenating the keyword (omitted if it is '*') and the search text, then calls :func:`flogin.flow.api.FlowLauncherAPI.change_query` to apply the update remotely. If the keyword is provided as None, it defaults to '*', and if the text is provided as None, it is treated as an empty string.
+        
         Parameters
         ----------
-        text: Optional[:class:`str` | ``None``]
-            The text that will be used with the query.
-
+        text : Optional[str], default=MISSING
+            The new search text for the query. When provided, it updates the query's search field.
             .. versionchanged:: 2.0.0
-                ``text`` can now be ``None``, and is now optional
-        keyword: Optional[:class:`str` | ``None``]
-            The keyword that will be used with the query. Defaults to the pre-existing value of :attr:`Query.keyword`. Set this to ``None`` or ``*`` for no keyword to be used.
-        requery: Optional[:class:`bool`]
-            Whether or not to re-send a query request in the event that the new query is the same as the current query. Defaults to ``False``
-
+               ``text`` can now be ``None`` and is treated as an empty string.
+        keyword : Optional[str], default=MISSING
+            The new keyword for the query. When provided, it updates the query's action keyword. Passing ``None`` or ``*`` resets the keyword to '*'.
+        requery : bool, default=False
+            If True, resends the query request even if the updated query matches the current query.
+        
         Raises
-        -------
-        :class:`~flogin.jsonrpc.errors.JsonRPCException`
-            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
-
+        ------
+        ~flogin.jsonrpc.errors.JsonRPCException
+            Raised when an error occurs with the JSON-RPC pipe during the API call.
+        
         Returns
-        --------
-        ``None``
+        -------
+        None
         """
 
         if keyword is not MISSING:
