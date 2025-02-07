@@ -128,7 +128,7 @@ class Query(Generic[ConditionDataT]):
 
         Applies updates to the query with flow, and to this object.
 
-        This method provides quick acess to :func:`flogin.flow.api.FlowLauncherAPI.change_query`
+        This method provides quick access to :func:`flogin.flow.api.FlowLauncherAPI.change_query`
 
         Parameters
         ----------
@@ -163,3 +163,24 @@ class Query(Generic[ConditionDataT]):
         )
 
         return await self.plugin.api.change_query(self.raw_text, requery=requery)
+
+    async def back_to_query_results(self) -> None:
+        r"""|coro|
+        
+        This coroutine tells flow to exit the context menu and go back to the query results.
+
+        This method provides quick access to :meth:`flogin.flow.api.FlowLauncherAPI.back_to_query_results`
+
+        .. versionadded:: 2.0.0
+        
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
+        Returns
+        --------
+        ``None``
+        """
+
+        await self.plugin.api.back_to_query_results()
