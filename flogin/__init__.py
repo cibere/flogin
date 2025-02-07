@@ -9,6 +9,7 @@ from .jsonrpc import *
 from .pip import *
 from .plugin import *
 from .query import *
+from .search_group import *
 from .search_handler import *
 from .settings import *
 from .utils import VersionInfo
