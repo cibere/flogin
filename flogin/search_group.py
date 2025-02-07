@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Generic, Self
 
-from ._types import (
+from ._types.search_handlers import (
     PluginT,
     SearchHandlerCallback,
     SearchHandlerCallbackReturns,
@@ -113,7 +113,7 @@ class SearchGroup(SearchHandler[PluginT], Generic[PluginT]):
     def signature(self) -> str:
         r""":class:`str` the group's signature. This property will grab all of the group's parent's prefixes, and join them together using the :attr:`~flogin.search_group.SearchGroup.sep` attribute"""
 
-        parts = []
+        parts: list[str] = []
         parent = self
 
         while parent:
@@ -180,7 +180,7 @@ class SearchGroup(SearchHandler[PluginT], Generic[PluginT]):
         setattr(self, "root_handler", callback)
         return self
 
-    @decorator(is_factory=True)
+    @decorator
     def sub(self, prefix: str) -> SearchGroup:
         r"""Adds a subgroup to the search group.
 
@@ -220,9 +220,6 @@ class SearchGroup(SearchHandler[PluginT], Generic[PluginT]):
         return {
             "prefix": self.prefix,
             "children": {
-                name: value.get_tree()
-                if isinstance(value, SearchGroup)
-                else repr(value)
-                for name, value in self._subgroups.items()
+                name: value.get_tree() for name, value in self._subgroups.items()
             },
         }
