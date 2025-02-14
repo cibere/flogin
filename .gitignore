@@ -8,7 +8,7 @@ dist/*
 *.egg-info
 docs/_build
 
-plugin.json
+*plugin.json
 test.py
 main.py
 flogin.log.1
