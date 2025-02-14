@@ -25,7 +25,8 @@ from .base_object import Base
 from .responses import ErrorResponse, ExecuteResponse
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine, Iterable
+    from collections.abc import Callable, Iterable
+    from types import CoroutineType
 
     from .._types.jsonrpc.result import (  # noqa: F401
         RawGlyph,
@@ -438,7 +439,9 @@ class Result(Base["RawResult"], Generic[PluginT]):
     @classmethod
     def create_with_partial(
         cls: type[Result],
-        partial_callback: Callable[[], Coroutine[Any, Any, Any]],
+        partial_callback: Callable[
+            [], CoroutineType[Any, Any, ExecuteResponse | bool | None]
+        ],
         **kwargs: Unpack[ResultConstructorKwargs],
     ) -> Result:
         r"""A quick and easy way to create a result with a callback without subclassing.
