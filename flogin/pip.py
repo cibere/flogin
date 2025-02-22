@@ -70,14 +70,14 @@ class Pip:
 
     _libs_dir: Path
 
-    def __init__(self, libs_dir: Path | str | None = None) -> None:
+    def __init__(self, libs_dir: Path | str = "lib") -> None:
         if requests is MISSING:
             raise ImportError(
                 "Pip's Extra Dependencies are not installed. You can install them with flogin[pip]"
             )
 
         self._pip_fp: Path | None = None
-        self.libs_dir = libs_dir or Path("lib")
+        self.libs_dir = libs_dir
 
     @property
     def libs_dir(self) -> Path:
