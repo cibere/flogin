@@ -131,6 +131,12 @@ Search Handlers
     .. automethod:: SearchHandler.error()
         :decorator:
 
+.. attributetable:: flogin.search_group.SearchGroup
+
+.. autoclass:: flogin.search_group.SearchGroup
+    :members:
+    :exclude-members: callback, condition
+
 .. _builtin_search_conditions:
 
 Builtin Search Conditions
