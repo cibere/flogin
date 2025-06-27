@@ -78,6 +78,7 @@ class Pip:
 
         self._pip_fp: Path | None = None
         self.libs_dir = libs_dir
+        self.pip_download_err: BaseException | None = None
 
     @property
     def libs_dir(self) -> Path:
@@ -96,7 +97,7 @@ class Pip:
 
         self._libs_dir = new
 
-    def download_pip(self) -> None:
+    def download_pip(self) -> bool:
         r"""Downloads the temp version of pip from pypa.
 
         .. NOTE::
@@ -109,25 +110,30 @@ class Pip:
 
         Returns
         -------
-        ``None``
+        :class:`bool`
+            ``True`` indicates successful download of pip
+            ``False`` indicates download of pip failed due an error in self.pip_download_err
         """
         try:
             res = requests.get("https://bootstrap.pypa.io/pip/pip.pyz", timeout=10)
             res.raise_for_status()
         except requests.RequestException as error:
-            raise UnableToDownloadPip(error) from error
-
-        error = None
+            self.pip_download_err = error
+            log.exception(f"Saving pip failed due {type(self.pip_download_err)}", exc_info=self.pip_download_err)
+            return False
+        
         with tempfile.NamedTemporaryFile("wb", suffix="-pip.pyz", delete=False) as f:
             try:
                 f.write(res.content)
                 self._pip_fp = Path(f.name)
             except BaseException as e:
-                error = e
+                self.pip_download_err = e
 
-        if error:
+        if self.pip_download_err:
             Path(f.name).unlink(missing_ok=True)
-            raise error
+            log.exception(f"Saving pip failed due {type(self.pip_download_err)}", exc_info=self.pip_download_err)
+            return False
+        return True
 
     def delete_pip(self) -> None:
         r"""Deletes the temp version of pip installed on the system.
@@ -183,7 +189,9 @@ class Pip:
             The output from pip.
         """
 
-        if self._pip_fp is None:
+        if self._pip_fp is None and self.pip_download_err:
+            raise UnableToDownloadPip() from self.pip_download_err
+        elif self._pip_fp is None:
             raise RuntimeError("Pip has not been installed")
 
         pip = self._pip_fp.as_posix()

@@ -69,11 +69,11 @@ class UnableToDownloadPip(PipException):
 
     Attributes
     ----------
-    error: :class:`requests.exceptions.HTTPError` | :class:`requests.Timeout` | :class:`requests.ConnectionError`
+    error: :class:`requests.exceptions.HTTPError` | :class:`requests.Timeout` | :class:`requests.ConnectionError` | :class:`BaseException`
         The error that was raised by the :doc:`req:index` module.
     """
 
-    def __init__(self, err: requests.RequestException) -> None:
+    def __init__(self, err: BaseException) -> None:
         super().__init__(err)
         self.error = err
 
