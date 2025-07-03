@@ -18,7 +18,7 @@ from .errors import PipExecutionError, UnableToDownloadPip
 TYPE_CHECKING = False
 if TYPE_CHECKING:
     from types import (
-        TracebackType,  # noqa: TC003 # https://github.com/astral-sh/ruff/issues/15681
+        TracebackType,  # https://github.com/astral-sh/ruff/issues/15681
     )
     from typing import Self
 

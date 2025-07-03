@@ -3,10 +3,10 @@ from __future__ import annotations
 TYPE_CHECKING = False
 if TYPE_CHECKING:
     from subprocess import (
-        CalledProcessError,  # noqa: TC003 # https://github.com/astral-sh/ruff/issues/15681
+        CalledProcessError,  # https://github.com/astral-sh/ruff/issues/15681
     )
 
-    import requests  # noqa: TC002 # https://github.com/astral-sh/ruff/issues/15681
+    import requests  # https://github.com/astral-sh/ruff/issues/15681
 
 __all__ = (
     "EnvNotSet",
