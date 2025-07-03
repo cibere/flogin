@@ -129,12 +129,6 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
 
-[tool.bandit]
-skips = [
-    "B603", # https://bandit.readthedocs.io/en/latest/plugins/b603_subprocess_without_shell_equals_true.html
-    "B404", # https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html#b404-import-subprocess
-]
-
 [tool.pyright]
 include = [
     "tests",
