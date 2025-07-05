@@ -190,7 +190,7 @@ class Pip:
         """
 
         if self._pip_fp is None and self.pip_download_err:
-            raise UnableToDownloadPip() from self.pip_download_err
+            raise UnableToDownloadPip(self.pip_download_err) from self.pip_download_err
         elif self._pip_fp is None:
             raise RuntimeError("Pip has not been installed")
 
