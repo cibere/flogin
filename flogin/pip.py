@@ -145,7 +145,6 @@ class Pip:
             log.info("Pip deleted from %s", self._pip_fp)
 
     def __enter__(self) -> Self:
-        self.download_pip()
         return self
 
     def __exit__(
@@ -184,7 +183,7 @@ class Pip:
         """
 
         if self._pip_fp is None:
-            raise RuntimeError("Pip has not been installed")
+            self.download_pip()
 
         pip = self._pip_fp.as_posix()
         cmd = [sys.executable, pip, *args]
