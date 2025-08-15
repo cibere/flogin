@@ -471,3 +471,22 @@ class FlowLauncherAPI:
         await self.jsonrpc.request(
             "UpdateResults", [raw_query, QueryResponse(results).to_dict()["result"]]
         )
+
+    async def back_to_query_results(self) -> None:
+        r"""|coro|
+
+        This coroutine tells flow to exit the context menu and go back to the query results.
+
+        .. versionadded:: 2.0.0
+
+        Raises
+        -------
+        :class:`~flogin.jsonrpc.errors.JsonRPCException`
+            This is raised when an error happens with the JsonRPC pipe while attempting to call this API method.
+
+        Returns
+        --------
+        ``None``
+        """
+
+        await self.jsonrpc.request("BackToQueryResults")
