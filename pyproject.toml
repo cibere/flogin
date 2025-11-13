@@ -35,7 +35,7 @@ Documentation = "https://flogin.readthedocs.io/en/latest/"
 [project.optional-dependencies]
 docs = [
     "sphinx>=7.0.0,<9.0.0",
-    "furo==2025.7.19", # theme // https://pradyunsg.me/furo/customisation/announcement/
+    "furo==2025.9.25", # theme // https://pradyunsg.me/furo/customisation/announcement/
     "sphinx-toolbox>=3.5,<5.0",  # https://sphinx-toolbox.readthedocs.io/en/latest/extensions/index.html
     "sphinxcontrib-trio==1.1.2",
     "sphinx-copybutton==0.5.2",
